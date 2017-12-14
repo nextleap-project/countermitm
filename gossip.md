@@ -46,14 +46,16 @@ For groups larger than three isolating a single member and intercepting all of t
 Probability of detecting an attack through out of band verification
 -------------------------------------------------------------------
 
-A group with n members has c = n * (n-1) / 2 connections. The probability of an attack on a connections not being detected with 1 key verification is therefor :
+A group with n members has $c = n \times \frac{n-1}{2}$ connections.
 
-$\frac{c-a}{c}$
+Let's consider an attack on $a$ connections. This leaves $g = c-a$ good connections. The probability of the attack not being detected with 1 key verification therefore is $\frac{g}{c}$.
 
-For the second verification c-1 unverified connections remain. So the probability of the attack going unnoticed in v verification attempts is:
+If the attack remains undetected c-1 unverified connections amongst which (g-1) are good remain. So the probability of the attack going unnoticed in v verification attempts is:
 
-$\frac{c-a * (c-a)-1 ... * (c-a)-(v-1)}{c * c-1 ... * c-(v-1)}$
-$= \frac{ \frac{(c-a)!}{(c-a-v)!} }{ \frac{c!}{(c-v)!} }$
+$\frac{g}{c} \times \frac{g-1}{c-1} ... \times \frac{g-(v-1)}{c-(v-1)}$
+$= \frac{g  (g-1) ...  (g-(v-1))}{c  (c-1) ...  (c-(v-1))}$
+$= \frac{ \frac{g!}{(g-v)!} }{ \frac{c!}{(c-v)!} }$
+$= \frac{ g!  (c-v)! }{ c!  (g-v)! }$
 
 The attached tables list the resulting detection probabilities for groups of up to 18 members.
 

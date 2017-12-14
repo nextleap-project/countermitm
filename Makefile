@@ -4,6 +4,7 @@ HELPERS = gossip.tex build
 all: $(TARGETS)
 
 %.pdf: %.tex
+	rm -rf build
 	mkdir build
 	pdflatex -halt-on-error -output-directory build $<
 	cp build/$@ $@
