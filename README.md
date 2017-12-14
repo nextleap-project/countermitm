@@ -11,8 +11,7 @@ In order to create the pdf you will need make, pandoc and pdflatex installed
 on your system. On a debian based system you can achieve this with
 
 ```sh
-sudo apt install pandoc texlive-latex-base texlive-fonts-recommended
-texlive-latex-extra
+sudo apt install pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra
 ```
 
 From there on creating the pdf should be a matter of running
