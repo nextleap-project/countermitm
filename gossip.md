@@ -26,7 +26,7 @@ Detecting mitm through gossip inconsistencies
 
 Given Alice (A) and Bob (B) used Autocrypt to exchange their keys (a for Alice and b for Bob) but one of their providers intercepted the initial mails and replaced their keys with mitm keys (a', b'). They both also communicated with Carol (C) and their communication was not intercepted.
 Now A sends a mail to B and C including the gossip keys (a, b', c). The mail is intercepted and B receives one encrypted to b including the keys (a', b, c). C receives the original mail and since it was signed with a it cannot be altered. C's client can now detect that A is using a different key for b. This may have been caused by a key update due to device loss. However if B responds to the mail, C learns that B also uses a different key for A. At this point B's client can suggest to verify fingerprints with either A or B. In addition a reply by C will provide A and B with keys of each other through an independent signed and encrypted channel.
-Therefore checking gossip keys poses a significant risk for detection for the attacker. 
+Therefore checking gossip keys poses a significant risk for detection for the attacker.
 
 Attacks with split world views
 ------------------------------
@@ -47,16 +47,13 @@ Probability of detecting an attack through out of band verification
 -------------------------------------------------------------------
 
 A group with n members has c = n * (n-1) / 2 connections. The probability of an attack on a connections not being detected with 1 key verification is therefor :
-```
-c-a / c
-```
+
+$\frac{c-a}{c}$
 
 For the second verification c-1 unverified connections remain. So the probability of the attack going unnoticed in v verification attempts is:
-```
-c-a * (c-a)-1 ... * (c-a)-(v-1)  /  c * c-1 ... * c-(v-1) 
-=
-( (c-a)! / (c-a-v)! ) / ( c! / (c-v)! )
-```
+
+$\frac{c-a * (c-a)-1 ... * (c-a)-(v-1)}{c * c-1 ... * c-(v-1)}$
+$= \frac{ \frac{(c-a)!}{(c-a-v)!} }{ \frac{c!}{(c-v)!} }$
 
 The attached tables list the resulting detection probabilities for groups of up to 18 members.
 
@@ -79,4 +76,4 @@ If each participant verifies at least one other key out of band isolation attack
 
 ### Targeted isolation
 
-The probabilities listed in the table assume that the attacker has no information about the likelyhood of out of band verification between the users. If a group is known to require a single key verification per person and two members of the group are socially or geographically isolated chances are they will verify each others fingerprints and are less likely to verify fingerprints with anyone else. Including such information can significantly reduce the risk for an attacker. 
+The probabilities listed in the table assume that the attacker has no information about the likelyhood of out of band verification between the users. If a group is known to require a single key verification per person and two members of the group are socially or geographically isolated chances are they will verify each others fingerprints and are less likely to verify fingerprints with anyone else. Including such information can significantly reduce the risk for an attacker.
