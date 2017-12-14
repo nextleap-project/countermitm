@@ -1,5 +1,5 @@
-TARGETS = gossip.pdf
-HELPERS = gossip.tex build
+TARGETS = gossip.pdf gossip.tex
+HELPERS = build
 
 all: $(TARGETS)
 
