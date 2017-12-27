@@ -24,39 +24,41 @@ multi recipient messages such as Signal.
 Attack without checking gossip
 ------------------------------
 
-Even though we currently send along all recipient keys in multi
-recipient encrypted emails we do not check them for inconsistencies. For
-the confidentiality of group conversation this poses a significant risk.
-If the key exchange between two participants was intercepted all mails
-between these parties can be read by the attacker. Since an e-mail
-message goes out to everyone in the group an attacker can read the
-content of all group e-mail messages sent by either of the attacked
-parties. Even worse ... it's a common habit in e-mail to include quoted
-text from previous e-mail messages in the same thread. So effectively
-this attack can provide access to all of the group's conversation.
+Even though some cryptographic systems such as OpenPGP leak the keys
+used for other recipients and schemes like Autocrypt even include the
+keys we currently do not check them for inconsistencies. For the
+confidentiality of group conversation this poses a significant risk.  If
+an mitm attack is taking place on the connection between two
+participants all messages between these parties can be read by the
+attacker. Since each group message goes out to everyone in the group an
+attacker can read the content of all messages sent by either of the
+attacked parties. Even worse ... it's a common habit in a number of
+messaging systems to include quoted text from previous messages. So
+despite only targetting two participants the attack can provide access
+to a large part of the group's conversation.
 
-Therefore participants in a group conversation need not only worry about
-the correctness of their own keys but also of those of everyone else in
-the group.
+Therefore participants in a group conversation need to worry about the
+correctness of the encryption keys they use but also of those of
+everyone else in the group.
 
 Detecting mitm through gossip inconsistencies
 ---------------------------------------------
 
-Given Alice (A) and Bob (B) used Autocrypt to exchange their keys (a for
-Alice and b for Bob) but one of their providers intercepted the initial
-mails and replaced their keys with mitm keys (a', b'). They both also
-communicated with Carol (C) and their communication was not intercepted.
-Now A sends a mail to B and C including the gossip keys (a, b', c). The
-mail is intercepted and B receives one encrypted to b including the keys
-(a', b, c). C receives the original mail and since it was signed with a
-it cannot be altered. C's client can now detect that A is using a
-different key for b. This may have been caused by a key update due to
-device loss. However if B responds to the mail, C learns that B also
-uses a different key for A. At this point B's client can suggest to
-verify fingerprints with either A or B. In addition a reply by C will
-provide A and B with keys of each other through an independent signed
-and encrypted channel.  Therefore checking gossip keys poses a
-significant risk for detection for the attacker.
+Given Alice (A) and Bob (B) exchanged their keys (a for Alice and b for
+Bob) but one of their providers intercepted the initial messages and
+replaced their keys with mitm keys (a', b'). They both also communicated
+with Carol (C) and their communication was not intercepted.  Now A sends
+a message to B and C including the gossip keys (a, b', c). The message
+is intercepted and B receives one encrypted to b including the keys (a',
+b, c). C receives the original message and since it was signed with a it
+cannot be altered. C's client can now detect that A is using a different
+key for B. This may have been caused by a key update due to device loss.
+However if B responds to the message, C learns that B also uses a
+different key for A. At this point C's client can suggest to verify
+fingerprints with either A or B. In addition a reply by C will provide A
+and B with keys of each other through an independent signed and
+encrypted channel.  Therefore checking gossip keys poses a significant
+risk for detection for the attacker.
 
 Attacks with split world views
 ------------------------------
@@ -79,12 +81,6 @@ there is no reason for them to be suspicious.
 
 Note however that the provider had to attack two key exchanges. This
 increases the risk of being detected through out of band verification.
-
-For groups larger than three isolating a single member and intercepting
-all of their key exchanges is the split world view that requires the
-least intercepted key exchanges. For example in a group of 10 users it
-requires 9 key exchanges to be intercepted. Splitting the group into two
-sets of 5 users would require 25 interceptions.
 
 Probability of detecting an attack through out of band verification
 -------------------------------------------------------------------
@@ -110,10 +106,8 @@ groups of up to 18 members.
 ### Single Attack
 
 As said above without checking gossip an attacker can access a relevant
-part of the group conversation and all direct emails between two people
-by attacking their connection and nothing else.  Since active attacks
-are outside of the scope of Autocrypt Level 1 these attacks would go
-unnoticed unless the people in question verify their keys out of band.
+part of the group conversation and all direct messages between two people
+by attacking their connection and nothing else.
 The likelihood of a single such verification being successful is shown
 in the first table.
 
@@ -139,8 +133,7 @@ isolation attacks can be ruled out. The next least invasive attack would
 be trying to isolate pairs from the rest of the group. However this
 requires more interceptions and even 1 verification on average per user
 leads to a chance > 88% for detecting an attack on a random pair of
-users. If on average only every second user performs such a verification
-the detection rate would still be ~ 66% (orange background)
+users.
 
 ### Targeted isolation
 
