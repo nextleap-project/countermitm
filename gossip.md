@@ -144,3 +144,57 @@ person and two members of the group are socially or geographically
 isolated chances are they will verify each others fingerprints and are
 less likely to verify fingerprints with anyone else. Including such
 information can significantly reduce the risk for an attacker.
+
+Out of band verified group communication
+----------------------------------------
+
+So far we have basically discussed opportunistic security with some
+efforts to improve the likelyhood to discover mitm attacks. Verifying
+key consistency is probably more interesting in establishing out-of-band
+verified group communication. Without checking the consistency of keys
+between peers securing the group communication requires verifying every
+single connection.
+
+The traditional approach to reducing the necessity of out-of-band
+verification is the web of trust. Existing implementations such as the
+OpenPGP keyservers however leak the social graph and require a concious
+learning effort to understand the underlying concepts. Therefore they
+have only reached limited adoption.
+
+In the following we will consider a graph with the nodes being the group
+members and edges representing an out-of-band verification.
+
+### Setting up secure group communication from the start
+
+We can prevent split world views by growing a group one user at a time
+and requiring out-of-band verification when adding a user. It's easy to
+see that the corresponding graph will be fully connected. Therefor it's
+not possible to split the group into two sets of recipients with
+consistent world views.
+
+If the messaging application exposes a notion of groups to the user,
+this scheme can be build based on signed and encrypted introduction
+messages to the group that include the new participants key.
+
+It could also be used to establish more lightweight group communication
+similar to CC'ed emails. In this case starting a threat would require
+out-of-band verified key exchanges with all initial members. Any
+recipient that wants to CC more people would be required to verify the
+new participants.
+
+### Establishing key consistency in an existing group
+
+
+### Dealing with device loss
+
+
+### Improving privacy properties
+
+So far the introduction of a new user to group communication leaks the
+information who introduced the new user. This may be a desired property
+of the communication scheme and is similar to how we already learn who
+added a new participant to a CC'ed email thread. However in contexts
+similar to mailing lists it may be interesting to provide similar
+guarantees without revealing who met whom for out-of-band verification.
+Notice however that the idea of key gossip does not allow for recipient
+anonymity.
