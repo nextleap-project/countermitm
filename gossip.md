@@ -15,14 +15,16 @@ without additional privacy leakage.
 This allows us to warn about machine-in-the-middle (mitm) attacks on one
 of the direct connections. This forces attackers to intercept multiple
 connections to split the recipients into consistent 'world views'.  The
-need to attack multiple connections in turn increases the chance of detecting
-the attack by out of band verification.
+need to attack multiple connections in turn increases the chance of
+detecting the attack by out of band verification.
 
 The approach is applicable to other asymmetric encryption schemes with
 multi recipient messages such as Signal.
 
-Attack without checking gossip
-------------------------------
+Attack Scenarios
+----------------
+
+### Attacking group communication on a single connection
 
 Even though some cryptographic systems such as OpenPGP leak the keys
 used for other recipients and schemes like Autocrypt even include the
@@ -41,8 +43,7 @@ Therefore participants in a group conversation need to worry about the
 correctness of the encryption keys they use but also of those of
 everyone else in the group.
 
-Detecting mitm through gossip inconsistencies
----------------------------------------------
+### Detecting mitm through gossip inconsistencies
 
 Given Alice (A) and Bob (B) exchanged their keys (a for Alice and b for
 Bob) but one of their providers intercepted the initial messages and
@@ -60,8 +61,7 @@ and B with keys of each other through an independent signed and
 encrypted channel.  Therefore checking gossip keys poses a significant
 risk for detection for the attacker.
 
-Attacks with split world views
-------------------------------
+### Attacks with split world views
 
 In order to prevent detection through inconsistencies an attacker may
 choose to try and attack in a way that leads to consistent world views
@@ -82,8 +82,29 @@ there is no reason for them to be suspicious.
 Note however that the provider had to attack two key exchanges. This
 increases the risk of being detected through out of band verification.
 
+
 Probability of detecting an attack through out of band verification
 -------------------------------------------------------------------
+
+Attacks on key exchange to carry out mitm attacks that replace everyones
+keys would be detected by the first out-of-band verification and the
+detection could easily be reproduced by others.
+
+However if the attack was carried out on only a small part of all
+connections the likelyhood of detection would be far lower and error
+messages could easily be attributed to software errors or other quirks.
+So even an attacker with little knowledge about the population they are
+attacking can learn a significant part of the group communication
+without risking detection.
+
+In this section we will discuss the likelyhood of detecting mitm attacks
+on randomly selected members of a group. This probabilistic discussion
+assumes the likelyhood of a member being attacked as uniform and
+independent of the likelyhood of out-of-band verification. It therefor
+serves as a model of randomly spread broad scale attacks rather than
+targetted attacks.
+
+### Calculating the likelyhood of detection
 
 A group with n members has $c = n \times \frac{n-1}{2}$ connections.
 
