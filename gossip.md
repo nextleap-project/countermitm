@@ -1,9 +1,7 @@
-Using key gossip for third-party verification
-=============================================
+# Using key gossip for third-party verification
 
 
-Introduction
-------------
+## Introduction
 
 Autocrypt Level 1 specifies sending all recipients keys along in
 encrypted mails to multiple recipients. This was introduced to ensure
@@ -19,7 +17,9 @@ need to attack multiple connections in turn increases the chance of
 detecting the attack by out of band verification.
 
 The approach is applicable to other asymmetric encryption schemes with
-multi recipient messages such as Signal.
+multi recipient messages. It is independent of the key distribution
+mechanism - wether it is in-band such as in Autocrypt or based on a
+keyserver like architecture such as in the Noise protocol.
 
 Attack Scenarios
 ----------------
@@ -29,7 +29,7 @@ Attack Scenarios
 Even though some cryptographic systems such as OpenPGP leak the keys
 used for other recipients and schemes like Autocrypt even include the
 keys we currently do not check them for inconsistencies. For the
-confidentiality of group conversation this poses a significant risk.  If
+confidentiality of group conversation this poses a significant risk. If
 an mitm attack is taking place on the connection between two
 participants all messages between these parties can be read by the
 attacker. Since each group message goes out to everyone in the group an
@@ -37,11 +37,11 @@ attacker can read the content of all messages sent by either of the
 attacked parties. Even worse ... it's a common habit in a number of
 messaging systems to include quoted text from previous messages. So
 despite only targetting two participants the attack can provide access
-to a large part of the group's conversation.
+to a large part of the groups conversation.
 
-Therefore participants in a group conversation need to worry about the
-correctness of the encryption keys they use but also of those of
-everyone else in the group.
+Therefore participants need to worry about the correctness of the
+encryption keys they use but also of those of everyone else in the
+group.
 
 ### Detecting mitm through gossip inconsistencies
 
@@ -170,17 +170,18 @@ Out of band verified group communication
 ----------------------------------------
 
 So far we have basically discussed opportunistic security with some
-efforts to improve the likelyhood to discover mitm attacks. Verifying
-key consistency is probably more interesting in establishing out-of-band
-verified group communication. Without checking the consistency of keys
-between peers securing the group communication requires verifying every
-single connection.
+efforts to improve the likelyhood to discover mitm attacks.
+
+Verifying key consistency is also interesting in establishing
+out-of-band verified group communication. Without checking the
+consistency of keys between peers securing the group communication
+requires verifying every single connection.
 
 The traditional approach to reducing the necessity of out-of-band
 verification is the web of trust. Existing implementations such as the
-OpenPGP keyservers however leak the social graph and require a concious
-learning effort to understand the underlying concepts. Therefore they
-have only reached limited adoption.
+OpenPGP keyservers however publicly leak the social graph and require a
+concious learning effort to understand the underlying concepts.
+Therefore they have only reached limited adoption.
 
 In the following we will consider a graph with the nodes being the group
 members and edges representing an out-of-band verification.
@@ -193,15 +194,40 @@ see that the corresponding graph will be fully connected. Therefor it's
 not possible to split the group into two sets of recipients with
 consistent world views.
 
-If the messaging application exposes a notion of groups to the user,
-this scheme can be build based on signed and encrypted introduction
-messages to the group that include the new participants key.
+If the messaging application exposes a notion of groups, this scheme can
+be build based on signed and encrypted introduction messages to the
+group that include the new participants key.
 
 It could also be used to establish more lightweight group communication
-similar to CC'ed emails. In this case starting a threat would require
+similar to CC'ed emails. In this case starting a thread would require
 out-of-band verified key exchanges with all initial members. Any
 recipient that wants to CC more people would be required to verify the
 new participants.
+
+### Reusing keys in new threads
+
+Given a thread that grew as described in a previous section. What if one
+of the recipients wants to start a new secure thread with the others but
+has not verified everyones keys themselves?
+
+If the mitm attacker is participating in the initial communication
+faking the out-of-band verification does not reveal further information
+because they can already access the content of the given thread. However
+if we trust the verification outside of the original group context it
+would allow them to attack further communication between the other
+participants.
+
+Therefor the easiest and most consistent answer would be to always
+require out-of-band verification for setting up new threads. People can
+send a message to the peers they already out-of-band verified and ask
+them to add the others. This seems cumbersome in particular if it's
+exactly the same group of people. Instead they would probably reply to
+the existing thread thus somewhat breaking the sementics of threads.
+
+Another option seems to allow starting a new thread with exactly the
+same group of people. But what happens if the user chooses to remove
+people from the group? What if they were vital in setting up the
+verification network in the initial thread?
 
 ### Establishing key consistency in an existing group
 
