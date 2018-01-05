@@ -1,7 +1,11 @@
-TARGETS = gossip.pdf gossip.tex
-HELPERS = build
+SOURCES = $(shell ls ?_*.md)
+TARGETS = complete.pdf gossip.pdf gossip.tex
+HELPERS = build complete.md complete.tex
 
 all: $(TARGETS)
+
+complete.md: $(SOURCES)
+	cat $^ >> $@
 
 %.pdf: %.tex
 	rm -rf build
@@ -10,6 +14,9 @@ all: $(TARGETS)
 	cp build/$@ $@
 
 %.tex: %.md
+	pandoc -f markdown -t latex $< -o $@ -s
+
+%.tex: ?_%.md
 	pandoc -f markdown -t latex $< -o $@ -s
 
 .PHONY: clean
