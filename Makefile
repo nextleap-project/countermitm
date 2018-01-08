@@ -1,11 +1,11 @@
 SOURCES = $(shell ls ?_*.md)
-TARGETS = complete.pdf gossip.pdf gossip.tex
-HELPERS = build complete.md complete.tex
+TARGETS = complete.pdf gossip.pdf
+HELPERS = build complete.md complete.tex gossip.tex
 
 all: $(TARGETS)
 
 complete.md: $(SOURCES)
-	cat $^ >> $@
+	cat $^ > $@
 
 %.pdf: %.tex
 	rm -rf build
