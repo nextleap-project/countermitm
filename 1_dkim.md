@@ -21,6 +21,8 @@ that was used to calculate the full signature. If the DKIM signature is
 broken it may still be possible to verify the headers based on the body
 hash and the signed headers.
 
+![Alt text](images/dkim.pdf)
+
 ### DKIM Signatures on attached public keys
 
 DKIM signatures also work on attachments. The same mechanism may
@@ -41,6 +43,7 @@ at least a basic level of protection can be achieved:
 A new key distributed in a mail header with a valid DKIM signature
 signals that the key was not altered after the mail left the senders
 provider. Therefore the following threats remain:
+
 * the senders device was compromised
 * the senders email account was compromised
 * the transport layer encryption between the sender and their provider
@@ -90,6 +93,7 @@ unlikely. However we need some data on this.
 ### Provider support
 
 What can providers do?
+
 * DKIM sign autocrypt headers in outgoing mails
 * preserve DKIM signed headers in incoming mails
 
