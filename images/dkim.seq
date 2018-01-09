@@ -2,16 +2,22 @@
 # I used https://bramp.github.io/js-sequence-diagrams/
 # to render it to svg and then save it in images folder
 
-Alice->Alice\nProvider: a
-Alice\nProvider-> Bob\nProvider: Sign_ap(a)
-Bob\nProvider-> Bob: Sign_ap(a)
-Bob->Alice\nProvider: get ap
-Alice\nProvider-> Bob: ap
-Note right of Bob: Verify_ap(Sign_ap(a))
-Bob->Bob\nProvider: b
-Bob\nProvider-> Alice\nProvider: Sign_bp(b)
-Alice\nProvider-> Alice: Sign_bp(b)
-Alice->Bob\nProvider: get bp
-Bob\nProvider-> Alice: bp
-Note right of Alice: Verify_bp(Sign_bp(b))
+participant Alice as Ua
+participant Alice\nProvider as Pa
+participant Bob\nProvider as Pb
+participant Bob as Ub
+
+
+Ua -> Pa: a
+Pa -> Pb: Sign_ap(a)
+Pb -> Ub: Sign_ap(a)
+Ub -> Pa: get ap
+Pa -> Ub: ap
+Note right of Ub: Verify_ap(Sign_ap(a))
+Ub -> Pb: b
+Pb -> Pa: Sign_bp(b)
+Pa -> Ua: Sign_bp(b)
+Ua -> Pb: get bp
+Pb -> Ua: bp
+Note left of Ua: Verify_bp(Sign_bp(b))
 
