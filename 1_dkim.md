@@ -21,13 +21,13 @@ that was used to calculate the full signature. If the DKIM signature is
 broken it may still be possible to verify the headers based on the body
 hash and the signed headers.
 
-![Alt text](images/dkim.pdf)
-
 ### DKIM Signatures on attached public keys
 
 DKIM signatures also work on attachments. The same mechanism may
 therefor be used to verify that public keys attached to emails have not
 been altered by the recipients provider.
+
+![Sequence diagram of Autocrypt key exchange with DKIM Signatures](images/dkim.pdf)
 
 ## Device loss and MITM attacks
 
