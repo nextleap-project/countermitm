@@ -12,13 +12,13 @@ These files use markdown with some tex formulars included.
 
 We use pandoc to convert it to latex and then pdflatex to turn the latex
 into a pdf document.
-For the images we use rsvg2 to convert them from svg to pdf.
+For the images we use inkscape to convert them from svg to pdf.
 
 In order to create the documents you will need make, pandoc and pdflatex installed
 on your system. On a debian based system you can achieve this with
 
 ```sh
-sudo apt install pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra librsvg2-bin
+sudo apt install pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra inkscape
 ```
 
 From there on creating the pdf should be a matter of running

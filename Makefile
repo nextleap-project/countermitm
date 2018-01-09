@@ -15,7 +15,7 @@ complete.md: $(SOURCES)
 	cp build/$@ $@
 
 images/%.pdf: images/%.svg
-	rsvg-convert -f pdf -o $@ $<
+	inkscape -D -z --file=$< --export-pdf=$@
 
 %.tex: %.md
 	pandoc -f markdown -t latex $< -o $@ -s

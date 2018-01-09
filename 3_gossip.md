@@ -45,6 +45,8 @@ group.
 
 ### Detecting mitm through gossip inconsistencies
 
+![Detecting mitm through gossip inconsistnecies](images/gossip.pdf)
+
 Given Alice (A) and Bob (B) exchanged their keys (a for Alice and b for
 Bob) but one of their providers intercepted the initial messages and
 replaced their keys with mitm keys (a', b'). They both also communicated
