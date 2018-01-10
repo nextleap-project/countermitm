@@ -1,5 +1,5 @@
 ---
-title: Mitigation and Defense Against Active Attacks against Autocrypt
+title: Defense Against and Mitigation of Active Attacks on Autocrypt
 abstract: |
   Assymmetric cryptography allows establishing an encrypted channel by
   transfering key material through an untrusted channel as long as it
