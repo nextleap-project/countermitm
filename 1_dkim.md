@@ -88,7 +88,10 @@ key. How likely is it that for a given sender and recipient DKIM
 signatures that used to be valid when receiving the emails stop being
 valid? How likely is this to cooccure with the introduction of a new
 key? Intuitively both events occuring at the same time seems highly
-unlikely. However we need some data on this.
+unlikely. However an attacker could also first start breaking DKIM
+signatures and insert a new key after some mails.
+In order to estimate the usefulness of this approach more experiences with
+client side validation of DKIM signatures would be helpful.
 
 ### Provider support
 

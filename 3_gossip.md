@@ -10,11 +10,11 @@ people are able to reply encrypted.
 We can make use of the included keys to check them for consistency
 without additional privacy leakage.
 
-This allows us to warn about machine-in-the-middle (mitm) attacks on one
-of the direct connections. This forces attackers to intercept multiple
-connections to split the recipients into consistent 'world views'.  The
-need to attack multiple connections in turn increases the chance of
-detecting the attack by out of band verification.
+This enables MUAs to warn about machine-in-the-middle (mitm) attacks on
+one of the direct connections. This forces attackers to intercept
+multiple connections to split the recipients into consistent 'world
+views'.  The need to attack multiple connections in turn increases the
+chance of detecting the attack by out of band verification.
 
 The approach is applicable to other asymmetric encryption schemes with
 multi recipient messages. It is independent of the key distribution
@@ -28,7 +28,7 @@ Attack Scenarios
 
 Even though some cryptographic systems such as OpenPGP leak the keys
 used for other recipients and schemes like Autocrypt even include the
-keys we currently do not check them for inconsistencies. For the
+keys current encryption systems do not check them for inconsistencies. For the
 confidentiality of group conversation this poses a significant risk. If
 an mitm attack is taking place on the connection between two
 participants all messages between these parties can be read by the
@@ -215,9 +215,9 @@ has not verified everyones keys themselves?
 If the mitm attacker is participating in the initial communication
 faking the out-of-band verification does not reveal further information
 because they can already access the content of the given thread. However
-if we trust the verification outside of the original group context it
-would allow them to attack further communication between the other
-participants.
+if the recipients of the initial threat start trusting the verification
+outside of the original context it would allow a malicious peer to
+attack communication between the other participants.
 
 Therefor the easiest and most consistent answer would be to always
 require out-of-band verification for setting up new threads. People can
@@ -231,6 +231,8 @@ same group of people. But what happens if the user chooses to remove
 people from the group? What if they were vital in setting up the
 verification network in the initial thread?
 
+## Open Questions
+
 ### Establishing key consistency in an existing group
 
 
@@ -241,9 +243,9 @@ verification network in the initial thread?
 
 So far the introduction of a new user to group communication leaks the
 information who introduced the new user. This may be a desired property
-of the communication scheme and is similar to how we already learn who
-added a new participant to a CC'ed email thread. However in contexts
-similar to mailing lists it may be interesting to provide similar
-guarantees without revealing who met whom for out-of-band verification.
-Notice however that the idea of key gossip does not allow for recipient
-anonymity.
+of the communication scheme and is similar to how email users already
+learn who added a new participant to a CC'ed email thread. However in
+contexts similar to mailing lists it may be interesting to provide
+confidentiality guarantees without revealing who met whom for out-of-band
+verification. Notice however that the idea of key gossip does not allow
+for recipient anonymity.
