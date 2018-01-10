@@ -1,23 +1,17 @@
-# This is a sequence diagram for the dkim section
+s is a sequence diagram for the dkim section
 # I used https://bramp.github.io/js-sequence-diagrams/
 # to render it to svg and then save it in images folder
 
 participant Alice as Ua
-participant Alice\nProvider as Pa
-participant Bob\nProvider as Pb
+participant Alice Provider as Pa
+participant Bob Provider as Pb
 participant Bob as Ub
 
 
-Ua -> Pa: a
-Pa -> Pb: Sign_ap(a)
-Pb -> Ub: Sign_ap(a)
-Ub -> Pa: get ap
-Pa -> Ub: ap
-Note right of Ub: Verify_ap(Sign_ap(a))
-Ub -> Pb: b
-Pb -> Pa: Sign_bp(b)
-Pa -> Ua: Sign_bp(b)
-Ua -> Pb: get bp
-Pb -> Ua: bp
-Note left of Ua: Verify_bp(Sign_bp(b))
-
+Ua -> Pa: (1) a
+Pa -> Pb: (2) DKIM_ap(a)
+Pb -> Pa: (3) get ap
+Pa -> Pb: (4) ap
+Note over Pb: (5) Verify_ap(DKIM_ap(a))
+Pb -> Ub: (6) DKIM_ap(a)
+Note over Ub: (7) Verify_ap(DKIM_ap(a))
