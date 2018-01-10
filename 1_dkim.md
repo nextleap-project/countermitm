@@ -23,8 +23,9 @@ Bob (6).
 
 In the current established practice Bobs MUA will simply present the
 message to Bob without any further verification. However if Bobs MUA
-also verifies the DKIM signature (7) it can verify that the headers and
-content have not been altered after leaving the Alices provider.
+also verifies retrieves the DKIM key (7,8) and verifies the signature
+(9) it can verify that the headers and content have not been altered
+after leaving the Alices provider.
 
 A valid DKIM signature on the mail headers that includes the Autocrypt
 header will therefore indicate that the recipients provider has not

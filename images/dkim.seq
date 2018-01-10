@@ -1,4 +1,4 @@
-s is a sequence diagram for the dkim section
+# This is a sequence diagram for the dkim section
 # I used https://bramp.github.io/js-sequence-diagrams/
 # to render it to svg and then save it in images folder
 
@@ -10,8 +10,10 @@ participant Bob as Ub
 
 Ua -> Pa: (1) a
 Pa -> Pb: (2) DKIM_ap(a)
-Pb -> Pa: (3) get ap
-Pa -> Pb: (4) ap
+Pb ->> Pa: (3) get ap
+Pa ->> Pb: (4) ap
 Note over Pb: (5) Verify_ap(DKIM_ap(a))
 Pb -> Ub: (6) DKIM_ap(a)
-Note over Ub: (7) Verify_ap(DKIM_ap(a))
+Ub ->> Pa: (7) get ap
+Pa ->> Ub: (8) ap
+Note over Ub: (9) Verify_ap(DKIM_ap(a))
