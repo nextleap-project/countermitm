@@ -1,5 +1,12 @@
 # Using key gossip for third-party verification
 
+Out of band verification has to happen per communication partner. In
+order to reduce the effort needed for out of band verification the web
+of trust builds on other peoples verification of public key material. In
+order to enable this its users publicly certify other users keys they
+have verified. While this allows to establish trust paths to future
+communication peers it also leaks the social graph of who verified whos
+keys.
 
 ## Introduction
 
@@ -19,7 +26,7 @@ chance of detecting the attack by out of band verification.
 The approach is applicable to other asymmetric encryption schemes with
 multi recipient messages. It is independent of the key distribution
 mechanism - wether it is in-band such as in Autocrypt or based on a
-keyserver like architecture such as in the Noise protocol.
+keyserver like architecture such as in Signal.
 
 Attack Scenarios
 ----------------

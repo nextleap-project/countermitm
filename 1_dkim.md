@@ -1,5 +1,12 @@
 # Verifying DKIM Signatures to detect MITM
 
+The introduction of a CA system is cumbersome and also introduces the
+CAs as a new class of possible attackers. The existing DKIM signing
+infrastructure provides signatures on mail headers and content by the
+email providers. In this section we explore using these signatures to
+protect the key material from tampering between the senders provider and
+the recipients MUA
+
 ## DKIM Signatures on Autocrypt Headers
 
 In December 2017 the provider posteo.de announced that they will DKIM sign

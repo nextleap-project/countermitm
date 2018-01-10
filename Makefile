@@ -12,6 +12,7 @@ complete.md: $(SOURCES)
 	rm -rf build
 	mkdir build
 	pdflatex -halt-on-error -output-directory build $<
+	pdflatex -halt-on-error -output-directory build $<
 	cp build/$@ $@
 
 images/%.pdf: images/%.svg
