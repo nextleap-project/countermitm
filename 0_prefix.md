@@ -28,6 +28,9 @@ numbersections: true
 auto_identifiers: true
 toc: true
 toc-depth: 2
+fontsize: 12pt
+papersize: a4
+
 ---
 
 # About this document
