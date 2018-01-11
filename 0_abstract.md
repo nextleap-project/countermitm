@@ -3,7 +3,7 @@ title: Defense Against and Mitigation of Active Attacks on Autocrypt
 abstract: |
   Assymmetric cryptography allows establishing an encrypted channel by
   transfering key material through an untrusted channel as long as it
-  protected against tampering. In most deployed cryptographic systems
+  is protected against tampering. In most deployed cryptographic systems
   this protection against tampering has been provided through
   certification authorities(CA) or out of band verification of the
   transfered key material.
