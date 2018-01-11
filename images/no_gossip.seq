@@ -1,0 +1,18 @@
+# This is a sequence diagram for the dkim section
+# I used https://bramp.github.io/js-sequence-diagrams/
+# to render it to svg and then save it in images folder
+
+participant Alice as Ua
+participant Attacker as At
+participant Bob as Ub
+participant Claire as Uc
+
+Ua --> At: (1) a
+At --> Ub: (2) a'
+Ub --> At: (3) b(a')
+At --> Ua: (4) b'(a)
+Ua -> Uc: (5) a
+Uc -> Ua: (6) c(a)
+Ub -> Uc: (7) b
+Uc -> Ub: (8) c(b)
+

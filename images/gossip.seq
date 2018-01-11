@@ -7,24 +7,13 @@ participant Attacker as At
 participant Bob as Ub
 participant Claire as Uc
 
-Ua --> At: a
-At --> Ub: a'
-Ub --> At: b(a')
-At --> Ua: b'(a)
-Ua -> Uc: a
-Uc -> Ua: c(a)
-Ub -> Uc: b
-Uc -> Ub: c(b)
-Note over Ua: a,b',c
-Note over Ub: a',b,c
-Note over Uc: a,b,c
-Ua --> At: a(b',c)
-At --> Ub: a'(b,c)
-Ua -> Uc: a(b',c)
-Note over Uc: C's client sees other key b' for B
-Ub --> At: b(a',c)
-At --> Ua: b'(a,c)
-Ub -> Uc: b(a',c)
-Note over Uc: C's client sees other key a' for A
-Uc -> Ua: c(a,b)
-Uc -> Ub: c(a,b)
+Ua --> At: (1) a(b',c)
+At --> Ub: (2) a'(b,c)
+Ua -> Uc: (3) a(b',c)
+Note over Uc: (4) C's client sees other key b' for B
+Ub --> At: (5) b(a',c)
+At --> Ua: (6) b'(a,c)
+Ub -> Uc: (7) b(a',c)
+Note over Uc: (8) C's client sees other key a' for A
+Uc -> Ua: (9) c(a,b)
+Uc -> Ub: (10) c(a,b)

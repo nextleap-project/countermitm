@@ -33,42 +33,52 @@ Attack Scenarios
 
 ### Attacking group communication on a single connection
 
-Even though some cryptographic systems such as OpenPGP leak the keys
-used for other recipients and schemes like Autocrypt even include the
-keys current encryption systems do not check them for inconsistencies. For the
-confidentiality of group conversation this poses a significant risk. If
-an mitm attack is taking place on the connection between two
-participants all messages between these parties can be read by the
-attacker. Since each group message goes out to everyone in the group an
-attacker can read the content of all messages sent by either of the
-attacked parties. Even worse ... it's a common habit in a number of
-messaging systems to include quoted text from previous messages. So
-despite only targetting two participants the attack can provide access
-to a large part of the groups conversation.
+![Targetted attack on a single connection](images/no_gossip.pdf) The
+attacker intercepts the initial message from Alice to Bob (1) and
+replaces Alices key `a` with a mitm key `a'` (2). When Bob replies (3)
+the attacker decrypts the message, replaces Bobs key `b` with `b'`,
+encrypts the message to `a` and passes it on to Alice (4).
+
+Both Bob and Alice also communicate with Claire (5,6,7,8). Even if the
+attacker chooses to not attack this communication the attack on a single
+connection poses a significant risk for group communication amongst the
+three.
+
+Since each group message goes out to everyone in the group the attacker
+can read the content of all messages sent by Alice or Bob. Even worse
+... it's a common habit in a number of messaging systems to include
+quoted text from previous messages. So despite only targetting two
+participants the attack can provide access to a large part of the groups
+conversation.
 
 Therefore participants need to worry about the correctness of the
 encryption keys they use but also of those of everyone else in the
 group.
 
+
 ### Detecting mitm through gossip inconsistencies
 
-![Detecting mitm through gossip inconsistnecies](images/gossip.pdf)
+Some cryptographic systems such as OpenPGP leak the keys used for other
+recipients and schemes like Autocrypt even include the keys. This allows
+checking them for inconsistencies to improve the confidence in the
+confidentiality of group conversation.
 
-Given Alice (A) and Bob (B) exchanged their keys (a for Alice and b for
-Bob) but one of their providers intercepted the initial messages and
-replaced their keys with mitm keys (a', b'). They both also communicated
-with Carol (C) and their communication was not intercepted.  Now A sends
-a message to B and C including the gossip keys (a, b', c). The message
-is intercepted and B receives one encrypted to b including the keys (a',
-b, c). C receives the original message and since it was signed with a it
-cannot be altered. C's client can now detect that A is using a different
-key for B. This may have been caused by a key update due to device loss.
-However if B responds to the message, C learns that B also uses a
-different key for A. At this point C's client can suggest to verify
-fingerprints with either A or B. In addition a reply by C will provide A
-and B with keys of each other through an independent signed and
-encrypted channel.  Therefore checking gossip keys poses a significant
-risk for detection for the attacker.
+![Detecting mitm through gossip inconsistencies](images/gossip.pdf)
+
+In the scenario outlined above Alice knows about three keys (`a`, `b'`,
+`c`).  Sending a message to both Bob and Clair she signs the message
+with her own key and includes the other two as gossip keys `a[b',c]`.
+The message is intercepted (1) and Bob receives one signed with `a'` and
+including the keys `b` and `c` (2). Claire receives the original message
+(3) and since it was signed with `a` it cannot be altered. C's client
+can now detect that A is using a different key for B
+(4). This may have been
+caused by a key update due to device loss.  However if B responds to the
+message (5,6,7) , C learns that B also uses a different key for A (8). At this point
+C's client can suggest to verify fingerprints with either A or B. In
+addition a reply by C (9, 10) will provide A and B with keys of each other
+through an independent signed and encrypted channel.  Therefore checking
+gossip keys poses a significant risk for detection for the attacker.
 
 ### Attacks with split world views
 
