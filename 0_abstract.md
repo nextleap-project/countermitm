@@ -3,7 +3,7 @@ title: Defense Against and Mitigation of Active Attacks on Autocrypt
 abstract: |
   Assymmetric cryptography allows establishing an encrypted channel by
   transfering key material through an untrusted channel as long as it
-  protected against tampering. In most deployed cryptographic systems
+  is protected against tampering. In most deployed cryptographic systems
   this protection against tampering has been provided through
   certification authorities(CA) or out of band verification of the
   transfered key material.
@@ -32,19 +32,3 @@ fontsize: 12pt
 papersize: a4
 
 ---
-
-# About this document
-
-This document contains of different chapters compiled from the
-corresponding markdown files:
-
-* `0_prefix.md` - About this document
-* `1_dkim.md` - Verifying DKIM Signatures to detect MITM
-* `2_key_history.md` - Comparing key history during out of band
-  verification
-* `3_gossip.md` - Using key gossip for third-party verification
-
-It still lacks a title page, summary, toc and so on. Form follows
-function.
-
-

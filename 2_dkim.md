@@ -120,7 +120,7 @@ Autocrypt headers of outgoing mail.
 
 What can providers do?
 
-* DKIM sign autocrypt headers in outgoing mails
+* DKIM sign Autocrypt headers in outgoing mails
 * preserve DKIM signed headers in incoming mails
 
 Maybe they can indicate both these properties in a way that can be
