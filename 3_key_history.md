@@ -22,7 +22,7 @@ will not show any discrepancies.
 The main countermeassure against this attack obviously is timely
 fingerprint comparisons. Key changes can also be exposed in the user
 interface or rejected. However these types of user interaction are not
-in line with the opportunistic approach to enryption autocrypt is
+in line with the opportunistic approach to enryption Autocrypt is
 taking. They also leave users in a difficult situation: They are alerted
 that someones key has changed and they should verify it. However this is
 usually not what the user wants to achieve in that particular moment.

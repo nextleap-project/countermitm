@@ -1,5 +1,5 @@
 # countermitm
-thoughts, plans on countering mitm-attacks on autocrypt and other messaging systems
+thoughts, plans on countering mitm-attacks on Autocrypt and other messaging systems
 
 ## Building the pdfs
 
