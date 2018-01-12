@@ -1,5 +1,2 @@
-*.tex
 build/*
-gossip.pdf
-complete.pdf
-complete.md
+images/*.pdf

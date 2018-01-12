@@ -1,4 +1,5 @@
-# Using key gossip for third-party verification
+Using key gossip for third-party verification
+=============================================
 
 Out of band verification has to happen per communication partner. In
 order to reduce the effort needed for out of band verification the web
@@ -8,7 +9,8 @@ have verified. While this allows to establish trust paths to future
 communication peers it also leaks the social graph of who verified whos
 keys.
 
-## Introduction
+Introduction
+------------
 
 Autocrypt Level 1 specifies sending all recipients keys along in
 encrypted mails to multiple recipients. This was introduced to ensure
@@ -20,7 +22,7 @@ without additional privacy leakage.
 This enables MUAs to warn about machine-in-the-middle (mitm) attacks on
 one of the direct connections. This forces attackers to intercept
 multiple connections to split the recipients into consistent 'world
-views'.  The need to attack multiple connections in turn increases the
+views'. The need to attack multiple connections in turn increases the
 chance of detecting the attack by out of band verification.
 
 The approach is applicable to other asymmetric encryption schemes with
@@ -31,13 +33,14 @@ keyserver like architecture such as in Signal.
 Attack Scenarios
 ----------------
 
-### Attacking group communication on a single connection
+Attacking group communication on a single connection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-![Targetted attack on a single connection](images/no_gossip.pdf) The
-attacker intercepts the initial message from Alice to Bob (1) and
-replaces Alices key `a` with a mitm key `a'` (2). When Bob replies (3)
-the attacker decrypts the message, replaces Bobs key `b` with `b'`,
-encrypts the message to `a` and passes it on to Alice (4).
+|Targetted attack on a single connection| The attacker intercepts the
+initial message from Alice to Bob (1) and replaces Alices key ``a`` with
+a mitm key ``a'`` (2). When Bob replies (3) the attacker decrypts the
+message, replaces Bobs key ``b`` with ``b'``, encrypts the message to
+``a`` and passes it on to Alice (4).
 
 Both Bob and Alice also communicate with Claire (5,6,7,8). Even if the
 attacker chooses to not attack this communication the attack on a single
@@ -55,32 +58,36 @@ Therefore participants need to worry about the correctness of the
 encryption keys they use but also of those of everyone else in the
 group.
 
-
-### Detecting mitm through gossip inconsistencies
+Detecting mitm through gossip inconsistencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some cryptographic systems such as OpenPGP leak the keys used for other
 recipients and schemes like Autocrypt even include the keys. This allows
 checking them for inconsistencies to improve the confidence in the
 confidentiality of group conversation.
 
-![Detecting mitm through gossip inconsistencies](images/gossip.pdf)
+.. figure:: ../images/gossip.*
+   :alt: Detecting mitm through gossip inconsistencies
 
-In the scenario outlined above Alice knows about three keys (`a`, `b'`,
-`c`).  Sending a message to both Bob and Clair she signs the message
-with her own key and includes the other two as gossip keys `a[b',c]`.
-The message is intercepted (1) and Bob receives one signed with `a'` and
-including the keys `b` and `c` (2). Claire receives the original message
-(3) and since it was signed with `a` it cannot be altered. C's client
-can now detect that A is using a different key for B
-(4). This may have been
-caused by a key update due to device loss.  However if B responds to the
-message (5,6,7) , C learns that B also uses a different key for A (8). At this point
-C's client can suggest to verify fingerprints with either A or B. In
-addition a reply by C (9, 10) will provide A and B with keys of each other
-through an independent signed and encrypted channel.  Therefore checking
-gossip keys poses a significant risk for detection for the attacker.
+   Detecting mitm through gossip inconsistencies
 
-### Attacks with split world views
+In the scenario outlined above Alice knows about three keys (``a``,
+``b'``, ``c``). Sending a message to both Bob and Clair she signs the
+message with her own key and includes the other two as gossip keys
+``a[b',c]``. The message is intercepted (1) and Bob receives one signed
+with ``a'`` and including the keys ``b`` and ``c`` (2). Claire receives
+the original message (3) and since it was signed with ``a`` it cannot be
+altered. C's client can now detect that A is using a different key for B
+(4). This may have been caused by a key update due to device loss.
+However if B responds to the message (5,6,7) , C learns that B also uses
+a different key for A (8). At this point C's client can suggest to
+verify fingerprints with either A or B. In addition a reply by C (9, 10)
+will provide A and B with keys of each other through an independent
+signed and encrypted channel. Therefore checking gossip keys poses a
+significant risk for detection for the attacker.
+
+Attacks with split world views
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to prevent detection through inconsistencies an attacker may
 choose to try and attack in a way that leads to consistent world views
@@ -88,11 +95,11 @@ for everyone involved. If the attacker in the example above also
 attacked the key exchange between A and C and replaced the gossip keys
 accordingly here's what everyone would see:
 
-```
-A: a , b', c'
-B: a', b , c
-C: a', b , c
-```
+::
+
+    A: a , b', c'
+    B: a', b , c
+    C: a', b , c
 
 Only B and C have been able to establish a secure communication channel.
 But from their point of view the key for A is a' consistently. Therefore
@@ -100,7 +107,6 @@ there is no reason for them to be suspicious.
 
 Note however that the provider had to attack two key exchanges. This
 increases the risk of being detected through out of band verification.
-
 
 Probability of detecting an attack through out of band verification
 -------------------------------------------------------------------
@@ -123,35 +129,38 @@ independent of the likelyhood of out-of-band verification. It therefor
 serves as a model of randomly spread broad scale attacks rather than
 targetted attacks.
 
-### Calculating the likelyhood of detection
+Calculating the likelyhood of detection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A group with n members has $c = n \times \frac{n-1}{2}$ connections.
+A group with n members has :math:`c = n \times \frac{n-1}{2}`
+connections.
 
-Let's consider an attack on $a$ connections. This leaves $g = c-a$ good
-connections. The probability of the attack not being detected with 1 key
-verification therefore is $\frac{g}{c}$.
+Let's consider an attack on :math:`a` connections. This leaves
+:math:`g = c-a` good connections. The probability of the attack not
+being detected with 1 key verification therefore is :math:`\frac{g}{c}`.
 
 If the attack remains undetected c-1 unverified connections amongst
 which (g-1) are good remain. So the probability of the attack going
 unnoticed in v verification attempts is:
 
-$\frac{g}{c} \times \frac{g-1}{c-1} ... \times \frac{g-(v-1)}{c-(v-1)}$
-$= \frac{g  (g-1) ...  (g-(v-1))}{c  (c-1) ...  (c-(v-1))}$
-$= \frac{ \frac{g!}{(g-v)!} }{ \frac{c!}{(c-v)!} }$
-$= \frac{ g!  (c-v)! }{ c!  (g-v)! }$
+:math:`\frac{g}{c} \times \frac{g-1}{c-1} ... \times \frac{g-(v-1)}{c-(v-1)}`
+:math:`= \frac{g (g-1) ... (g-(v-1))}{c (c-1) ... (c-(v-1))}`
+:math:`= \frac{ \frac{g!}{(g-v)!} }{ \frac{c!}{(c-v)!} }`
+:math:`= \frac{ g! (c-v)! }{ c! (g-v)! }`
 
 The attached tables list the resulting detection probabilities for
 groups of up to 18 members.
 
-### Single Attack
+Single Attack
+~~~~~~~~~~~~~
 
 As said above without checking gossip an attacker can access a relevant
-part of the group conversation and all direct messages between two people
-by attacking their connection and nothing else.
-The likelihood of a single such verification being successful is shown
-in the first table.
+part of the group conversation and all direct messages between two
+people by attacking their connection and nothing else. The likelihood of
+a single such verification being successful is shown in the first table.
 
-### Isolation attack
+Isolation attack
+~~~~~~~~~~~~~~~~
 
 Isolating a user in a group of n people requires (n-1) interceptions.
 This is the smallest attack possible that still provides consistent
@@ -166,7 +175,8 @@ participant, this can go up to > 99% detection probability.
 Isolation attacks can be detected in all cases if every participant
 performs at least 1 out of band verification.
 
-### Isolating pairs
+Isolating pairs
+~~~~~~~~~~~~~~~
 
 If each participant verifies at least one other key out of band
 isolation attacks can be ruled out. The next least invasive attack would
@@ -175,7 +185,8 @@ requires more interceptions and even 1 verification on average per user
 leads to a chance > 88% for detecting an attack on a random pair of
 users.
 
-### Targeted isolation
+Targeted isolation
+~~~~~~~~~~~~~~~~~~
 
 The probabilities listed in the table assume that the attacker has no
 information about the likelyhood of out of band verification between the
@@ -205,7 +216,8 @@ Therefore they have only reached limited adoption.
 In the following we will consider a graph with the nodes being the group
 members and edges representing an out-of-band verification.
 
-### Setting up secure group communication from the start
+Setting up secure group communication from the start
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We can prevent split world views by growing a group one user at a time
 and requiring out-of-band verification when adding a user. It's easy to
@@ -223,7 +235,8 @@ out-of-band verified key exchanges with all initial members. Any
 recipient that wants to CC more people would be required to verify the
 new participants.
 
-### Reusing keys in new threads
+Reusing keys in new threads
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Given a thread that grew as described in a previous section. What if one
 of the recipients wants to start a new secure thread with the others but
@@ -248,21 +261,26 @@ same group of people. But what happens if the user chooses to remove
 people from the group? What if they were vital in setting up the
 verification network in the initial thread?
 
-## Open Questions
+Open Questions
+--------------
 
-### Establishing key consistency in an existing group
+Establishing key consistency in an existing group
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Dealing with device loss
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-### Dealing with device loss
-
-
-### Improving privacy properties
+Improving privacy properties
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 So far the introduction of a new user to group communication leaks the
 information who introduced the new user. This may be a desired property
 of the communication scheme and is similar to how email users already
 learn who added a new participant to a CC'ed email thread. However in
 contexts similar to mailing lists it may be interesting to provide
-confidentiality guarantees without revealing who met whom for out-of-band
-verification. Notice however that the idea of key gossip does not allow
-for recipient anonymity.
+confidentiality guarantees without revealing who met whom for
+out-of-band verification. Notice however that the idea of key gossip
+does not allow for recipient anonymity.
+
+.. |Targetted attack on a single connection| image:: ../images/no_gossip.*
+
