@@ -34,19 +34,20 @@ abstract: |
   different keys appearing to be associated with a single e-mail account
   (one of which will be a MITM key). If attackers therefore expand their attacks
   to larger social circles, the probability of out-of-band verifications
-  leading to malfeasance exposure rises. 
+  leading to malfeasance exposure rises.  In contrast to traditional
+  star-wise out-of-band key verification, the presence of Autocrypt key
+  gossiping reduces the number of verifications needed for securing groups
+  and the wider e-mail ecosystem.
 
   In the third section, we present an approach which uses a simplified
   variant of "ClaimChains" to organize verifications between mail apps
-  and their respective users.  We specifically discuss E2E protocols and UX
+  and their respective users.  We specifically discuss protocols and UX
   considerations for performing "out-of-band" verifications between users.
-  Out-of-Band means here that the provider should not be able to tell whether
-  two users are performing a verification.  We propose to verify key 
-  history (instead of just current fingerprints) and to verify it not
-  only for the two peers in question but also for shared contacts.
-  In contrast to traditional star-wise out-of-band key verification, the 
-  presence of Autocrypt key gossiping reduces the
-  number of verifications needed for securing groups and the wider e-mail ecosystem.
+  Out-of-Band means here that the provider can not tell whether two
+  users are performing a verification.  We specificially propose to verify 
+  key history (instead of just current fingerprints) and to verify it not 
+  only for the two peers in question but also for shared contacts (while
+  maintaining contact privacy).
   
   Even if key gossip inconsistencies and broken or missing digital DKIM signatures
   can not always, or not immediately be used as proof of malfeasance mail apps can track 
@@ -55,7 +56,7 @@ abstract: |
   the provider can not know which users are watching and who is performing 
   which extra steps to secure their communications (and those of their circles). 
 
-  All of the presented ideas and approaches are under active discussion.
+  All of the presented ideas and approaches here are under active discussion.
   Please contribute to the improvement of this doc through
   https://github.com/nextleap/countermitm 
 
