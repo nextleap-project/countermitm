@@ -1,4 +1,5 @@
-# Verifying DKIM Signatures to detect MITM
+Verifying DKIM Signatures to detect MITM
+========================================
 
 The introduction of a CA system is cumbersome and also introduces the
 CAs as a new class of possible attackers. The existing DKIM signing
@@ -7,19 +8,23 @@ senders email provider. In this section we explore using these
 signatures to protect the key material from tampering between the
 senders provider and the recipients MUA.
 
-## DKIM Signatures on Autocrypt Headers
+DKIM Signatures on Autocrypt Headers
+------------------------------------
 
-![Sequence diagram of Autocrypt key exchange with DKIM Signatures](images/dkim.pdf)
+.. figure:: ../images/dkim.*
+   :alt: Sequence diagram of Autocrypt key exchange with DKIM Signatures
+
+   Sequence diagram of Autocrypt key exchange with DKIM Signatures
 
 Alice sends a mail to Bob including an Autocrypt header with her key(a).
 Alices Provider authenticates Alice, receives the message (1), adds a
 DKIM signature header and then passes it on to Bobs provider (2).
 
-Bobs provider retrieves the public DKIM key from Alices provider (3,4) and
-verifies the DKIM signature (5). This is the default DKIM procedure and
-serves primarily to detect and prevent spam email. If the DKIM signature
-matches and other spam tests pass Bobs provider relays the message to
-Bob (6).
+Bobs provider retrieves the public DKIM key from Alices provider (3,4)
+and verifies the DKIM signature (5). This is the default DKIM procedure
+and serves primarily to detect and prevent spam email. If the DKIM
+signature matches and other spam tests pass Bobs provider relays the
+message to Bob (6).
 
 In the current established practice Bobs MUA will simply present the
 message to Bob without any further verification. However if Bobs MUA
@@ -34,7 +39,7 @@ altered the key included in the header.
 Since some providers do not use DKIM signatures at all. A missing
 signature by itself does not indicate a MITM attack. Some providers also
 alter incoming mails to attach mail headers or add footers to the
-message body.  Therefore even a broken signature can have a number of
+message body. Therefore even a broken signature can have a number of
 causes.
 
 The DKIM header includes a field 'bh' with the hash of the email body
@@ -42,14 +47,15 @@ that was used to calculate the full signature. If the DKIM signature is
 broken it may still be possible to verify the headers based on the body
 hash and the signed headers.
 
-### DKIM Signatures on attached public keys
+DKIM Signatures on attached public keys
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 DKIM signatures also work on attachments. The same mechanism may
 therefor be used to verify that public keys attached to emails have not
 been altered by the recipients provider.
 
-
-## Device loss and MITM attacks
+Device loss and MITM attacks
+----------------------------
 
 Autocrypt specifies to happily accept new keys send in Autocrypt headers
 even if a different key was send before. This is meant to prevent
@@ -64,25 +70,27 @@ A new key distributed in a mail header with a valid DKIM signature
 signals that the key was not altered after the mail left the senders
 provider. Therefore the following threats remain:
 
-* the senders device was compromised
-* the senders email account was compromised
-* the transport layer encryption between the sender and their provider
-  was broken
-* the senders provider is malicious
-* the senders provider was compromised
+-  the senders device was compromised
+-  the senders email account was compromised
+-  the transport layer encryption between the sender and their provider
+   was broken
+-  the senders provider is malicious
+-  the senders provider was compromised
 
 Please note that all other key distribution schemes that rely on the
 provider to certify or distribute the users key share these attack
 vectors.
 
-### Key updates in suspicious mails
+Key updates in suspicious mails
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If the recipient has seen an Autocrypt header with a valid DKIM
 signature from the sender before and receives a new key in a mail
 without a signature or with a broken signature that may indicate a MITM
 attack.
 
-### One malicious provider out of two
+One malicious provider out of two
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to carry out a successful transparent MITM attack on a
 conversation the attacker needs to replace both parties keys and
@@ -91,16 +99,18 @@ intercept all emails replacing the keys in the headers and the
 signatures in the body will lead to broken DKIM signatures in one
 direction.
 
-### Same provider or two malicious providers
+Same provider or two malicious providers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If both providers cooperate on the attack or both users use the same
 provider it's easy for the attacker to replace the keys and pgp
 signatures on the mails before DKIM signing them.
 
+Open Questions
+--------------
 
-## Open Questions
-
-### Reliability of DKIM signatures
+Reliability of DKIM signatures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Key update notifications suffer from a high number of false positives.
 Most of the time the key holder just lost their device and reset the
@@ -109,20 +119,20 @@ signatures that used to be valid when receiving the emails stop being
 valid? How likely is this to cooccure with the introduction of a new
 key? Intuitively both events occuring at the same time seems highly
 unlikely. However an attacker could also first start breaking DKIM
-signatures and insert a new key after some mails.
-In order to estimate the usefulness of this approach more experiences with
-client side validation of DKIM signatures would be helpful.
+signatures and insert a new key after some mails. In order to estimate
+the usefulness of this approach more experiences with client side
+validation of DKIM signatures would be helpful.
 
-### Provider support
+Provider support
+~~~~~~~~~~~~~~~~
 
-In December 2017 the provider posteo.de announced that they will DKIM sign
-Autocrypt headers of outgoing mail.
+In December 2017 the provider posteo.de announced that they will DKIM
+sign Autocrypt headers of outgoing mail.
 
 What can providers do?
 
-* DKIM sign Autocrypt headers in outgoing mails
-* preserve DKIM signed headers in incoming mails
+-  DKIM sign Autocrypt headers in outgoing mails
+-  preserve DKIM signed headers in incoming mails
 
 Maybe they can indicate both these properties in a way that can be
 checked by the recipients client?
-

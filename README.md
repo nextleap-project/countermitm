@@ -1,41 +1,28 @@
 # countermitm
 thoughts, plans on countering mitm-attacks on Autocrypt and other messaging systems
 
-## Building the pdfs
+## Building the pdf
 
-The separate approaches are addressed in
-* 1_dkim.md
-* 2_key_history.md
-* 3_gossip.md
-
-These files use markdown with some tex formulars included.
-
-We use pandoc to convert it to latex and then pdflatex to turn the latex
-into a pdf document.
 For the images we use inkscape to convert them from svg to pdf.
 
-In order to create the documents you will need make, pandoc and pdflatex installed
+In order to create the documents you will need make, sphinx and inkscape installed
 on your system. On a debian based system you can achieve this with
 
 ```sh
-sudo apt install pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra inkscape
+sudo apt install python-sphinx inkscape
 ```
 
 From there on creating the pdf should be a matter of running
 
 ```sh
-make
+make images
+make latexpdf
 ```
 
 ## Build Results
 
-Once the build is completed there will be a complete.pdf file in the
-main directory. This contains the different approaches. It still lacks
-and introduction and an overview though.
-
-There's also a `gossip.pdf` which only contains the gossip
-considerations. In order to compile more separate documents you can add
-them to the TARGETS variable in the Makefile.
+Once the build is completed there will be a CounterMitm.pdf file in the
+build/latex directory. This contains the different approaches.
 
 ## Modifying the Images
 

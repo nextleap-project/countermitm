@@ -1,23 +1,26 @@
-# Comparing key history during out of band verification
+Comparing key history during out of band verification
+=====================================================
 
-## Temporary attacks on Autocrypt
+Temporary attacks on Autocrypt
+------------------------------
 
 Since Autocrypt does not protect against active attacks it's easy to
 replace encryption keys for an attacker that can intercept the traffic.
 The attacker can intercept the initial key exchange. They can also
-impersonate one user (Alice) and send emails with spoofed sender
-the other party (Bob), triggering a key replacement.  When Bob replies
-they can decrypt and reencrypt the message and also replace Bobs keys.
+impersonate one user (Alice) and send emails with spoofed sender the
+other party (Bob), triggering a key replacement. When Bob replies they
+can decrypt and reencrypt the message and also replace Bobs keys.
 
 To end the attack an attacker can decrypt a message say to Bob. Instead
 of replacing the signatur and the key on the original message they can
 just send on the message as is. This will cause Bob to update Alices key
-to the original key. Replies will now be unreadable to the attacker.
-But just letting them through will lead Alice to also update her key for
+to the original key. Replies will now be unreadable to the attacker. But
+just letting them through will lead Alice to also update her key for
 Bob. Now the both users state is consistent and a fingerprint comparison
 will not show any discrepancies.
 
-## Countermeassures
+Countermeassures
+----------------
 
 The main countermeassure against this attack obviously is timely
 fingerprint comparisons. Key changes can also be exposed in the user
@@ -29,7 +32,8 @@ usually not what the user wants to achieve in that particular moment.
 They probably want to read the email that updated the key state or send
 a message themselves.
 
-## Keeping a key history
+Keeping a key history
+---------------------
 
 If the client instead keeps a history of Autocrypt keys it observed this
 history could be compared after the fact when users verify their
@@ -38,7 +42,8 @@ a setting where they have an out-of-band channel of communication and
 are interested in verifying the integrity of their communication
 channel.
 
-### Device Loss
+Device Loss
+~~~~~~~~~~~
 
 One issue with comparing key history is that the typical scenario for a
 key change is device loss. However loosing access to ones device and
@@ -58,4 +63,3 @@ and then using that to compare to what other people saw during the next
 out of band verification. This way consistent attacks that replace Bobs
 keys with all of his peers could not be detected. It also leads to error
 cases that are much harder to investigate.
-
