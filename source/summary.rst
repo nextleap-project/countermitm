@@ -24,7 +24,7 @@ Providers can not attack in-band Autocrypt key exchanges as easily as
 might be expected from their perfect MITM-position with respect to
 transported e-mails. In :doc:`dkim`, we show how `DomainKeys
 Identified Mail (DKIM) <https://dkimorg>`_ signatures on transported
-e-mails already can help with mitigating active attacks. We show how Mail
+e-mails help with mitigating active attacks. We discuss how Mail
 User Agents (MUAs) can detect tampering of Autocrypt headers if one out
 of two involved e-mail providers is honest.
 
@@ -37,7 +37,7 @@ individuals or small groups without causing inconsistencies such as two
 different keys appearing to be associated with a single e-mail account
 (one of which will be a MITM key). If attackers therefore expand their
 attacks to larger social circles, the probability of out-of-band
-verifications leading to malfeasance exposure rises. In contrast to
+verifications leading to exposed malfeasance rises. In contrast to
 traditional star-wise out-of-band key verification, the presence of
 Autocrypt key gossiping reduces the number of verifications needed for
 securing groups and the wider e-mail ecosystem.

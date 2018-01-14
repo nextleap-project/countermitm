@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Counter Mitm's documentation!
-========================================
+Detecting active attacks against Autocrypt
+==========================================
 
 (Abstract)
 
@@ -13,6 +13,6 @@ Welcome to Counter Mitm's documentation!
 
    summary.rst
    dkim.rst
-   key_history.rst
    gossip.rst
+   key_history.rst
 
