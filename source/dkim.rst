@@ -31,63 +31,48 @@ DKIM Signatures on Autocrypt Headers
    Sequence diagram of Autocrypt key exchange with DKIM Signatures
 
 Alice sends a mail to Bob including an Autocrypt header with her key(a).
-Alices Provider authenticates Alice, receives the message (1), adds a
-DKIM signature header and then passes it on to Bobs provider (2).
+First, Alice's Provider authenticates Alice, and upon receiving her message (1), it adds a DKIM signature header and then passes it on to Bobs provider (2). When Bob's provider receives the message it retrieves the public DKIM key from Alice's provider (3,4) and verifies Alice's provider DKIM signature (5).
 
-Bobs provider retrieves the public DKIM key from Alices provider (3,4)
-and verifies the DKIM signature (5). This is the default DKIM procedure
-and serves primarily to detect and prevent spam email. If the DKIM
-signature matches and other spam tests pass Bobs provider relays the
-message to Bob (6).
+This is the default DKIM procedure and serves primarily to detect and prevent spam email. If the DKIM signature matches (and other spam tests pass) Bob's provider relays the message to Bob (6).
 
-In the current established practice Bobs MUA will simply present the
-message to Bob without any further verification. However if Bobs MUA
-also verifies retrieves the DKIM key (7,8) and verifies the signature
-(9) it can verify that the headers and content have not been altered
-after leaving the Alices provider.
+In the current established practice Bob's MUA will simply present the
+message to Bob without any further verification. This means that Bob's provider is in a position to modify the message before it is presented to Alice. This can be avoided if Bob's MUA also retrieves the DKIM key (7,8) and verifies the signature (9, making sure that the headers and content have not been altered after leaving the Alice's provider. In other words, a valid DKIM signature on the mail headers, including the Autocrypt header, indicates that the recipient's provider has not altered the key included in the header.
 
-A valid DKIM signature on the mail headers that includes the Autocrypt
-header will therefore indicate that the recipients provider has not
-altered the key included in the header.
-
-Since some providers do not use DKIM signatures at all a missing
-signature by itself does not indicate a MITM attack. Some providers also
-alter incoming mails to attach mail headers or add footers to the
-message body. Therefore even a broken signature can have a number of
-causes.
+It must be noted that since some providers do not use DKIM signatures at
+all, a missing signature by itself does not indicate a MITM attack.
+Also, some providers alter incoming mails to attach mail headers or add
+footers to the message body. Therefore even a broken signature can have
+a number of causes.
 
 The DKIM header includes a field ``bh`` with the hash of the email body
 that was used to calculate the full signature. If the DKIM signature is
 broken it may still be possible to verify the Autocrypt header based
 on the body hash and the signed headers.
 
-
 Device loss and MITM attacks
 ----------------------------
 
-Autocrypt opportunistically accepts new keys send in Autocrypt headers
-even if a different key was sent before. This is meant to prevent
-unreadable mail but also offers a larger attack surface for MITM
+Autocrypt specifies to happily accept new keys send in Autocrypt headers
+even if a different key was received before. This is meant to prevent
+unreadable mail, but also offers a larger attack surface for MITM
 attacks.
 
 The Autocrypt spec explicitely states that it does not provide
 protection against active attacks. However combined with DKIM signatures
 at least a basic level of protection can be achieved:
 
-A new Autocrypt key distributed in a mail header with a valid DKIM signature
-signals that the key was not altered after the mail left the senders
-provider. Therefore the following threats remain:
+A new key distributed in a mail header with a valid DKIM signature
+signals that the key was not altered after the mail left the sender's
+provider. Yet, the following threats remain:
 
--  the senders device was compromised
--  the senders email account was compromised
+-  the sender's device was compromised
+-  the sender's email account was compromised
 -  the transport layer encryption between the sender and their provider
    was broken
--  the senders provider is malicious
--  the senders provider was compromised
+-  the sender's provider is malicious
+-  the sender's provider was compromised
 
-Note that all other key distribution schemes that rely on the
-provider to certify or distribute the users key share these attack
-vectors.
+This attack vector is shared by any other key distribution scheme that rely on the provider to certify or distribute the user's keys.
 
 One malicious provider out of two
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
