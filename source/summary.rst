@@ -2,27 +2,29 @@ Summary
 =======
 
 In this document we discuss strategies for detecting active attacks
-against Autocrypt Level 1 with high probability. `Autocrypt is a fresh
-usability-driven effort on replacing cleartext with encrypted
-mail <https://autocrypt.org/>`__. Mail apps transparently negotiate
-asymetric encryption by adding and parsing Autocrypt headers transported
-with regular e-mails. Autocrypt does not recommend and does not depend
-on key servers or the PGP Web of Trust which are a well-known source of
-comlexity for developers and users. To this end, the `Level 1
-specification (16 pages) <https://autocrypt.org/autocrypt-spec-1.0.0>`__
-intentionally does not address or discuss active attacks such as
-tampering of the Autocrypt header during e-mail message transport. The
-Level 1 spec rather focuses on offering users single-click, opt-in
-encryption, on easing of encrypted group communications and on providing
-a way to setup encryption on multiple devices -- the latter involves a
-secret key transfer that is [already designed to be safe against active
-attacks] (https://autocrypt.org/level1.html#autocrypt-setup-message).
+against Autocrypt Level 1 key exchanges.
+
+`Autocrypt is a fresh usability-driven effort on replacing cleartext
+with encrypted mail <https://autocrypt.org/>`__. Mail apps transparently
+negotiate asymetric encryption by adding and parsing Autocrypt headers
+transported with regular e-mails. Autocrypt does not recommend and does
+not depend on key servers or the PGP Web of Trust which are a well-known
+source of comlexity for developers and users. To this end, the `Level 1
+specification (16 pages)
+<https://autocrypt.org/autocrypt-spec-1.0.0.pdf>`__ intentionally does
+not address or discuss active attacks such as tampering of the Autocrypt
+header during e-mail message transport. The Level 1 spec rather focuses
+on offering users single-click, opt-in encryption, on easing of
+encrypted group communications and on providing a way to setup
+encryption on multiple devices -- the latter involves a secret key
+transfer that is [already designed to be safe against active attacks]
+(https://autocrypt.org/level1.html#autocrypt-setup-message).
 
 Providers can not attack in-band Autocrypt key exchanges as easily as
-might be expected from their perfect MITM positioning with respect to
-transported e-mails. In the first section, we show that `DomainKeys
-Identified Mail (DKIM) <https://dkimorg>`__ signatures on transported
-e-mails already help with mitigating active attacks. We show how Mail
+might be expected from their perfect MITM-position with respect to
+transported e-mails. In :doc:`dkim`, we show how `DomainKeys
+Identified Mail (DKIM) <https://dkimorg>`_ signatures on transported
+e-mails already can help with mitigating active attacks. We show how Mail
 User Agents (MUAs) can detect tampering of Autocrypt headers if one out
 of two involved e-mail providers is honest.
 

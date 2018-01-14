@@ -30,6 +30,7 @@ import os
 # ones.
 extensions = [
     'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
     'sphinx.ext.mathjax',
 ]
 
@@ -49,8 +50,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Counter Mitm'
-copyright = u'2018, azul'
-author = u'azul'
+copyright = u'2018, azul, hpk and others'
+author = u'azul, hpk and others'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -211,7 +212,8 @@ latex_elements = {
 #'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+'pointsize': '12pt',
+     'preamble': '''\\setcounter{secnumdepth}{3}''',
 
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
@@ -228,26 +230,33 @@ latex_documents = [
      u'azul', 'manual'),
 ]
 
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#latex_logo = None
-
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
-#latex_use_parts = False
+#
+latex_use_parts = False
 
 # If true, show page references after internal links.
-#latex_show_pagerefs = False
+#
+latex_show_pagerefs = True
 
 # If true, show URL addresses after external links.
-#latex_show_urls = False
+#
+latex_show_urls = 'footnote'
+# latex_show_urls = True
 
 # Documents to append as an appendix to all manuals.
-#latex_appendices = []
+#
+# latex_appendices = []
+
+# It false, will not define \strong, \code, 	itleref, \crossref ... but only
+# \sphinxstrong, ..., \sphinxtitleref, ... To help avoid clash with user added
+# packages.
+#
+# latex_keep_old_macro_names = True
 
 # If false, no module index is generated.
-#latex_domain_indices = True
-
+#
+latex_domain_indices = False
 
 # -- Options for manual page output ---------------------------------------
 

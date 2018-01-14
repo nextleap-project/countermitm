@@ -6,7 +6,7 @@
 Welcome to Counter Mitm's documentation!
 ========================================
 
-Contents:
+(Abstract)
 
 .. toctree::
    :maxdepth: 2
@@ -15,11 +15,4 @@ Contents:
    dkim.rst
    key_history.rst
    gossip.rst
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
