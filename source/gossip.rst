@@ -1,34 +1,34 @@
-Using key gossip for third-party verification
-=============================================
-
-Out of band verification has to happen per communication partner. In
-order to reduce the effort needed for out of band verification the web
-of trust builds on other peoples verification of public key material. In
-order to enable this its users publicly certify other users keys they
-have verified. While this allows to establish trust paths to future
-communication peers it also leaks the social graph of who verified whos
-keys.
+Using key gossip to detect attacks during Message Transport
+===========================================================
 
 Introduction
 ------------
 
-Autocrypt Level 1 specifies sending all recipients keys along in
-encrypted mails to multiple recipients. This was introduced to ensure
-people are able to reply encrypted.
+Autocrypt Level 1 introduces `key gossip <https://autocrypt.org/level1.html#key-gossip>`_
+where a sender adds ``Autocrypt-Gossip`` headers to the encrypted part of a multi-recipient
+message.  This was introduced to ensure users are able to reply encrypted.
+Because encrypted message parts are always signed, recipients may interpret
+the gossip keys as a form of third-party verification.
 
-We can make use of the included keys to check them for consistency
-without additional privacy leakage.
+In `gossip-attack`_ we look at how MUAs can check key consistency
+with respect to particular attacks.  MUAs can flag possible
+machine-in-the-middle (mitm) attacks on one of the direct connections
+which in turn can be used for helping users with prioritizing Out-of-Band
+verifications with those peers. To mitigate, attackers may intercept
+multiple connections to split the recipients into mostly isolated
+groups. However, the need to attack multiple connections at once
+increases the chance of detecting the attack by out-of-band (OOB) verification.
 
-This enables MUAs to warn about machine-in-the-middle (mitm) attacks on
-one of the direct connections. This forces attackers to intercept
-multiple connections to split the recipients into consistent 'world
-views'. The need to attack multiple connections in turn increases the
-chance of detecting the attack by out of band verification.
+In ``oob-verify-group`` we moreover discuss how verified groups could
+be established by tying group-membership with oob-verification.
 
-The approach is applicable to other asymmetric encryption schemes with
-multi recipient messages. It is independent of the key distribution
-mechanism - wether it is in-band such as in Autocrypt or based on a
-keyserver like architecture such as in Signal.
+The approaches described here are applicable to other asymmetric
+encryption schemes with multi recipient messages. They are independent of
+the key distribution mechanism - wether it is in-band such as in
+Autocrypt or based on a keyserver like architecture such as in Signal.
+
+
+.. _`gossip-attack`:
 
 Attack Scenarios
 ----------------
@@ -106,7 +106,7 @@ But from their point of view the key for A is a' consistently. Therefore
 there is no reason for them to be suspicious.
 
 Note however that the provider had to attack two key exchanges. This
-increases the risk of being detected through out of band verification.
+increases the risk of being detected through OOB-verification.
 
 Probability of detecting an attack through out of band verification
 -------------------------------------------------------------------
@@ -173,12 +173,12 @@ lead to detection rates of > 66%. With two verifications per
 participant, this can go up to > 99% detection probability.
 
 Isolation attacks can be detected in all cases if every participant
-performs at least 1 out of band verification.
+performs at least 1 OOB-verification.
 
 Isolating pairs
 ~~~~~~~~~~~~~~~
 
-If each participant verifies at least one other key out of band
+If each participant OOB-verifies at least one other key
 isolation attacks can be ruled out. The next least invasive attack would
 be trying to isolate pairs from the rest of the group. However this
 requires more interceptions and even 1 verification on average per user
@@ -196,7 +196,10 @@ isolated chances are they will verify each others fingerprints and are
 less likely to verify fingerprints with anyone else. Including such
 information can significantly reduce the risk for an attacker.
 
-Out of band verified group communication
+
+.. _`oob-verify-group`:
+
+Out-of-band verified group communication
 ----------------------------------------
 
 So far we have basically discussed opportunistic security with some
@@ -211,7 +214,8 @@ The traditional approach to reducing the necessity of out-of-band
 verification is the web of trust. Existing implementations such as the
 OpenPGP keyservers however publicly leak the social graph and require a
 concious learning effort to understand the underlying concepts.
-Therefore they have only reached limited adoption.
+Therefore they have only reached limited adoption. Autocrypt intentionally
+does not use (global or provider-) keyservers.
 
 In the following we will consider a graph with the nodes being the group
 members and edges representing an out-of-band verification.
