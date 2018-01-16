@@ -1,6 +1,8 @@
 Summary
 =======
 
+small test change
+
 In this document we discuss strategies for detecting active attacks against Autocrypt Level 1 with high probability. Active attacks are those in which providers, or other entities with access to e-mails during transport, tamper with cryptographic material in order to gain access to confidential information or to be able to impersonate users.
 
 `Autocrypt is a fresh usability-driven effort to replace cleartext emails with encrypted mail <https://autocrypt.org/>`__. Autocrypt headers are embedded in regular e-mails and contain cryptographic material. When Autocrypt is in place mail apps transparently negotiate asymmetric encryption by adding and parsing these headers. Autocrypt does not recommend and does not depend on key servers or the PGP Web of Trust which are a well-known source of complexity for developers and users. The `Level 1 specification (16 pages) <https://autocrypt.org/autocrypt-spec-1.0.0>`__ focuses on offering users single-click, opt-in encryption, on easing of encrypted group communications and on providing a way to setup encryption on multiple devices
