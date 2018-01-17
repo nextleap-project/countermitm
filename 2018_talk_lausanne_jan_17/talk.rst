@@ -2,20 +2,43 @@
 Securing Autocrypt against active attacks
 =============================================
 
-- What is Autocrypt Level 1?
+- What is Autocrypt Level 1? Why E-Mail?
 
-- Autocrypt gossip as third party verification
+- DKIM and Autocrypt gossip as verifications
 
-- Key consistency for Autocrypt with ClaimChains
+- ClaimChains and keeping histories
 
-- Out-of-Band verification via peer/oob chains
+- Prioritized Out-of-Band verification
+
+----
+
+Why "E-Mail"?
+=====================
+
+- largest socially federated messaging network
+
+- organizations need it
+
+- new mail clients change social use
+
+----
+
+Delta.chat (Android)
+==========================
+
+- codewise: Telegram UI + E-mail/Autocrypt backend
+
+- shows: convenient messaging over e-mail possible!
+
+- freeing users from "in-app-only" messenging
+  (``ETOOMANYMESSENGERS``)
 
 ----
 
 Autocrypt Level 1
 ========================================
 
-for users:
+**Autocrypt Level 1 for users**:
 
 - one click encryption
 
@@ -36,20 +59,19 @@ Autocrypt gossip
 
 - allows recipients to reply encrypted to all
 
-- **complicates attacks from message transport layer**
+- complicates attacks from message transport layer
+  (peers can track inconsistencies)
 
 ----
 
 DKIM signing of Autocrypt headers
 =================================
 
-- providers start to regularly sign Autocrypt headers
-
-- DKIM signatures (if veriable) provide another
-  third party verification
+- providers starting to regularly sign Autocrypt headers
+  (Posteo.de, others upcoming)
 
 - if only one out of two providers in an e-mail transactions
-  performs MITM attack, peers can note DKIM verification
+  performs MITM attack, peers can notice DKIM verification
   failures
 
 ----
@@ -63,11 +85,6 @@ ClaimChains
 
 - peers can exchange chain entries or head hashes
   in "online" and "offline" variants
-
-- Autocrypt is offline protocol as much as e-mail itself
-
-- we therefore consider the offline Claimchain variant
-  (also termed "in-band" in the original ClaimChains paper)
 
 ----
 
@@ -153,24 +170,6 @@ notes:
 - in either case we have an "out-of-band" channel
   where additional messages can be exchanged.
 
-
-----
-
-OOB-verification chains
-==========================
-
-- a MUA keeps track of OOB key verifications
-  in a separate chain
-
-- gossip OOB verifications of shared contacts
-  to other OOB-verified peers which in turn
-  add incoming gossiped ones to their own chain
-  (and maybe gossip them further)
-
-- for sharing OOB verifications with oob-verified peers
-  a MUA may sends along references to its own OOB-chain
-  entries to make it harder for peers to equivocate.
-
 ----
 
 Usability ideas related to OOB/chains
@@ -182,40 +181,39 @@ Usability ideas related to OOB/chains
 - key inconsistencies (from gossip or device change)
   raise priority of getting new oob-verification
 
-- oob-verification gossip can be sent along
+- oob-verification gossip can also be sent along
   regular messages (in headers or attachments
-  of encrypted message partS)
+  of encrypted message parts)
+
 
 ----
 
-Implementation approach
--------------------------------------
+new UX: Verified Groups
+==========================================
 
-- implement per-peer chains which contain
-  in/out message dates, msgid's and sent/received
-  (email, key fingerprints) tuples.
+- OOB-verify and join a group in one step
 
-- implement keychain which map fingerprints to keydata
+- gossip new oob-verified member+key to group
 
-- implement oob-chains which contain
-  out of band verification entries for
-  (fingerprint, email) tuples.
+- lost key requires new OOB verification
 
-- note that algorithms in MUAs can evolve over time
+**security practise for activists?**
 
 ----
 
-Implementation projects 2018
+Ongoing work 2018
 ----------------------------
+
+- R&D with Carmela Troncoso/EPFL and
+  NEXTLEAP partners
 
 - https://muacrypt.readthedocs.io for exploring
   chain and oob implementations, to be used in
   "expert" mail setups and from mailing list software
 
 - https://delta.chat to implement QR-based OOB
-  verification using the prototyped approach.
-  (Delta.chat is an e-mail/Autocrypt based messenger
-  re-using the Telegram UI on Android)
+  verification
+
 
 
 Open issues
