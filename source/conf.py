@@ -226,8 +226,9 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'CounterMitm.tex', u'Counter Mitm Documentation',
-     u'azul', 'manual'),
+    (master_doc, 'CounterMitm.tex',
+    u'Detecting active attacks against Autocrypt',
+     u'azul, hpk and others', 'howto'),
 ]
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
