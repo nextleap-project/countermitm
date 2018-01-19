@@ -36,7 +36,7 @@ Attack Scenarios
 Attacking group communication on a single connection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: ../images/no_gossip.*
+.. figure:: ../images/no_gossip.pdf
    :alt: Targetted attack on a single connection
 
    Targetted attack on a single connection
@@ -71,7 +71,7 @@ recipients and schemes like Autocrypt even include the keys. This allows
 checking them for inconsistencies to improve the confidence in the
 confidentiality of group conversation.
 
-.. figure:: ../images/gossip.*
+.. figure:: ../images/gossip.pdf
    :alt: Detecting mitm through gossip inconsistencies
 
    Detecting mitm through gossip inconsistencies

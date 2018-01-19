@@ -25,7 +25,7 @@ recipients MUA.
 DKIM Signatures on Autocrypt Headers
 ------------------------------------
 
-.. figure:: ../images/dkim.*
+.. figure:: ../images/dkim.pdf
    :alt: Sequence diagram of Autocrypt key exchange with DKIM Signatures
 
    Sequence diagram of Autocrypt key exchange with DKIM Signatures
