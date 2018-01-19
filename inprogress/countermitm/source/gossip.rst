@@ -36,11 +36,16 @@ Attack Scenarios
 Attacking group communication on a single connection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-|Targetted attack on a single connection| The attacker intercepts the
-initial message from Alice to Bob (1) and replaces Alices key ``a`` with
-a mitm key ``a'`` (2). When Bob replies (3) the attacker decrypts the
-message, replaces Bobs key ``b`` with ``b'``, encrypts the message to
-``a`` and passes it on to Alice (4).
+.. figure:: ../images/no_gossip.*
+   :alt: Targetted attack on a single connection
+
+   Targetted attack on a single connection
+
+
+The attacker intercepts the initial message from Alice to Bob (1) and
+replaces Alices key ``a`` with a mitm key ``a'`` (2). When Bob replies
+(3) the attacker decrypts the message, replaces Bobs key ``b`` with
+``b'``, encrypts the message to ``a`` and passes it on to Alice (4).
 
 Both Bob and Alice also communicate with Claire (5,6,7,8). Even if the
 attacker chooses to not attack this communication the attack on a single
@@ -285,6 +290,4 @@ contexts similar to mailing lists it may be interesting to provide
 confidentiality guarantees without revealing who met whom for
 out-of-band verification. Notice however that the idea of key gossip
 does not allow for recipient anonymity.
-
-.. |Targetted attack on a single connection| image:: ../images/no_gossip.*
 
