@@ -1,2 +1,5 @@
 build/*
 images/*.pdf
+*.pdf
+attic.rst
+html/

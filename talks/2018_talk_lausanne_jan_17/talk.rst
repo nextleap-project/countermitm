@@ -4,11 +4,37 @@ Securing Autocrypt against active attacks
 
 - What is Autocrypt Level 1? Why E-Mail?
 
-- DKIM and Autocrypt gossip as verifications
+- DKIM and Autocrypt Key gossip as verifications
 
 - ClaimChains and keeping histories
 
 - Prioritized Out-of-Band verification
+
+**R&D in progress, NEXTLEAP project**
+
+----
+
+.. image:: img/triangle.png
+   :width: 110%
+
+**"Security as a product of shared human outcomes"**
+
+(E. Saitta)
+
+----
+
+Autocrypt Level 1 spec
+========================================
+
+**Autocrypt Level 1 for users**:
+
+- one-click encryption
+
+- easing encrypted group replies
+
+- support for setting up multiple device
+
+**never ask users about keys, ever!**
 
 ----
 
@@ -17,9 +43,9 @@ Why "E-Mail"?
 
 - largest socially federated messaging network
 
-- organizations need it
+- all kinds of organizations need it
 
-- new mail clients change social use
+- also: new mail apps can change social use
 
 ----
 
@@ -35,31 +61,14 @@ Delta.chat (Android)
 
 ----
 
-Autocrypt Level 1
-========================================
+Autocrypt Key Gossip
+======================
 
-**Autocrypt Level 1 for users**:
-
-- one click encryption
-
-- allowing for encrypted group replies
-
-- support for setting up multiple device
-
-design UX note:
-
-**never ask users about keys, ever!**
-
-----
-
-Autocrypt gossip
-================
-
-- recipients's keys are in encrypted group-messages
+- members' keys are in sign+encrypted group-messages
 
 - allows recipients to reply encrypted to all
 
-- complicates attacks from message transport layer
+- complicates targetted attacks from message transport layer
   (peers can track inconsistencies)
 
 ----
@@ -67,7 +76,7 @@ Autocrypt gossip
 DKIM signing of Autocrypt headers
 =================================
 
-- providers starting to regularly sign Autocrypt headers
+- providers starting to sign Autocrypt headers
   (Posteo.de, others upcoming)
 
 - if only one out of two providers in an e-mail transactions
@@ -81,7 +90,8 @@ ClaimChains
 
 - framework for decentralized key consistency
 
-- peers maintain key-related claims in "chains"
+- peers maintain key-related claims, verifications
+  in "chains"
 
 - peers can exchange chain entries or head hashes
   in "online" and "offline" variants
@@ -115,10 +125,10 @@ Decentralized "offline" ClaimChain
 
 ----
 
-ClaimChain and out-of-band verification
+ClaimChain and Out-Of-Band verification
 ---------------------------------------
 
-design approach:
+Design approach:
 
 - users trigger their MUAs to compare
   key **histories** (own and common contacts)
@@ -197,22 +207,27 @@ new UX: Verified Groups
 
 - lost key requires new OOB verification
 
-**security practise for activists?**
+**new security practise for activists?**
 
 ----
 
-Ongoing work 2018
+Ongoing Efforts 2018
 ----------------------------
 
 - R&D with Carmela Troncoso/EPFL and
-  NEXTLEAP partners
+  NEXTLEAP partners on chain designs
 
-- https://muacrypt.readthedocs.io for exploring
+- https://muacrypt.readthedocs.io for
   chain and oob implementations, to be used in
-  "expert" mail setups and from mailing list software
+  "expert" mail setups and from mailman/ML software
 
 - https://delta.chat to implement QR-based OOB
-  verification
+  verification + join?
+
+- user-testing with activists
+
+----
+
 
 
 
