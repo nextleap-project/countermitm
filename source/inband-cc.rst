@@ -63,21 +63,8 @@ New blocks SHOULD also include the latest peer head imprints
 in all claims.
 
 
-Chain Construction
-------------------
-
-A chain would contain these entries:
-
-- genesis entry is my public own (identity) key
-
-- one encrypted entry per contact which points to the head of a contact's chain (readable if _ccsecret is known)
-
-questions: how does VRF(contact-email) come into play? How does the addr-entry-secret relate to it?
-
-addr-entry-secret = (lookup-addr, sym encryption_key)
-
-VRF: Given an input value x (the email address), the owner of the secret key SK can compute the function value y = FSK(x) (the lookup addr) and the proof pSK(x). Using the proof from the encrypted blob and the public key everyone can check that the value y = FSK(x) was indeed computed correctly, yet this information cannot be used to find the secret key.
-What this design achieves:
+Goals
+-----
 
 - if i see a new block for a contact, i can verify it references a chain i already know about a contact
 
@@ -89,8 +76,17 @@ What this design achieves:
 
 - on device loss key history could be recovered from claim chains through peers who serve as an entry point. (claims might remain unreadable though.)
 
-Question: could we signal/mark entries that have a OOB-verification?
-Problems/notes with this CC approach
+
+
+Open Questions
+--------------
+
+could we signal/mark entries that have a OOB-verification?
+
+
+Problems noticed
+----------------
+
 
 - complex to specify interoperable wire format of Claimchains, "_cchead" and "_ccsecret" and all of the involved cryptographic algorithms
 
@@ -100,7 +96,7 @@ Problems/notes with this CC approach
 
 - lack of underlying implementation for different languages
 
-- need for semi-centralized online storage access (not so bad since we can postpone updates to the time we actually send mail)
+- Maybe semi-centralized online storage access (not so bad since we can postpone storage updates to the time we actually send mail)
 
 
 Mitigating Equivocation in different blocks
