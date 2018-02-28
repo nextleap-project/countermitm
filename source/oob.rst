@@ -48,11 +48,11 @@ By contrast, we suggest that each MUA keeps track of:
 
 We suggest that each MUA keeps:
 
-- a "peer-chain" which keeps track of all incoming and outgoing
+- a "peer-log" which keeps track of all incoming and outgoing
   mail towards a peer. A message which goes to multiple peers
-  will be recorded in each respective peer-chain.
+  will be recorded in each respective peer-log.
 
-- a "oob-chain" which keeps track of all own out-of-band verifications
+- a "oob-log" which keeps track of all own out-of-band verifications
 
 If the client instead keeps a history of Autocrypt keys it observed this
 history could be compared after the fact when users verify their
@@ -80,8 +80,8 @@ up the private key. It only needs to be temper proof - not confidential.
 Another option would be recovering his key history from what Alice knows
 and then using that to compare to what other people saw during the next
 out of band verification. This way consistent attacks that replace Bobs
-keys with all of his peers could not be detected. It also leads to error
-cases that are much harder to investigate.
+keys with all of his peers including Alice could not be detected. It also
+leads to error cases that are much harder to investigate.
 
 
 .. _`oob-attacks`:
@@ -89,7 +89,7 @@ cases that are much harder to investigate.
 Temporary attacks on Autocrypt
 ------------------------------
 
-Since Autocrypt does not protect against active attacks it's easy to
+Since Autocrypt does not protect against active attacks it's possible to
 replace encryption keys for an attacker that can intercept the traffic.
 The attacker can intercept the initial key exchange. They can also
 impersonate one user (Alice) and send emails with spoofed sender the
