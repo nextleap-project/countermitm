@@ -1,5 +1,5 @@
-Inband Claim Chains For Gossip
-==============================
+Inband Claim Chain proofes backed by an online STM and SI
+=========================================================
 
 Inclusion in Messages
 ---------------------
@@ -23,13 +23,20 @@ A gossip header includes these additional non-critical attributes:
     when constructing this block.
     ( Effectively a cross chain signature )
 
-In addition we include a header for the latest CC block
+In addition we include a header with
+the head imprint for the latest CC block
 in the encrypted and signed part of the message:
 
-   GossipClaims: <my last CC block (which contains references to previous blocks)>
+   GossipClaims: <head imprint of my last CC block>
 
-Optimization: Instead of sending the entire block
-we can send proofs of inclusion for the gossiped keys.
+The latest CC block can be retrieved from online services (SI).
+In addition an online service (STM) allowes detecting if new blocks
+have been published afterwards.
+
+Optimization: We can include
+proofs of inclusion for the gossiped keys
+in the headers.
+This way the inclusion in the given block could be verified offline.
 
 
 Constructing New Blocks
@@ -115,3 +122,18 @@ Therefore new blocks would have to be created
 whenever the equivocating party communicates
 with the equivocated party
 for whom the last block does not fit.
+
+
+
+We could include the vrf value for the previous block
+in the current claim.
+
+This way readers could retrieve intermediate blocks
+and see when the content of claims for a given label changed.
+
+The block seed was introduced to prevent correlating messaging meta data
+with block updates. That way the SI could have learned which entry
+belongs to which communication partner.
+
+With an inband SI and only transfering the proofs of inclusion for
+the included keys this
