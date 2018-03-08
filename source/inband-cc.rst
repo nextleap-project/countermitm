@@ -4,17 +4,29 @@ Inband Claim Chains For Gossip
 Inclusion in Messages
 ---------------------
 
-Every mail has the Autocrypt header as usual:
+Every mail has the Autocrypt header as usual.
 
-   autocrypt: ...
+   Autocrypt: addr="..."
+     keydata="..."
+
+In addition we include a header for the latest CC block
+in the encrypted and signed part of the message:
+
+   GossipClaims: imprint=<my last CC block head imprint>
 
 A gossip header includes these additional non-critical attributes:
 
-   autocrypt-gossip: addr="..." _ccsecret=<vrf value for the claim>
-   _cchead=<latest head imprint from the peers chain if any>
+   Autocrypt-Gossip: addr="..."
+     keydata="..."
+     _ccsecret=<vrf value for the claim in my last block>
+     _ccdata=<claim data that can be decrypted with ccsecret>
+     _ccproof=<proof of inclusion for the key>
+     _cchead=<latest head imprint from the peers chain if any>
 
-- _ccsecret allows lookup and decryption of the corresponding entry
-  in the CC block.
+- _ccsecret: allows lookup and decryption of the corresponding entry
+  in  CC block.
+- _ccdata: encrypted blob as included in the claim chain.
+  Can be decrypted with H_2(_ccsecret).
   The entry itself contains:
   * the fingerprint of the peers public key included in the gossip.
     ( Linking the gossip to the head imprint )
@@ -22,14 +34,37 @@ A gossip header includes these additional non-critical attributes:
     the imprint of the last block seen from that peer
     when constructing this block.
     ( Effectively a cross chain signature )
+- _ccproof: allows veryfying the claim for the given address
+    is in the block and contains the content retrieved and
+    decrypted with _ccsecret
+- _cchead: If the peer also uses claim chains,
+    the imprint of the last block seen from that peer
+    when composing the email
 
-In addition we include a header for the latest CC block
-in the encrypted and signed part of the message:
 
-   GossipClaims: <my last CC block (which contains references to previous blocks)>
+If one of the peers has not seen
+the latest block from the sender yet
+the sender will also proof to them
+that they did not equivocate in the meantime.
 
-Optimization: Instead of sending the entire block
-we can send proofs of inclusion for the gossiped keys.
+They do this by including the same data
+as added to the gossip header
+but for all the blocks the user was missing.
+This is since the last head imprint
+that user had seen from them
+according to the mails they received
+If it looks like the peer has not seen any of their
+claim chain they include the heads
+since the claim about that user was added.
+
+TODO: figure out if this can be exploited by lying
+  about the first block. Fall back to the full chain
+  if that is the case.
+
+This data should be included
+in a way that is encrypted only to the corresponding user
+and at the same time does not cause confusion
+for the other users.
 
 
 Constructing New Blocks
@@ -37,20 +72,24 @@ Constructing New Blocks
 
 It is possible to equivocate by presenting different blocks to different
 users.
-Therefore we try to minimize the times new blocks need to be created.
+Therefore we try to minimize the times new blocks need to be created
+and proof to everyone we did not equivocate about their key
+if they missed some blocks.
 If blocks stay stable for a longer time
 more people will observe the same block with the same head imprint
-and therefore be protected against equivocation.
+and therefore we will need to add less proofs.
 
 Whenever the client adds gossip headers to an outgoing message
 it checks for a claim with the corresponding fingerprint in the last block.
 If it exists for all gossip headers the client can reuse the last block.
 
-If the client has seen newer blocks from the corresponding peers
+If the client has seen newer blocks
+from the corresponding peers
 it will indicate this in the _cchead attribute
 rather than by creating a new block.
 
-If a claim is missing or references the wrong key in the last block
+If a claim is missing
+or references the wrong key in the last block
 a new block needs to be created.
 
 When creating a new block
@@ -108,10 +147,8 @@ Mitigating Equivocation in different blocks
 The easiest way to circumvent the non-equivocation property
 is to send different blocks to two different parties.
 
-Blocks are ordered
-and clients are expected to always send the last block.
+We work around this by prooving to our peers
+that we did not equivocate in any of the blocks.
 
-Therefore new blocks would have to be created
-whenever the equivocating party communicates
-with the equivocated party
-for whom the last block does not fit.
+The person who can best confirm the data in a block
+is the owner of the respective key.
