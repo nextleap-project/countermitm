@@ -24,17 +24,12 @@ This makes it hard to detect changes that occured between blocks
 and therefor opens the possibility of equivocating
 by sending different blocks to different peers.
 
+Therefor we need to send each peer proofs of inclusion
+for their key for all blocks we commit.
+
 At the same time tracking and syncing state across devices
 that may be used offline
 is hard and error prone.
-
-In scenario a) the MUA basically tracks
-which capabilities it already granted
-in the claim chain.
-
-If capabilities persisted accross blocks
-this would not be necessary.
-At the same time it would also make revoking capabilities hard.
 
 
 Multi device usage and offline mail composition
@@ -71,3 +66,8 @@ or a removal in the latter chain.
 
 Unresolvable conflicts include different keys added
 for the same email address.
+This probably also is an error case
+we want to draw the users attention to.
+We can derive a deterministic solution for which
+key to continue using if we store the effective date
+we received the claim at inside the claim chain.
