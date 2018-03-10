@@ -20,11 +20,11 @@ A gossip header includes these additional non-critical attributes:
      keydata="..."
      _ccsecret=<vrf value for the claim in my last block>
      _ccdata=<claim data that can be decrypted with ccsecret>
-     _ccproof=<proof of inclusion for the key>
+     _ccproof=<proof of inclusion for the claim>
      _cchead=<latest head imprint from the peers chain if any>
 
-- _ccsecret: allows lookup and decryption of the corresponding entry
-  in  CC block.
+- _ccsecret: allows deriving the index of the claim in the chain
+  and decryption of _ccdata.
 - _ccdata: encrypted blob as included in the claim chain.
   Can be decrypted with H_2(_ccsecret).
   The entry itself contains:
@@ -34,9 +34,8 @@ A gossip header includes these additional non-critical attributes:
     the imprint of the last block seen from that peer
     when constructing this block.
     ( Effectively a cross chain signature )
-- _ccproof: allows veryfying the claim for the given address
-    is in the block and contains the content retrieved and
-    decrypted with _ccsecret
+- _ccproof: allows veryfying the inclusion of the claim
+    in the block and its content
 - _cchead: If the peer also uses claim chains,
     the imprint of the last block seen from that peer
     when composing the email
@@ -47,10 +46,11 @@ the latest block from the sender yet
 the sender will also proof to them
 that they did not equivocate in the meantime.
 
-They do this by including the same data
+They do this by sending a system message
+including the same data
 as added to the gossip header
 but for all the blocks the user was missing.
-This is since the last head imprint
+That is since the last head imprint
 that user had seen from them
 according to the mails they received
 If it looks like the peer has not seen any of their
@@ -58,13 +58,13 @@ claim chain they include the heads
 since the claim about that user was added.
 
 TODO: figure out if this can be exploited by lying
-  about the first block. Fall back to the full chain
+  about the first block. Fall back to proofs for the full chain
   if that is the case.
 
 This data should be included
 in a way that is encrypted only to the corresponding user
 and at the same time does not cause confusion
-for the other users.
+for the other users. (system message for now)
 
 
 Constructing New Blocks
@@ -105,6 +105,52 @@ New blocks SHOULD also include the latest peer head imprints
 in all claims.
 
 
+Using the chain to track keys
+-----------------------------
+
+The chain can also be used to track the peer keys.
+In this scenario the next block is constructed
+continuously when receiving keys.
+When receiving the first key that is not in the latest block
+a new block is created
+based on the data of the last block.
+New keys are added to this block
+whenever they are received.
+
+The block captures the state of all peer keys on this device.
+When the MUA gossips a key that did not exist in the previous block
+it 'commits' the new keys and starts sending the new block
+
+
+Multi device usage
+------------------
+
+In addition we will need a mechanism to synchormize state
+between different devices.
+
+We can assume that we already shared the private keys
+between the devices.
+That is the private key for the email encryption
+but also the private key for the VRF.
+
+Therefor both devices can update their internal state in parallel.
+
+Whenever a block is commited we send a message to ourselves
+including the entire block.
+This way other devices can stay in sync.
+
+If they have observed additional keys
+that are not included in the block they receive
+these will be added 'on top' as uncommited claims.
+
+If two devices happen to commit new blocks
+before synchronizing
+we have two branches of the chain.
+
+The first device to recognize such a situation
+will create a merge block.
+
+
 Goals
 -----
 
@@ -130,15 +176,21 @@ Problems noticed
 ----------------
 
 
-- complex to specify interoperable wire format of Claimchains, "_cchead" and "_ccsecret" and all of the involved cryptographic algorithms
+- complex to specify interoperable wire format of Claimchains,
+  "_cchead" and "_ccsecret" and all of the involved cryptographic algorithms
 
-- Autocrypt-gossip + DKIM already make it hard for providers to equivocate, CC don't add that much (especially in relation to the complexity they introduce)
+- Autocrypt-gossip + DKIM already make it hard for providers to equivocate,
+  CC don't add that much
+  (especially in relation to the complexity they introduce)
 
-- D2.4 (encrypted messaging, updated identity) also discusses benefits of Autocrypt/gossip
+- D2.4 (encrypted messaging, updated identity)
+  also discusses benefits of Autocrypt/gossip
 
 - lack of underlying implementation for different languages
 
-- Maybe semi-centralized online storage access (not so bad since we can postpone storage updates to the time we actually send mail)
+- Maybe semi-centralized online storage access
+  (not so bad since we can postpone storage updates
+  to the time we actually send mail)
 
 
 Mitigating Equivocation in different blocks
