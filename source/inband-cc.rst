@@ -1,6 +1,39 @@
 Inband Claim Chains For Gossip
 ==============================
 
+Introduction
+------------
+
+Autocrypt gossip includes all recipient keys
+in messages with multiple recipients.
+This allows the recipients to encrypt replies
+to all of the initial recipients.
+At the same time it introduces an attack surface
+for injecting keys into other peoples Autocrypt peer state.
+
+The attack surface is limited by the fact
+that directly received keys will be chosen over gossip keys.
+
+However in an initial introduction message MITM keys could be seeded.
+This attack is particularly relevant when performed
+by a provider that already performs MITM attacks
+on the sender of the introductory message.
+In this position the attacker can tell
+from the message content the follow up messages might be interesting.
+
+In order to mitigate this attack
+and increase the trust in gossip keys
+we introduce a distributed key transperancy scheme
+that prevents equivocation in Autocrypt gossip.
+At the same time the scheme preserves
+the privacy of the participants
+to the same extend messages with only Autocrypt gossip would.
+
+The consistency checks the scheme introduces
+lead to error cases that can be used
+to recommend out of band verification
+with parties that have been detected to be equivocating.
+
 Inclusion in Messages
 ---------------------
 
