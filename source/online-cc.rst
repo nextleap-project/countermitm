@@ -8,30 +8,15 @@ Every mail has the Autocrypt header as usual:
 
    autocrypt: ...
 
-A gossip header includes these additional non-critical attributes:
-
-   autocrypt-gossip: addr="..." _ccsecret=<vrf value for the claim>
-   _cchead=<latest head imprint from the peers chain if any>
-
-- _ccsecret allows lookup and decryption of the corresponding entry
-  in the CC block.
-  The entry itself contains:
-  * the fingerprint of the peers public key included in the gossip.
-    ( Linking the gossip to the head imprint )
-  * If the peer also uses claim chains,
-    the imprint of the last block seen from that peer
-    when constructing this block.
-    ( Effectively a cross chain signature )
+Gossip headers are left untouched (in contrast to in-band cc).
 
 In addition we include a header with
-the head imprint for the latest CC block
+our head imprint (root hash of our latest CC block)
 in the encrypted and signed part of the message:
 
-   GossipClaims: <head imprint of my last CC block>
+   GossipClaims: <head imprint of my claim chain>
 
-The latest CC block can be retrieved from online services (SI).
-In addition an online service (STM) allowes detecting if new blocks
-have been published afterwards.
+The corresponding CC block can be retrieved from online services (SI).
 
 Optimization: We can include
 proofs of inclusion for the gossiped keys
@@ -42,36 +27,30 @@ This way the inclusion in the given block could be verified offline.
 Constructing New Blocks
 -----------------------
 
-It is possible to equivocate by presenting different blocks to different
-users.
-Therefore we try to minimize the times new blocks need to be created.
-If blocks stay stable for a longer time
-more people will observe the same block with the same head imprint
-and therefore be protected against equivocation.
+The absence of a claim can not be destinguished
+from the lack of a capability for that claim.
+Therefore to proof that we are not equivocating about keys
+we gossiped in the past
+we need to include the corresponding claims
+and grant a capability to their respective peers.
 
-Whenever the client adds gossip headers to an outgoing message
-it checks for a claim with the corresponding fingerprint in the last block.
-If it exists for all gossip headers the client can reuse the last block.
+So each new block starts by creating a state
+based on the last block
+that includes all claims about peer keys
+and capabilities for these peers.
 
-If the client has seen newer blocks from the corresponding peers
-it will indicate this in the _cchead attribute
-rather than by creating a new block.
+In addition the client will include claims
+with the fingerprints of the keys gossiped.
+For peers that also use claimchain
+the client will include the root hash
+of the latest block they saw from that peer
+in the claim.
 
-If a claim is missing or references the wrong key in the last block
-a new block needs to be created.
+It will grant capabilities to all these claims
+for the recipients of the email and itself.
 
-When creating a new block
-the client will include claims for all contacts with keys
-that could be used for gossip.
 Due to the privacy preserving nature of claim chains
-these keys will not be revealed to anyone
-until they actually are used in gossip.
-They are included never the less
-to ensure the block can be used as long as possible.
-
-New blocks SHOULD also include the latest peer head imprints
-in all claims.
-
+these keys will not be revealed to anyone else.
 
 Goals
 -----
@@ -80,9 +59,9 @@ Goals
 
 - Cross-referenced chains allow for keeping consistency across contacts cryptographic information, making (temporary) isolation attacks harder:
 
-  -> if A and B know C's head imprint through D - a contact both share with C (but not each other)... they can verify that neither C nor C's provider equivocate on any gossiped email
+  -> if A and B know C's head imprint... they can verify that neither C nor C's provider equivocate on any gossiped email
 
-- ordered history of keys allows determining which is the later one of two available keys
+- claim chains provide an ordered history of keys. This allows determining which is the later one of two available keys.
 
 - on device loss key history could be recovered from claim chains through peers who serve as an entry point. (claims might remain unreadable though.)
 
@@ -98,15 +77,19 @@ Problems noticed
 ----------------
 
 
-- complex to specify interoperable wire format of Claimchains, "_cchead" and "_ccsecret" and all of the involved cryptographic algorithms
+- complex to specify interoperable wire format of Claimchains
+  and all of the involved cryptographic algorithms
 
-- Autocrypt-gossip + DKIM already make it hard for providers to equivocate, CC don't add that much (especially in relation to the complexity they introduce)
+- Autocrypt-gossip + DKIM already make it hard for providers to equivocate.
+  CC don't add that much (especially in relation to the complexity they introduce)
 
-- D2.4 (encrypted messaging, updated identity) also discusses benefits of Autocrypt/gossip
+- D2.4 (encrypted messaging, updated identity)
+  also discusses benefits of Autocrypt/gossip
 
 - lack of underlying implementation for different languages
 
-- Maybe semi-centralized online storage access (not so bad since we can postpone storage updates to the time we actually send mail)
+- Maybe semi-centralized online storage access
+  (we can postpone storage updates to the time we actually send mail)
 
 
 Mitigating Equivocation in different blocks
@@ -115,25 +98,8 @@ Mitigating Equivocation in different blocks
 The easiest way to circumvent the non-equivocation property
 is to send different blocks to two different parties.
 
-Blocks are ordered
-and clients are expected to always send the last block.
+We work around this by prooving to our peers
+that we did not equivocate in any of the blocks.
 
-Therefore new blocks would have to be created
-whenever the equivocating party communicates
-with the equivocated party
-for whom the last block does not fit.
-
-
-
-We could include the vrf value for the previous block
-in the current claim.
-
-This way readers could retrieve intermediate blocks
-and see when the content of claims for a given label changed.
-
-The block seed was introduced to prevent correlating messaging meta data
-with block updates. That way the SI could have learned which entry
-belongs to which communication partner.
-
-With an inband SI and only transfering the proofs of inclusion for
-the included keys this
+The person who can best confirm the data in a block
+is the owner of the respective key.
