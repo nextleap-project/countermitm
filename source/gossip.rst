@@ -13,11 +13,12 @@ the gossip keys as a form of third-party verification.
 In `gossip-attack`_ we look at how MUAs can check key consistency
 with respect to particular attacks.  MUAs can flag possible
 machine-in-the-middle (mitm) attacks on one of the direct connections
-which in turn can be used for helping users with prioritizing Out-of-Band
-verifications with those peers. To mitigate, attackers may intercept
+which in turn can be used for helping users with **prioritizing Out-of-Band
+verifications** with those peers. To mitigate, attackers may intercept
 multiple connections to split the recipients into mostly isolated
 groups. However, the need to attack multiple connections at once
-increases the chance of detecting the attack by out-of-band (OOB) verification.
+increases the chance of detecting the attack by even a small
+amount of out-of-band (OOB) verification.
 
 The approaches described here are applicable to other asymmetric
 encryption schemes with multi recipient messages. They are independent of

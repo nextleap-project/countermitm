@@ -1,6 +1,6 @@
 
-Securing group communications with new message/UI flows
-=======================================================
+Securing groups with new message and UI flows
+=============================================
 
 Autocrypt-enabled e-mail apps like https://delta.chat implement
 longer-lived groups as is typical for messenging apps.  Earlier
@@ -55,51 +55,138 @@ consistently launch an active key substitution attack.
 Out-of-band verified groups
 ---------------------------
 
-Setting up secure group communication from the start
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Traditionally, two peers perform verification of their respective
+public keys through manually verifying finger prints or through
+QR codes which are scanned from the other side.  The oob-verification
+work flow is centered on keys and typically does not offer any other
+benefits than a verified key or verified contact.  This arguably
+contradicts the good Autocrypt design choice of
+"Don't talk to users about keys, ever!".
 
-We can prevent split world views by growing a group one user at a time
-and requiring out-of-band verification when adding a user. It's easy to
-see that the corresponding graph will be fully connected. Therefor it's
-not possible to split the group into two sets of recipients with
-consistent world views.
+Morever, in order for a group to be secure, every member needs to
+consistently perform oob-verifications with all other peers in a group.
+Otherwise a non-verified member could have its key modified in transit,
+rendering all group's messages readable to an attacker.
 
-If the messaging application exposes a notion of groups, this scheme can
-be build based on signed and encrypted introduction messages to the
-group that include the new participants key.
+Instead of focusing on just key verification, we rather focus on
+introducing new a new "invite + join" work flow to construct a
+group which is consistently secure against active attacks.
+The goal is that an active attacker (who substitutes Autocrypt keys in
+transit) can never read any group messages.  We achieve this
+by mandating that joining a group is always tied to an oob-verification
+with an existing member, leading to a fully connected graph of oob-verifications
+between group members.
 
-It could also be used to establish more lightweight group communication
-similar to CC'ed emails. In this case starting a thread would require
-out-of-band verified key exchanges with all initial members. Any
-recipient that wants to CC more people would be required to verify the
-new participants.
+Here is a sketch of the proposed UI work flow, expressed here in terms
+of currently ongoing implementation work in Delta.chat:
 
-Reusing keys in new threads
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Alice (the inviter) creates a "verified secure group named 'X'" and starts
+  a "secure invite" by showing a special QR code which contains
+  her Openpgp4 fingerprint, e-mail address and a tag that qualifies
+  the QR code as being of type "secure-invite-to-group 'X'".
 
-Given a thread that grew as described in a previous section. What if one
-of the recipients wants to start a new secure thread with the others but
-has not verified everyones keys themselves?
+- Bob (the joiner) hits "Scan QR" code (a generic UI action, there are other
+  QR things you can scan, e.g. also the ones from OpenKeyChain).
+  After scanning the QR code Bob's screen shows "This is the
+  verified secure group "X", do you want to join"? Bob hits
+  the "Secure Join" button.
 
-If the mitm attacker is participating in the initial communication
-faking the out-of-band verification does not reveal further information
-because they can already access the content of the given thread. However
-if the recipients of the initial threat start trusting the verification
-outside of the original context it would allow a malicious peer to
-attack communication between the other participants.
+- Bob's device sends a secure-join message to Alice, containing
+  Bob's Autocrypt key (which Alice might not know yet). The
+  secure-join message contains a random number from the invite code
+  so that Alice's device can easily recognize the message.
 
-Therefore the easiest and most consistent answer would be to always
-require out-of-band verification for setting up new threads. People can
-send a message to the peers they already out-of-band verified and ask
-them to add the others. This seems cumbersome in particular if it's
-exactly the same group of people. Instead they would probably reply to
-the existing thread thus somewhat breaking the sementics of threads.
+- Alice's device sends back an encrypted reply to Bob, indicating
+  she has received and accepts the secure-join message.
+  Bob verifies that the Autocrypt key and e-mail from Alice matches
+  the OpenPgp4 fingerprint from the original oob-transmitted QR code.
 
-Another option seems to allow starting a new thread with exactly the
-same group of people. But what happens if the user chooses to remove
-people from the group? What if they were vital in setting up the
+- Bob then sends back an encrypted reply to Alice, where his
+  key's fingerprint is contained in the encrypted and signed part.
+  Alice receives Bob's encrypted reply, and verifies that Bob's
+  Autocrypt matches the fingerprint contained in the encrypted part.
+  If it doesn't match, Alice's device can conclusively signal
+  "You are under active attack".
+
+- Alice now sends a message to all group members (including Bob),
+  gossiping the Autocrypt keys of everyone.
+
+- Bob's and Alice's devices can signal that the "secure join"
+  has been successfully completed.
+
+Bob and Alice may now both continue to add more members which
+in turn can add more members. Through the described join/invite flow
+we know that everybody in the group has been oob-verified with
+at least one member and that all members are fully connected.
+
+For users, this provides a simple to understand guarantee:
+Sending and receiving messages in a verified secure group
+is consistently e2e encrypted and safe against active
+provider/network attackers. There are never any warnings
+about changed keys that could be clicked away.
+
+A user with a new key new (because e.g. of lost device)
+looses the ability to read or write messages in the group
+and needs to find one group member to perform secure-join again.
+
+
+Some notes on the verified group protocol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- If one peer is "evil" it can already read all messages
+  in the group and leak it to outsiders. We do not consider
+  advanced attacks like an "infiltrator" peer which exchanges
+  keys for a newly joined member and collaborates with an evil provider
+  to intercept/read messages.  We note, however, that such
+  an infiltrator will have to gossip fake keys (which are signed
+  by him). If group members then perform independent OOB-verifications
+  the infiltrator would be unmistakenly detected.
+
+- the secure-invite/join work flow can also be adapted towards
+  two peers establishing (verifiedly secure) contact with each
+  other, without any group involved.  This is useful because none
+  of them would need to be manually type in e-mail addresses.
+
+- For secure invite codes, we don't need to use the QR code but could
+  also e.g. print out the information and have the other user
+  type it in, or use a file on a USB stick for transfering it.
+
+- It might be possible to to design the initial in-band "secure-join"
+  message from Bob (the joiner) to Alice (the inviter) to be indistinguishable
+  from other initial messages Bob sends to Alice to establish contact.
+  This means that the provider would, when trying to substitute an Autocrypt key
+  on a first message between two peers, run the risk of **immediate and
+  conclusive detection of malfeasance**. The introduction of the verified
+  group protocol would thus secure the e-mail encryption eco-system,
+  rather than just securing the group at hand.
+
+- instead of the secure-join and subsequent messages over in-band
+  channels two peers could use Bluetooth or WLAN channels to fully
+  perform the invite/join protocol out-of-band. The provider would
+  not gain knowledge about this oob-verification and thus could not
+  know if it's safe to substitute the peers.
+
+- instead of dealing about groups, traditional e-mail apps could
+  possibly offer the techniques described here for "secure threads".
+
+
+Questions wrt reusing verifications for new groups
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Given a verified group that grew as described in a previous section.
+What if one of the members wants to start a new group with a subset
+of the members?  How safe is it in practise to allow directly creating
+the group if the creator has not verified all keys himself?
+
+Of course, a safe answer would be to always require a
+new secure-join work flow for not directly verified members.
+A creator could send a message to initial group members to
+add peers they have directly verified already.
+
+Another option seems to allow starting a new group with exactly the
+same group of people. But what happens if the new group creator chooses
+to remove people from the group? What if they were vital in setting up the
 verification network in the initial thread?
-
 
 
 .. _`onion-verified-keys`:
