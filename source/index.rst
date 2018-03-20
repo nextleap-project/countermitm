@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Detecting active attacks against Autocrypt
-==========================================
+Detecting and preventing active attacks against Autocrypt
+=========================================================
 
 (Abstract)
 
@@ -14,5 +14,6 @@ Detecting active attacks against Autocrypt
    summary.rst
    dkim.rst
    gossip.rst
+   new.rst
    key_history.rst
 
