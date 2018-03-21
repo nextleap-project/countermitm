@@ -182,9 +182,12 @@ Notes on the verified group protocol
 
 - All steps after 2 (the sending of internal messages)
   could happen asynchronously and in the background.  This might
-  be useful because in e-mail the common provide practise of
-  greylisting delays initial messages. Outcomes ("you are under
-  attack" and "successful join") can be done in notifications.
+  be useful because e-mail providers often delay initial messages
+  ("greylisting") as mitigation against spam.
+  The eventual outcomes ("you are under attack" and "successful join")
+  can be done in notifications towards Alice and Bob including
+  a "verified join failed to complete" if messages do not arrive
+  within a fixed time frame.
 
 - If one peer is "evil" it can already read all messages
   in the group and leak it to outsiders. We do not consider here
