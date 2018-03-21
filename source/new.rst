@@ -168,13 +168,18 @@ from Bob:
 
 - If the provider does not forward the "please-provide-random-secret"
   message to Bob at all, but tries to send "secure-join-with-random-secret"
-  it will will fail to provide the oob-transmitted random secret to Alice
-  Alice's device will show in step 6 "You are under attack".
+  it will will fail to provide the oob-transmitted random secret to Alice.
+  Alice's device will thus show in step 6 "You are under attack".
 
-If step 7 is reached, it is thus guaranteed that the provider has
-not impersonated Bob towards Alice.  The devices will only
-show success (in step 8 and 9) after they proved to each other
-that the provider did not substitute keys.
+In step 7 it is guaranteed that the provider has
+not impersonated Bob towards Alice.  The devices will thus only
+show success (in step 8 and 9) if Alice and Bob saw the true keys
+and e-mail addresses of each other, and the true keys have been
+used for all signed+encrypted messages.
+
+An alternative to using a random oob-verified secret for securing
+against a provider impersonation attack is if all encrypted
+messages use ``sign(encrypt(sign(message)))`` semantics.
 
 
 Notes on the verified group protocol
