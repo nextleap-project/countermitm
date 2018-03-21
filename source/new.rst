@@ -16,7 +16,7 @@ Without automatically checking the consistency of keys between peers,
 peers are required to verify keys with every other peer.
 This is unpractical as a device loss will invalidate all
 prior verifications, requiring the tedious task of redoing them all.
-In practise, very few users consistently perform key verification.
+In practice, very few users consistently perform key verification.
 This is true for users of Signal, Threema, Wire and Whatsapp.
 
 A traditional approach to reducing the necessity of out-of-band
@@ -24,7 +24,7 @@ verification is the web of trust. Existing implementations such as the
 OpenPGP keyservers however publicly leak the social graph and require a
 substantial learning effort to understand the underlying concepts.
 They have reached very limited adoption. Autocrypt intentionally
-does not use centralized public (global or provider-) keyservers.
+does not use public keyservers.
 
 In this section, we consider how introducing new kinds of (hidden)
 messages and work flows between peers can substantially help
@@ -63,7 +63,7 @@ benefits than a verified key or verified contact.  This arguably
 contradicts the good Autocrypt design choice of
 "Don't talk to users about keys, ever!".
 
-Morever, in order for a group to be secure, every member needs to
+Moreover, in order for a group to be secure, every member needs to
 consistently perform oob-verifications with all other peers in a group.
 Otherwise a non-verified member could have its key modified in transit,
 rendering all group's messages readable to an attacker.
