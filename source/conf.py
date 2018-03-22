@@ -227,7 +227,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'CounterMitm.tex',
-    u'Detecting active attacks against Autocrypt',
+    u'Detecting and preventing active attacks against Autocrypt',
      u'NEXTLEAP researchers', 'howto'),
 ]
 
