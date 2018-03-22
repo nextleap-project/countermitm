@@ -1,11 +1,5 @@
 IMAGES = $(shell ls images/*.svg | sed -e 's/svg/pdf/')
 
-.PHONY: images
-images: $(IMAGES)
-
-images/%.pdf: images/%.svg
-	inkscape -D -z --file=$< --export-pdf=$@
-
 # Makefile for Sphinx documentation
 #
 
@@ -54,6 +48,13 @@ help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 	@echo "  coverage   to run coverage check of the documentation (if enabled)"
+
+.PHONY: images
+images: $(IMAGES)
+
+images/%.pdf: images/%.svg
+	inkscape -D -z --file=$< --export-pdf=$@
+
 
 .PHONY: clean
 clean:
