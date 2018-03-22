@@ -55,21 +55,39 @@ consistently launch an active key substitution attack.
 Out-of-band verified groups
 ---------------------------
 
-We introduce a new secure verified group" which is constructed through
+We introduce a new secure **verified secure group** which is constructed through
 a "secure-join" techno-social protocol which we describe below.  Each member
-can add new members to the group through this protocol. Members in a verified
+can add new verified members to the group through this protocol. Members in a verified
 group are consistently secure against message transport layer attacks.  We achieve
-this by mandating that joining a group is initiated by transfering once a small
-amount of data in an out-of-band channel, that the message transport layer
-can not observe.
+this by mandating that joining a group is initiated by once transfering a small
+amount of data in an out-of-band channel, i.e. a channel which the message
+transport layer can not observe by definition.
+
+For users, verified groups provide a simple to understand guarantee:
+Sending and receiving messages in a verified group
+is consistently e2e encrypted and always safe against active
+provider/network attackers. There are never any warnings
+about changed keys (like in Signal) that could be clicked away
+or cause worry. A member who lost a device or key,
+looses the ability to read from or write to the verified group.
+It is required to find one group member to perform secure-join again.
+
+
+The verified secure-join protocol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is a conceptual step-by-step example of the proposed UI work flow,
 including the internal messages exchanged during it:
 
 1. Alice (the inviter) creates a "verified secure group 'X'" and starts
-   the "secure invite" protocol by showing a special QR code.
-   The code contains her Openpgp4 fingerprint, e-mail address, a tag
-   that qualifies the code as being of type "secure-invite-to-group 'X'.
+   the "verified invite" protocol by showing a special QR code.
+   The code contains:
+
+   - Alice's Openpgp4 fingerprint,
+   - Alice's routable e-mail address (realname stripped),
+   - a tag that qualifies the code as being of type
+     "secure-invite-to-group 'X',
+   - a small random secret which Bob uses in step 5b to authenticate to Alice
 
 2. Bob (the joiner) hits "Scan QR" code (a generic UI action, there are other
    QR things you can scan, e.g. also the ones from OpenKeyChain).
@@ -99,8 +117,8 @@ including the internal messages exchanged during it:
    verifies that Bob's Autocrypt key matches the fingerprint contained in the
    encrypted part and that the random secret from step 1 is correctly contained.
 
-   If verification fails, Alice's device signals "You are under attack"
-   and the protocol terminates.
+   If verification fails, Alice's device signals "Could not establish
+   secure connection" and the protocol terminates.
 
 7. Alice now broadcasts an encrypted "member added" message to all group
    members (including Bob), gossiping the Autocrypt keys of everyone.
@@ -118,15 +136,9 @@ can add more members. Through the described secure-join work flow
 we know that everybody in the group has been oob-verified with
 at least one member and that all members are fully connected.
 
-For users, this provides a simple to understand guarantee:
-Sending and receiving messages in a verified secure group
-is consistently e2e encrypted and always safe against active
-provider/network attackers. There are never any warnings
-about changed keys that could be clicked away.
+Note that all group members need to interpret a changed
+Autocrypt key as that member being removed from the group.
 
-A user who lost his device or key, she looses the ability to read from
-or write to the verified group.  She will need to find one group member to
-perform secure-join again.
 
 
 The provider can not impersonate Bob
@@ -138,7 +150,7 @@ forwarding the message to Alice.  Alice can in step 4 not find
 out about the MITM key and sends the "please-provide-random-secret"
 encrypted reply to the Bob-MITM key. The provider can decrypt the
 content of this message but it will fail to obtain the random secret
-from Bob:
+that Bob received out-of-band in step 1 from Alice:
 
 - If the provider forwards the "please-provide-random-secret" message
   unmodified, then Bob will in 5b send the "secure-join-with-random-secret"
@@ -146,17 +158,19 @@ from Bob:
   that Bob's "secure-join-requested" message from step 3 had the wrong
   key (Bob-MITM) because the "secure-join-with-random-secret" message
   contains a different fingerprint for Bob (namely, Bob's true key).
-  Alice's device shows a screen "you are under attack!"
+  Alice's device shows a screen "Could not verify secure connection"
+  and the protocol terminates.
 
 - If the provider substitutes the "please-provide-random-secret"
   message from Alice to Bob with a Alice-MITM key, then Bob will
-  signal "You are under attack" in step 5a.  Alice's work flow
-  will not complete.
+  signal "Could not establish secure connection" in step 5a and
+  the protocol terminates.
 
 - If the provider does not forward the "please-provide-random-secret"
   message to Bob at all, but tries to send "secure-join-with-random-secret"
   it will will fail to provide the oob-transmitted random secret to Alice.
-  Alice's device will thus show in step 6 "You are under attack".
+  Alice's device will thus show in step 6 "Could not establish
+  verified connection".
 
 In step 7 it is guaranteed that the provider has
 not impersonated Bob towards Alice.  The devices will thus only
@@ -168,49 +182,58 @@ used for all signed+encrypted messages.
 Notes on the verified group protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- All steps after 2 (the sending of internal messages)
+- **More Asynchronous UI flow**: All steps after 2 (the sending of internal messages)
   could happen asynchronously and in the background.  This might
   be useful because e-mail providers often delay initial messages
   ("greylisting") as mitigation against spam.
-  The eventual outcomes ("you are under attack" and "successful join")
-  can be done in notifications towards Alice and Bob including
-  a "verified join failed to complete" if messages do not arrive
+  The eventual outcomes ("Could not establish verified connection"
+  and "successful join") can be done in asynchronous notifications
+  towards Alice and Bob including a
+  "verified join failed to complete" if messages do not arrive
   within a fixed time frame.
+  In practise this means that one person can show the "Secure Group
+  invite" to a number of people in parallel, and everybody scans and
+  starts the secure-join.  After some time everybody will be joined
+  as the protocol messages flow in parallel between the members.
 
-- If one peer is "evil" it can already read all messages
-  in the group and leak it to outsiders. We do not consider here
+
+- **Ignoring Infiltrators, focusing on message transport attacks first**:
+  If one peer is "evil" it can already
+  read all messages in the group and leak it to outsiders. We do not consider here
   advanced attacks like an "infiltrator" peer which exchanges
   keys for a newly joined member and collaborates with an evil provider
   to intercept/read messages.  We note, however, that such
   an infiltrator (say Bob when adding Carol as a new member), will have
   to sign the gossip fake keys. If Carol performs an oob-verification
-  against Alice, she can prove that Bob gossiped the wrong key to Alice
+  with Alice, she can prove that Bob gossiped the wrong key to Alice
   because Bob has signed it.
 
-- the secure-invite/join work flow can also be adapted towards
+- **Secure 1:1 chat:** the secure-invite/join work flow can also be adapted towards
   two peers establishing (verifiedly secure) contact with each
   other, without any group involved.  This is useful because none
   of them would need to be manually type in the e-mail addresses.
 
-- For secure invite codes, we don't need to use the QR format but could
+- **other oob-channels**: For secure invite codes, we don't need to use
+  the QR format but could
   also e.g. print out the information and have the other user
   type it in, or use a file on a USB stick for transfering it.
 
-- It might be possible to design the step 3 "secure-join-requested"
+- **Leaving message transport attackers in the dark about verified
+  groups**. It might be feasible to design the step 3 "secure-join-requested"
   message from Bob (the joiner) to Alice (the inviter) to be indistinguishable
-  from other initial messages Bob sends to Alice to establish contact.
+  from other initial "contact request" messages Bob sends to Alice to establish contact.
   This means that the provider would, when trying to substitute an Autocrypt key
   on a first message between two peers, run the risk of **immediate and
   conclusive detection of malfeasance**. The introduction of the verified
-  group protocol would thus secure the e-mail encryption eco-system,
+  group protocol would thus contribute to securing the e-mail encryption eco-system,
   rather than just securing the group at hand.
 
-- all messages from step 3-6 could be transferred via
+- **full out-of-band**: all messages from step 3-6 could be transferred via
   Bluetooth or WLAN to fully perform the invite/join protocol out-of-band.
   The provider would not gain knowledge about this oob-verification
-  and thus might not easily get to know if malfeasance was detected.
+  and thus might not easily get to know even if malfeasance was detected.
 
-- instead of groups, traditional e-mail apps could
+- **non-messenger e-mail apps**: instead of groups, traditional e-mail apps could
   possibly offer the techniques described here for "secure threads".
 
 
