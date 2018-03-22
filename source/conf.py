@@ -228,7 +228,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'CounterMitm.tex',
     u'Detecting active attacks against Autocrypt',
-     u'azul, hpk and others', 'howto'),
+     u'NEXTLEAP researchers', 'howto'),
 ]
 
 # For "manual" documents, if this is true, then toplevel headings are parts,

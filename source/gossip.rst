@@ -1,5 +1,5 @@
-Using key gossip to detect attacks during Message Transport
-===========================================================
+Using Autocrypt key gossip to detect attacks during Message Transport
+=====================================================================
 
 Introduction
 ------------

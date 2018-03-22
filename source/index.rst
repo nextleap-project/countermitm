@@ -13,7 +13,6 @@ Detecting and preventing active attacks against Autocrypt
 
    summary.rst
    dkim.rst
+   online-cc.rst
    gossip.rst
    new.rst
-   key_history.rst
-

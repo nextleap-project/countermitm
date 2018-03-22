@@ -1,5 +1,21 @@
-Inband Claim Chain proofs backed by an online STM and SI
-=========================================================
+Detecting inconsistencies and equivocation with Claim Chains
+============================================================
+
+XXX introduce ClaimChain concepts and qualify the description
+here as being a ClaimChain integration with Autocrypt mechanics for
+the particular variant of using an in-band STM (contained
+in encrypted parts of e-mails) and an online publically
+accessible SI. The current ongoing implementation work
+happens at https://github.com/nextleap-project/muacryptcc
+
+XXX work out the precise advantages and what features
+it offers to users -- in some cases we can safely detect
+equivocation, and we can always use detected inconcisstency
+to raise the priority of recommending oob-verifications
+with particular peers similar to how we discussed DKIM
+and Autocrypt-Gossip in previous sections -- they also
+lead to recommending oob-verifications with particular
+users.
 
 Inclusion in Messages
 ---------------------
