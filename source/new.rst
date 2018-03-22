@@ -55,35 +55,21 @@ consistently launch an active key substitution attack.
 Out-of-band verified groups
 ---------------------------
 
-Traditionally, two peers perform verification of their respective
-public keys through manually verifying finger prints or through
-QR codes which are scanned from the other side.  This arguably
-contradicts the good Autocrypt design choice of "Don't talk to
-users about keys, ever!".  Moreover, in order for a group to be secure,
-every member needs to consistently perform oob-verifications with all
-other peers in a group. Otherwise a non-verified member could have its
-key modified in transit, rendering all group's messages readable to an
-attacker. The traditional oob-verification work flows are centered
-around keys and do not offer any additional benefits than a verified key
-or verified contact.
+We introduce a new secure verified group" which is constructed through
+a "secure-join" techno-social protocol which we describe below.  Each member
+can add new members to the group through this protocol. Members in a verified
+group are consistently secure against message transport layer attacks.  We achieve
+this by mandating that joining a group is initiated by transfering once a small
+amount of data in an out-of-band channel, that the message transport layer
+can not observe.
 
-Instead of focusing on just key verification, we rather focus on
-introducing new a new "invite + join" work flow to construct a
-group which is consistently secure against active attacks.
-The goal is that an active attacker (who substitutes Autocrypt keys in
-transit) can never read any group messages.  We achieve this
-by mandating that joining a group is always tied to an oob-verification
-with an existing member, leading to a fully connected graph of oob-verifications
-between group members.
-
-Here is a conceptual step-by-step sketch of the proposed UI work flow,
+Here is a conceptual step-by-step example of the proposed UI work flow,
 including the internal messages exchanged during it:
 
 1. Alice (the inviter) creates a "verified secure group 'X'" and starts
    the "secure invite" protocol by showing a special QR code.
    The code contains her Openpgp4 fingerprint, e-mail address, a tag
-   that qualifies the code as being of type "secure-invite-to-group 'X', and
-   a random "join-X" secret that the provider can not obtain.
+   that qualifies the code as being of type "secure-invite-to-group 'X'.
 
 2. Bob (the joiner) hits "Scan QR" code (a generic UI action, there are other
    QR things you can scan, e.g. also the ones from OpenKeyChain).
@@ -101,8 +87,8 @@ including the internal messages exchanged during it:
 5. Bob verifies that Alice's Autocrypt key and e-mail address from Alice matches
    the OpenPgp4 fingerprint from the original oob-transmitted QR code (step 1).
 
-   a) If verification fails, Bob gets a screen message "You are under attack
-      from your provider!".
+   a) If verification fails, Bob gets a screen message "Error: Could not setup
+      a secure connection to Alice" and the protocol terminates.
 
    b) Otherwise Bob then sends back an 'secure-join-with-random-secret' encrypted
       reply to Alice, which contains in the encrypted part of the message Bob's
@@ -113,7 +99,8 @@ including the internal messages exchanged during it:
    verifies that Bob's Autocrypt key matches the fingerprint contained in the
    encrypted part and that the random secret from step 1 is correctly contained.
 
-   If verification fails, Alice's device signals "You are under active attack!".
+   If verification fails, Alice's device signals "You are under attack"
+   and the protocol terminates.
 
 7. Alice now broadcasts an encrypted "member added" message to all group
    members (including Bob), gossiping the Autocrypt keys of everyone.
@@ -127,7 +114,7 @@ including the internal messages exchanged during it:
    shows a screen "Bob <email-address> securely joined group 'X'"
 
 Bob and Alice may now both invite and add more members which in turn
-can add more members. Through the described join/invite flow
+can add more members. Through the described secure-join work flow
 we know that everybody in the group has been oob-verified with
 at least one member and that all members are fully connected.
 
@@ -137,9 +124,9 @@ is consistently e2e encrypted and always safe against active
 provider/network attackers. There are never any warnings
 about changed keys that could be clicked away.
 
-A user with a new key (because e.g. of lost device)
-looses the ability to read from or write to the group any messages
-and needs to find one group member to perform secure-join again.
+A user who lost his device or key, she looses the ability to read from
+or write to the verified group.  She will need to find one group member to
+perform secure-join again.
 
 
 The provider can not impersonate Bob
@@ -149,7 +136,7 @@ The message provider could try in step 3 to substitute the
 "secure-join-requested" message and use a Bob-MITM key before
 forwarding the message to Alice.  Alice can in step 4 not find
 out about the MITM key and sends the "please-provide-random-secret"
-encrypted reply to the Bob-MITM key.  The provider can read the
+encrypted reply to the Bob-MITM key. The provider can decrypt the
 content of this message but it will fail to obtain the random secret
 from Bob:
 
@@ -176,10 +163,6 @@ not impersonated Bob towards Alice.  The devices will thus only
 show success (in step 8 and 9) if Alice and Bob saw the true keys
 and e-mail addresses of each other, and the true keys have been
 used for all signed+encrypted messages.
-
-An alternative to using a random oob-verified secret for securing
-against a provider impersonation attack is if all encrypted
-messages use ``sign(encrypt(sign(message)))`` semantics.
 
 
 Notes on the verified group protocol
