@@ -1,4 +1,4 @@
-Inband Claim Chain proofes backed by an online STM and SI
+Inband Claim Chain proofs backed by an online STM and SI
 =========================================================
 
 Inclusion in Messages
@@ -6,7 +6,7 @@ Inclusion in Messages
 
 Every mail has the Autocrypt header as usual:
 
-   autocrypt: ...
+   Autocrypt: ...
 
 Gossip headers are left untouched (in contrast to in-band cc).
 
@@ -29,18 +29,16 @@ Constructing New Blocks
 
 The absence of a claim can not be destinguished
 from the lack of a capability for that claim.
-Therefore to proof that we are not equivocating about keys
+Therefore to prove that we are not equivocating about keys
 we gossiped in the past
 we need to include the corresponding claims
 and grant a capability to their respective peers.
-
-So each new block starts by creating a state
-based on the last block
-that includes all claims about peer keys
-and capabilities for these peers.
+Each new block therefore starts by including all claims
+all claims about peer keys and capabilities from
+the last block.
 
 In addition the client will include claims
-with the fingerprints of the keys gossiped.
+with the fingerprints of new gossiped keys.
 For peers that also use claimchain
 the client will include the root hash
 of the latest block they saw from that peer
@@ -50,7 +48,8 @@ It will grant capabilities to all these claims
 for the recipients of the email and itself.
 
 Due to the privacy preserving nature of claim chains
-these keys will not be revealed to anyone else.
+these keys will not be revealed to anyone else even
+if if the block data is publically accessible.
 
 Goals
 -----
@@ -63,14 +62,15 @@ Goals
 
 - claim chains provide an ordered history of keys. This allows determining which is the later one of two available keys.
 
-- on device loss key history could be recovered from claim chains through peers who serve as an entry point. (claims might remain unreadable though.)
+- on device loss key history could maybe be recovered from claim chains through peers who serve as an entry point. (claims might remain unreadable though.)
 
 
 
 Open Questions
 --------------
 
-could we signal/mark entries that have a OOB-verification?
+how could we signal/mark entries or create claims that
+relate to successfull OOB-verifications between keys?
 
 
 Problems noticed
