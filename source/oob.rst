@@ -1,65 +1,171 @@
-New approaches to out-of-band verification
-===========================================
+Historic, Out-of-Band key change verification
+=============================================
 
 Introduction
 --------------
 
 With existing secure messengers (Signal, Threema etc.) and with PGP,
-users can perform Out-of-Band verification through peer-to-peer fingerprint
-validation. Users need to perform out-of-band fingerprint validation with
-each peer they want to have privacy-preserving communications with. This
-is cumbersome on practise and moreover, users often do not succeed in
-distinguishing Lost/Reinstalled Device events from Machine-in-the-Middle
-(MITM) attacks. See for example `When Signal hits the Fan
-<https://eurousec.secuso.org/2016/presentations/WhenSignalHitsFan.pdf>`_.
+users perform Out-of-Band key verification by showing and scanning
+each other's public key fingerprints.  The need to verify with each peer is
+cumbersome. Moreover, users often do not succeed in distinguishing
+Lost/Reinstalled Device events (with new keys) from Machine-in-the-Middle
+(MITM) attacks . See for example
+`When Signal hits the Fan <https://eurousec.secuso.org/2016/presentations/WhenSignalHitsFan.pdf>`_.
 
-Therefore, we explore design approaches for improving
-the success of out-of-band verification activities for secure messaging.
-We incorporate insights of the previous chapters on DKIM and Autocrypt-Gossip
-third party verifications.
+We present a "keyhistory-verification" techno-social protocol which
+improves on the current situation:
 
-Our `OOB design`_ is driven by a basic UX consideration: we do not want
-to alert the user (by default) if a key changes unless we can, with high
-certainty, state that a Machine-in-the-Middle attack took place.  OOB-Verification
-messages involve in/out mail history which reference used keys.
-A peer can check an OOB-message sent from another peer for matching
-histories. If a non-matching key is found a MUA SHOULD alert the user
-about this fact.
+- the detection of active attacks is communicated when users engage in
+  out-of-band verification which is the right time to alert users.
+  By contrast, today's systems alert the users much later when a
+  previously verified key has changed, but at that point users typically
+  are not physically next to each other and just want to get a job done,
+  e.g. of sending or reading a message.
+
+- peers need to perform only one "show" and one "read" of out-of-band
+  information (typically transmitted via showing QR codes and scanning them).
+  Both peers receive assessments about the integrity of their past communication.
+
+- peers compare their historic records of which keys they sent and which
+  keys they received in which message. To compare history, tamper-proof
+  key verification messages are sent between the peers.
+
+The protocol first needs to establish Alice and Bob as verified contacts
+towards each other, i.e. an out-of-band initial bootstrap allows them to
+be safe against message layer MITM attacks regarding their keys. They can
+then safely perform the `keyhistory-verifcation`_ protocol. After completion,
+users gain assurance that not only their current communication is safe
+but that their past communications have not been tampered with.
 
 
-.. _`oob-design`:
+.. _`establish-verified-contact-protocol`:
 
-Out-of-Band verification design approach
+The "Establish verified contact" protocol
 -----------------------------------------
 
-Our OOB-verification considerations build on :doc:`dkim` and :doc:`gossip`.
-Autocrypt Level 1 only keeps the most current key for a peer.
-By contrast, we suggest that each MUA keeps track of:
+The goal of this protocol is to allow two peers to establish contact
+with each other with out-of-band verified keys. The protocol is safe
+against message layer modification and impersonation attacks as both peers will
+learn the true keys of each other or else both get an error message.
+Here is a conceptual step-by-step example of the proposed UI work flow,
+including the internally exchanged messages:
 
-- each key it ever saw in Autocrypt or Autocrypt-Gossip headers
-  (not just the most recent one(s)) from incoming mails
+1. Alice sends a bootstrap code to Bob via an Out-of-Band channel
+   (e.g. through QR code show). The bootstrap code consists of:
 
-- each key it ever sent out in Autocrypt or Autocrypt Gossip headers
+   - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
+   - Alice's routable e-mail address (realname stripped),
+   - a ``TAG`` that qualifies the bootstrap code as being of type
+     "verified-contact-info"
+   - a random secret ``AUTH`` which Bob uses in step 3 to authenaticate
+     with Alice.
 
-- the DKIM signature verification status along with the used DKIM key
-  of each incoming message (if a MUA can not verify a signature
-  itself, it at least includes the ``Authentication-Results`` header
-  from its own provider).
+2. Bob receives the oob-transmitted bootstrap data (e.g. through QR scan) and
 
-We suggest that each MUA keeps:
+   a) If Bob's device knows a key that matches ``Alice_FP``
+      the protocol continues with 4b)
 
-- a "peer-log" which keeps track of all incoming and outgoing
-  mail towards a peer. A message which goes to multiple peers
-  will be recorded in each respective peer-log.
+   b) otherwise Bob's device sends a (cleartext) "vc-start" message to
+      Alice's e-mail address, adding the ``TAG`` and Alice's
+      fingerprint from step 1 to the message.
 
-- a "oob-log" which keeps track of all own out-of-band verifications
+3. Alice's device receives the "vc-start" message, recognizes
+   the ``TAG``, processes Bob's Autocrypt key and sends
+   back an encrypted "vc-auth-required" reply to Bob.
+   This message contains Alice's Autocrypt key.
 
-If the client instead keeps a history of Autocrypt keys it observed this
-history could be compared after the fact when users verify their
-fingerprint. This way the users would find out about inconsistencies in
-a setting where they have an out-of-band channel of communication and
-are interested in verifying the integrity of their communication
-channel.
+4. Bob receives the "vc-auth-required" message and verifies that
+   Alice's Autocrypt key matches ``Alice_FP``.
+
+   a) If verification fails, Bob gets a screen message "Error: Could not setup
+      a secure connection to Alice" and the protocol terminates.
+
+   b) Otherwise Bob's device sends back a 'vc-start-with-auth'
+      encrypted message whose encrypted part contains Bob's
+      own key fingerprint ``Bob_FP``, ``AUTH`` and ``TAG``.
+
+5. Alice decrypts Bob's 'vc-start-with-auth' message, and
+   verifies that Bob's Autocrypt key matches ``Bob_FP`` and that
+   ``AUTH`` and ``TAG`` are correct.
+
+   If any verification fails, Alice's device signals "Could not establish
+   secure connection to Bob" and the protocol terminates.
+
+6. Alice and Bob send "vc-contact-confirm" messages to each other:
+
+   a) Bob receives "vc-contact-confirm" and
+      shows "Secure contact with Alice established".
+
+   b) Alice receives "vc-contact-confirm" and
+      shows "Secure contact with Bob established".
+
+
+Usability question of "sticky" encryption and key loss
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Do we want to prevent dropping back to
+not encrypting or encrypting with a different key if a peer's autocrypt
+key state changes? Key change or drop back to cleartext is opportunistically
+accepted by the Autocrypt Level 1 key processing logic and eases communication in
+cases of device or key loss.  The "establish-secure-contact" also conveniently
+allows two peers who have no address of each other to establish contact.
+Ultimately, it depends on the guarantees a mail app wants to provide
+and how it represents cryptographic properties to the user.
+
+
+.. _`keyhistory-verification`:
+
+The "keyhistory-verification" protocol
+---------------------------------------
+
+The goal of this protocol is to allow two peers to verify key integrity
+of all their shared historic messages.  The protocol starts
+with steps 1-5 of the `establish-verified-contact`_ protocol
+using a ``TAG`` value of ``keyhistory-verification`` and then:
+
+6. Alice and Bob have each others verified keydata. They each send
+   an encrypted message with **message-key data**: a list of message id's
+   with respective Dates and a list of (email-address, Autocryptkey fingerprints)
+   tuples which were sent or received in a particular message.
+
+7. Alice and Bob respectively perform the following historic comparison
+   algorithm:
+
+   a) determine the start-date as the date of the earliest message (by Date)
+      for which both sides have records of.
+
+   b) verify key fingerprints for each message since the start-state for
+      which both sides have records of: if a key differs for any e-mail address,
+      show an error "Message at <DATE> from <From> to <recipients> has
+      mangled encryption". This is strong evidence that there was an active
+      attack.
+
+8. Present a summary which lists:
+
+   - time frame of comparison
+   - NUM messages successfully verified
+   - NUM dropped messages, i.e. sent but not received or vice versa
+
+   If there are no dropped messages and all messages are verified
+   signal to the user "Message keyhistory verification successull".
+
+
+Keeping records of keys in messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Our keyhistory verification considerations rely on each MUA
+keeping track of:
+
+- each e-mail address/key tuple it ever saw in Autocrypt or Autocrypt-Gossip
+  headers (i.e. not just the most recent one(s)) from incoming mails
+
+- each emailaddr/key association it ever sent out in
+  Autocrypt or Autocrypt Gossip headers
+
+We suggest MUAs could maintain a "peer-log" data structure which keeps
+  track of all incoming and outgoing mail towards a peer. A message
+which goes to multiple peers will be recorded in each respective
+peer-log.
 
 Device Loss
 ~~~~~~~~~~~
@@ -69,7 +175,7 @@ key change is device loss. However loosing access to ones device and
 private key in most cases also means loosing access to ones key history.
 
 So in some cases if Bob lost his device Alice will have a much longer
-history for him then he has himself. Therefor Bob can only compare keys
+history for him then he has himself. Therefore Bob can only compare keys
 for the timespan since the last device loss. Never the less this would
 lead to the detection of attacks in that time.
 
@@ -82,39 +188,4 @@ and then using that to compare to what other people saw during the next
 out of band verification. This way consistent attacks that replace Bobs
 keys with all of his peers including Alice could not be detected. It also
 leads to error cases that are much harder to investigate.
-
-
-.. _`oob-attacks`:
-
-Temporary attacks on Autocrypt
-------------------------------
-
-Since Autocrypt does not protect against active attacks it's possible to
-replace encryption keys for an attacker that can intercept the traffic.
-The attacker can intercept the initial key exchange. They can also
-impersonate one user (Alice) and send emails with spoofed sender the
-other party (Bob), triggering a key replacement. When Bob replies they
-can decrypt and reencrypt the message and also replace Bobs keys.
-
-To end the attack an attacker can decrypt a message say to Bob. Instead
-of replacing the signature and the key on the original message they can
-just send on the message as is. This will cause Bob to update Alices key
-to the original key. Replies will now be unreadable to the attacker. But
-just letting them through will lead Alice to also update her key for
-Bob. Now the both users state is consistent and a fingerprint comparison
-will not show any discrepancies.
-
-Countermeassures
-----------------
-
-The main countermeassure against this attack obviously is timely
-fingerprint comparisons. Key changes can also be exposed in the user
-interface or rejected. However these types of user interaction are not
-in line with the opportunistic approach to enryption Autocrypt is
-taking. They also leave users in a difficult situation: They are alerted
-that someones key has changed and they should verify it. However this is
-usually not what the user wants to achieve in that particular moment.
-They probably want to read the email that updated the key state or send
-a message themselves.
-
 
