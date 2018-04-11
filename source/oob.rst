@@ -1,4 +1,4 @@
-Historic, Out-of-Band key change verification
+Historic Key/Message Out-of-Band verification
 =============================================
 
 Introduction
@@ -44,9 +44,9 @@ The "Establish verified contact" protocol
 -----------------------------------------
 
 The goal of this protocol is to allow two peers to establish contact
-with each other with out-of-band verified keys. The protocol is safe
-against message layer modification and impersonation attacks as both peers will
-learn the true keys of each other or else both get an error message.
+with each other. The protocol is safe
+against message layer modification and message layer impersonation attacks
+as both peers will learn the true keys of each other or else both get an error message.
 Here is a conceptual step-by-step example of the proposed UI work flow,
 including the internally exchanged messages:
 
