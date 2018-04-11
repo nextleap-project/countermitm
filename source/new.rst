@@ -85,7 +85,7 @@ work flow for establishing a secure contact between two contacts, Alice and Bob.
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
 
-   - Alice's routable e-mail address (realname stripped),
+   - Alice's e-mail address (both name and routable address),
 
    - a ``TYPE=vc-INVITENUMBER`` where the ``INVITENUMBER`` is a small
      random number which Bob sends back to Alice in step 2b so that her device
@@ -106,8 +106,9 @@ work flow for establishing a secure contact between two contacts, Alice and Bob.
 
 3. Alice's device receives the "vc-request" message, recognizes
    the ``INVITENUMBER`` from step 1, processes Bob's Autocrypt key and sends
-   back an encrypted "vc-auth-required" reply to Bob.
-   Alice's message contains her own Autocrypt key.
+   back an encrypted "vc-auth-required" reply to Bob which
+   also contains her own Autocrypt key.  If the ``INVITENUMBER`` does
+   not match then Alice terminates the protocol.
 
 4. Bob receives and decrypts the "vc-auth-required" message and
    verifies that Alice's Autocrypt key matches ``Alice_FP``.
@@ -165,6 +166,12 @@ completion of the protocol:
   message (step 3) from Alice to Bob with a Alice-MITM key, then the protocol
   terminates with 4a because the key does not match ``Alice_FP`` from step 1.
 
+
+Open Questions
+~~~~~~~~~~~~~~
+
+- re-use or regenerate the step 1 INVITENUMBER across different peers?
+  what's a good default?
 
 
 .. _`oob-verified-group`:
