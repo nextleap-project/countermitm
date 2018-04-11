@@ -17,9 +17,9 @@ improves on the current situation:
 
 - the detection of active attacks is communicated when users engage in
   out-of-band verification which is the right time to alert users.
-  By contrast, today's systems alert the users much later when a
+  By contrast, today's key verification work flows alert the users when a
   previously verified key has changed, but at that point users typically
-  are not physically next to each other and just want to get a job done,
+  are not physically next to each other and want to get a different job done,
   e.g. of sending or reading a message.
 
 - peers need to perform only one "show" and one "read" of out-of-band
@@ -124,11 +124,11 @@ with steps 1-5 of the `establish-verified-contact`_ protocol
 using a ``TAG`` value of ``keyhistory-verification`` and then:
 
 6. Alice and Bob have each others verified keydata. They each send
-   an encrypted message with **message-key data**: a list of message id's
-   with respective Dates and a list of (email-address, Autocryptkey fingerprints)
+   an encrypted message which contains **message/keydata list**: a list of message id's
+   with respective Dates and a list of (email-address, key fingerprints)
    tuples which were sent or received in a particular message.
 
-7. Alice and Bob respectively perform the following historic comparison
+7. Alice and Bob now independently perform the following historic comparison
    algorithm:
 
    a) determine the start-date as the date of the earliest message (by Date)
@@ -147,7 +147,7 @@ using a ``TAG`` value of ``keyhistory-verification`` and then:
    - NUM dropped messages, i.e. sent but not received or vice versa
 
    If there are no dropped messages and all messages are verified
-   signal to the user "Message keyhistory verification successull".
+   signal to the user "Message keyhistory verification successfull".
 
 
 Keeping records of keys in messages
@@ -156,16 +156,41 @@ Keeping records of keys in messages
 Our keyhistory verification considerations rely on each MUA
 keeping track of:
 
-- each e-mail address/key tuple it ever saw in Autocrypt or Autocrypt-Gossip
+- each e-mail address/key-fingerprint tuple it ever saw in Autocrypt or Autocrypt-Gossip
   headers (i.e. not just the most recent one(s)) from incoming mails
 
 - each emailaddr/key association it ever sent out in
   Autocrypt or Autocrypt Gossip headers
 
-We suggest MUAs could maintain a "peer-log" data structure which keeps
-  track of all incoming and outgoing mail towards a peer. A message
-which goes to multiple peers will be recorded in each respective
-peer-log.
+
+Implementation advise on state tracking
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We suggest MUAs could maintain an outgoing and incoming "message-log"
+which keeps track of all incoming and outgoing mails, respectively.
+A message with multiple recipients would cause multiple entries in the log.
+Both incoming and outgoing message-logs would contain these attributes:
+
+- ``message-id``: The message-id of the e-mail
+
+- ``date``: the parsed Date header as inserted by the sending MUA
+
+- ``from-addr``: the senders routable e-mail address part of the From header.
+
+- ``from-fingerprint``: the sender's key fingerprint of the sent Autocrypt key
+  (NULL if no Autocrypt header was sent)
+
+- ``recipient-addr``: the routable e-mail address of a recipient
+
+- ``recipient-fingerprint``: the fingerprint of the key we sent or received
+  in a gossip header (NULL if not Autocrypt-Gossip header was sent)
+
+Each mail would cause N entries on both the sender's outgoing and each
+of the recipient's incoming message logs, with N being the number of recipients.
+It's also possible to serialize the list of recipient addresses and fingerprints
+into a single value, which would result in only one entry in the sender's
+outgoing and each recipient's incoming message log.
+
 
 Device Loss
 ~~~~~~~~~~~
