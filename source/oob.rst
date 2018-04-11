@@ -38,68 +38,6 @@ users gain assurance that not only their current communication is safe
 but that their past communications have not been tampered with.
 
 
-.. _`establish-verified-contact-protocol`:
-
-The "Establish verified contact" protocol
------------------------------------------
-
-The goal of this protocol is to allow two peers to establish contact
-with each other. The protocol is safe
-against message layer modification and message layer impersonation attacks
-as both peers will learn the true keys of each other or else both get an error message.
-Here is a conceptual step-by-step example of the proposed UI work flow,
-including the internally exchanged messages:
-
-1. Alice sends a bootstrap code to Bob via an Out-of-Band channel
-   (e.g. through QR code show). The bootstrap code consists of:
-
-   - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
-   - Alice's routable e-mail address (realname stripped),
-   - a ``TAG`` that qualifies the bootstrap code as being of type
-     "verified-contact-info"
-   - a random secret ``AUTH`` which Bob uses in step 3 to authenaticate
-     with Alice.
-
-2. Bob receives the oob-transmitted bootstrap data (e.g. through QR scan) and
-
-   a) If Bob's device knows a key that matches ``Alice_FP``
-      the protocol continues with 4b)
-
-   b) otherwise Bob's device sends a (cleartext) "vc-start" message to
-      Alice's e-mail address, adding the ``TAG`` and Alice's
-      fingerprint from step 1 to the message.
-
-3. Alice's device receives the "vc-start" message, recognizes
-   the ``TAG``, processes Bob's Autocrypt key and sends
-   back an encrypted "vc-auth-required" reply to Bob.
-   This message contains Alice's Autocrypt key.
-
-4. Bob receives the "vc-auth-required" message and verifies that
-   Alice's Autocrypt key matches ``Alice_FP``.
-
-   a) If verification fails, Bob gets a screen message "Error: Could not setup
-      a secure connection to Alice" and the protocol terminates.
-
-   b) Otherwise Bob's device sends back a 'vc-start-with-auth'
-      encrypted message whose encrypted part contains Bob's
-      own key fingerprint ``Bob_FP``, ``AUTH`` and ``TAG``.
-
-5. Alice decrypts Bob's 'vc-start-with-auth' message, and
-   verifies that Bob's Autocrypt key matches ``Bob_FP`` and that
-   ``AUTH`` and ``TAG`` are correct.
-
-   If any verification fails, Alice's device signals "Could not establish
-   secure connection to Bob" and the protocol terminates.
-
-6. Alice and Bob send "vc-contact-confirm" messages to each other:
-
-   a) Bob receives "vc-contact-confirm" and
-      shows "Secure contact with Alice established".
-
-   b) Alice receives "vc-contact-confirm" and
-      shows "Secure contact with Bob established".
-
-
 Usability question of "sticky" encryption and key loss
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

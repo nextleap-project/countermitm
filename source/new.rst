@@ -3,8 +3,8 @@ Securing groups with new message and UI flows
 =============================================
 
 Autocrypt-enabled e-mail apps like https://delta.chat implement
-longer-lived groups as is typical for messenging apps.  Earlier
-chapters discussed opportunistic techniques to increase the likelyhood
+longer-lived groups as is typical for messenging apps (Whatsapp, Signal etc.).
+Earlier chapters discussed opportunistic techniques to increase the likelyhood
 for detecting active attacks, without introducing new work flows or
 new network messages between peers. In this section we discuss
 how allowing new work flows or hidden messages between peers
@@ -34,10 +34,18 @@ are decentralized in that they describe ways of how peers (or
 their devices) can interact with each other, thus fitting nicely
 into the decentralized Autocrypt key distribution model.
 
-In `oob-verified-group`_ we outline a new UI work flow for constructing
+In the basic `establish-verified-contact-protocol`_ we outline a new UI
+and message work flow for establishing contacts between two peers, where
+both learn the correct keys and e-mail addresses of each other. A message
+layer attacker (including the provider) may observe the contact establishment
+but it cannot substitute cryptographic keys without causing error messages
+or time outs with both users.
+
+In `oob-verified-group`_ we describe a new UI work flow for constructing
 a **verified group** which guarantees security against active
-attacks.  A network or provider attacker is unable to read the messages as
-any attempt at key substitution ("MITM attack") will remove that
+attacks.  A network or provider attacker is unable to read subsequent group
+messages because all communication is e2e encrypted between the peers and any
+attempt at key substitution ("MITM attack") will remove that
 member from the group automatically. A removed member (e.g. because of a
 new device) needs to verify with only a single member of the group to re-join
 the verified group.
@@ -50,85 +58,160 @@ members involved in an onion query to manipulate the result and
 consistently launch an active key substitution attack.
 
 
+.. _`establish-verified-contact-protocol`:
+
+The "Establish verified contact" protocol
+-----------------------------------------
+
+The goal of this protocol is to allow two peers to conveniently establish
+contact, introducing their e-mail addresses and cryptographic
+identities to each other.  It is re-used as a building block for
+the `keyhistory-comparison`_ and `oob-verified-group`_ protocols.
+
+The establish-verified-contact protocol is safe against message layer modification and
+message layer impersonation attacks
+as both peers will learn the true keys of each other or else both get an error message.
+The protocol aims to provide the simplest possible UI workflow, in that a peer
+"shows" out-of-band data that is then "read" by another peer. On mobiles this
+is typically achieved with QR codes but transfering data via USB, Bluetooth
+or WLAN channels is possible as well. Out-of-band data is characterized by
+the inability of the "in-band" message layer to observe or modify the data.
+
+Here is a conceptual step-by-step example of the proposed UI and internal message
+work flow for establishing a secure contact between two contacts, Alice and Bob.
+
+1. Alice sends a bootstrap code to Bob via an Out-of-Band channel.
+   The bootstrap code consists of:
+
+   - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
+
+   - Alice's routable e-mail address (realname stripped),
+
+   - a ``TYPE=vc-INVITENUMBER`` where the ``INVITENUMBER`` is a small
+     random number which Bob sends back to Alice in step 2b so that her device
+     can in step 3 automatically accept Bob's contact request. (Usually
+     a new contact needs to be manually affirmed in most messenging apps).
+
+   - a random secret ``AUTH`` which Bob uses in step 4 to authenaticate
+     with Alice.
+
+2. Bob receives the oob-transmitted bootstrap data and
+
+   a) If Bob's device knows a key that matches ``Alice_FP``
+      the protocol continues with 4b)
+
+   b) otherwise Bob's device sends a cleartext "vc-request" message
+      to Alice's e-mail address, adding the ``INVITENUMBER`` from step 1
+      to the message.
+
+3. Alice's device receives the "vc-request" message, recognizes
+   the ``INVITENUMBER`` from step 1, processes Bob's Autocrypt key and sends
+   back an encrypted "vc-auth-required" reply to Bob.
+   Alice's message contains her own Autocrypt key.
+
+4. Bob receives and decrypts the "vc-auth-required" message and
+   verifies that Alice's Autocrypt key matches ``Alice_FP``.
+
+   a) If verification fails, Bob gets a screen message "Error: Could not setup
+      a secure connection to Alice" and the protocol terminates.
+
+   b) Otherwise Bob's device sends back a 'vc-request-with-auth'
+      encrypted message whose encrypted part contains Bob's
+      own key fingerprint ``Bob_FP`` and the ``AUTH`` value from step 1.
+
+5. Alice decrypts Bob's 'vc-request-with-auth' message, and
+   verifies that Bob's Autocrypt key matches ``Bob_FP`` and that
+   the transferred ``AUTH`` matches the one from step 1.
+
+   If any verification fails, Alice's device signals "Could not establish
+   secure connection to Bob" and the protocol terminates.
+
+6. Alice and Bob send "vc-contact-confirm" messages to each other:
+
+   a) Bob receives "vc-confirm" and
+      shows "Secure contact with Alice <alice-adr> established".
+
+   b) Alice receives "vc-confirm" and
+      shows "Secure contact with Bob <bob-adr> established".
+
+
+Message layer attackers can not impersonate Bob nor Alice
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A message layer attacker could try in step 3 to
+substitute Bob's "vc-request" message and use a Bob-MITM key before
+forwarding the message to Alice.  Alice can in step 3 not distinguish
+the Bob-MITM from Bob's real key and sends the encrypted "vc-auth-request"
+reply to the Bob-MITM key. The attacker can decrypt the
+content of this message but it will fail to cause a successful
+completion of the protocol:
+
+- **failed Bob-impersonation**: If the provider forwards the step 3 "vc-auth-request"
+  message unmodified to Bob, then Bob will in 4b send the "vc-request-with-auth"
+  message, but it is encrypted to Alice's true key.
+  There are now three possibilities for the attacker:
+
+  * dropping the message will terminate the protocol without success.
+
+  * inventing a new message will fail Alice's ``AUTH`` check in step 5
+    and the protocol terminates without success.
+
+  * if the attacker forwards Bob's original message then
+    Alice will find out in step 5 that Bob's "vc-request"
+    from step 3 had the wrong key (Bob-MITM) and the protocol terminates
+    unsuccessfully.
+
+- **failed Alice-impersonation**: If the provider substitutes the "vc-auth-required"
+  message (step 3) from Alice to Bob with a Alice-MITM key, then the protocol
+  terminates with 4a because the key does not match ``Alice_FP`` from step 1.
+
+
+
 .. _`oob-verified-group`:
 
 Out-of-band verified groups
 ---------------------------
 
-We introduce a new secure **verified secure group** which is constructed through
-a "secure-join" techno-social protocol which we describe below.  Each member
-can add new verified members to the group through this protocol. Members in a verified
-group are consistently secure against message transport layer attacks.  We achieve
-this by mandating that joining a group is initiated by once transfering a small
-amount of data in an out-of-band channel, i.e. a channel which the message
-transport layer can not observe by definition.
-
-For users, verified groups provide a simple to understand guarantee:
-Sending and receiving messages in a verified group
-is consistently e2e encrypted and always safe against active
-provider/network attackers. There are never any warnings
-about changed keys (like in Signal) that could be clicked away
-or cause worry. A member who lost a device or key,
-looses the ability to read from or write to the verified group.
-It is required to find one group member to perform secure-join again.
+We introduce a new secure **verified group** which is consistently secure
+against message transport layer attacks.  Verified groups provide a simple to
+understand guarantee:
+All messages in a verified group are end-to-end encrypted and safe against
+active provider/network attackers. There are never any warnings about
+changed keys (like in Signal) that could be clicked away or cause worry.
+Rather, a member who lost a device or key also looses the ability to read from or
+write to the verified group. It is required to find one group member to
+re-join the group.
 
 
-The verified secure-join protocol
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Joining a verified group ("secure-join")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is a conceptual step-by-step example of the proposed UI work flow,
-including the internal messages exchanged during it:
+The goal of the verified secure-join protocol is to let a new
+member Bob join a group that Alice created or is herself a member of.
+The protocol re-uses the first five steps of the `establish-verified-contact`_
+protocol with the following modifications:
 
-1. Alice (the inviter) creates a "verified secure group 'X'" and starts
-   the "verified invite" protocol by showing a special QR code.
-   The code contains:
+- all message names starting with "vc-" use the "vg-" prefix instead.
 
-   - Alice's Openpgp4 fingerprint,
-   - Alice's routable e-mail address (realname stripped),
-   - a tag that qualifies the code as being of type
-     "secure-invite-to-group 'X',
-   - a small random secret which Bob uses in step 5b to authenticate to Alice
+- in step 1 the oob-transferred type is ``TYPE=vg-invite-X`` indicating
+  Alice's offer of letting Bob join group X.
 
-2. Bob (the joiner) hits "Scan QR" code (a generic UI action, there are other
-   QR things you can scan, e.g. also the ones from OpenKeyChain).
-   After scanning the QR code Bob's screen shows "This is the
-   verified secure group "X", do you want to join"?
+- in step 2 Bob manually confirms he wants to join the group X.
+  before his device sends the ``vg-request-X`` message.
 
-3. Bob hits the "Join Securely" button which triggers an in-band
-   "secure-join-requested" internal message to Alice's device
-   in cleartext, containing Bob's Autocrypt key. Bob only has
-   Alice's fingerprint but not her key yet.
+Step 6 of the `establish-verified-contact`_ protocol is then replaced
+with the following steps:
 
-4. Alice's device sends back an encrypted "please-provide-random-secret"
-   reply to Bob. This message also contains Alice's Autocrypt key.
+6. Alice broadcasts an encrypted "member added" message to all group
+   members (including Bob), gossiping the Autocrypt keys of everyone,
+   including the new member Bob.
 
-5. Bob verifies that Alice's Autocrypt key and e-mail address from Alice matches
-   the OpenPgp4 fingerprint from the original oob-transmitted QR code (step 1).
+7. Bob receives the encrypted "member added" message and learns all the keys
+   and e-mail addresses of group members. Bob's device sends a final
+   "vg-member-added-received" message to Alice's device.
+   Bob's device shows "You successfully joined the verified group 'X'".
 
-   a) If verification fails, Bob gets a screen message "Error: Could not setup
-      a secure connection to Alice" and the protocol terminates.
-
-   b) Otherwise Bob then sends back an 'secure-join-with-random-secret' encrypted
-      reply to Alice, which contains in the encrypted part of the message Bob's
-      own key fingerprint and the random secret obtained through the
-      oob-transmission of step 1.
-
-6. Alice receives Bob's encrypted 'secure-join-with-random-secret' reply, and
-   verifies that Bob's Autocrypt key matches the fingerprint contained in the
-   encrypted part and that the random secret from step 1 is correctly contained.
-
-   If verification fails, Alice's device signals "Could not establish
-   secure connection" and the protocol terminates.
-
-7. Alice now broadcasts an encrypted "member added" message to all group
-   members (including Bob), gossiping the Autocrypt keys of everyone.
-
-8. Bob receives the encrypted messages and learns all the keys and e-mail
-   addresses of group members. Bob's device shows "You successfully joined
-   the verified group 'X'".  Bob's device sends a final "member-added-received"
-   message to Alice's device.
-
-9. Alice's device receives the "member-added-received" reply from Bob and
+8. Alice's device receives the "member-added-received" reply from Bob and
    shows a screen "Bob <email-address> securely joined group 'X'"
 
 Bob and Alice may now both invite and add more members which in turn
@@ -138,7 +221,6 @@ at least one member and that all members are fully connected.
 
 Note that all group members need to interpret a changed
 Autocrypt key as that member being removed from the group.
-
 
 
 The provider can not impersonate Bob
