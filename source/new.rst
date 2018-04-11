@@ -230,44 +230,6 @@ Note that all group members need to interpret a changed
 Autocrypt key as that member being removed from the group.
 
 
-The provider can not impersonate Bob
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The message provider could try in step 3 to substitute the
-"secure-join-requested" message and use a Bob-MITM key before
-forwarding the message to Alice.  Alice can in step 4 not find
-out about the MITM key and sends the "please-provide-random-secret"
-encrypted reply to the Bob-MITM key. The provider can decrypt the
-content of this message but it will fail to obtain the random secret
-that Bob received out-of-band in step 1 from Alice:
-
-- If the provider forwards the "please-provide-random-secret" message
-  unmodified, then Bob will in 5b send the "secure-join-with-random-secret"
-  message, encrypted to Alice's true key.  In step 6, Alice will find out
-  that Bob's "secure-join-requested" message from step 3 had the wrong
-  key (Bob-MITM) because the "secure-join-with-random-secret" message
-  contains a different fingerprint for Bob (namely, Bob's true key).
-  Alice's device shows a screen "Could not verify secure connection"
-  and the protocol terminates.
-
-- If the provider substitutes the "please-provide-random-secret"
-  message from Alice to Bob with a Alice-MITM key, then Bob will
-  signal "Could not establish secure connection" in step 5a and
-  the protocol terminates.
-
-- If the provider does not forward the "please-provide-random-secret"
-  message to Bob at all, but tries to send "secure-join-with-random-secret"
-  it will will fail to provide the oob-transmitted random secret to Alice.
-  Alice's device will thus show in step 6 "Could not establish
-  verified connection".
-
-In step 7 it is guaranteed that the provider has
-not impersonated Bob towards Alice.  The devices will thus only
-show success (in step 8 and 9) if Alice and Bob saw the true keys
-and e-mail addresses of each other, and the true keys have been
-used for all signed+encrypted messages.
-
-
 Notes on the verified group protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
