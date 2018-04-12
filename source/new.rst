@@ -193,8 +193,8 @@ re-join the group.
 Joining a verified group ("secure-join")
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The goal of the verified secure-join protocol is to let a new
-member Bob join a group that Alice created or is herself a member of.
+The goal of the secure-join protocol is to let a new
+member Bob join a verified group that Alice created or is herself a member of.
 The protocol re-uses the first five steps of the `establish-verified-contact`_
 protocol with the following modifications:
 
@@ -253,21 +253,11 @@ Notes on the verified group protocol
   read all messages in the group and leak it to outsiders. We do not consider here
   advanced attacks like an "infiltrator" peer which exchanges
   keys for a newly joined member and collaborates with an evil provider
-  to intercept/read messages.  We note, however, that such
+  to intercept/read messages outside the group.  We note, however, that such
   an infiltrator (say Bob when adding Carol as a new member), will have
   to sign the gossip fake keys. If Carol performs an oob-verification
-  with Alice, she can prove that Bob gossiped the wrong key to Alice
+  with Alice, she can prove that Bob gossiped the wrong Alice key
   because Bob has signed it.
-
-- **Secure 1:1 chat:** the secure-invite/join work flow can also be adapted towards
-  two peers establishing (verifiedly secure) contact with each
-  other, without any group involved.  This is useful because none
-  of them would need to be manually type in the e-mail addresses.
-
-- **other oob-channels**: For secure invite codes, we don't need to use
-  the QR format but could
-  also e.g. print out the information and have the other user
-  type it in, or use a file on a USB stick for transfering it.
 
 - **Leaving message transport attackers in the dark about verified
   groups**. It might be feasible to design the step 3 "secure-join-requested"
@@ -279,10 +269,9 @@ Notes on the verified group protocol
   group protocol would thus contribute to securing the e-mail encryption eco-system,
   rather than just securing the group at hand.
 
-- **full out-of-band**: all messages from step 3-6 could be transferred via
+- **full out-of-band**: messages from step 2 on could be transferred via
   Bluetooth or WLAN to fully perform the invite/join protocol out-of-band.
-  The provider would not gain knowledge about this oob-verification
-  and thus might not easily get to know even if malfeasance was detected.
+  The provider would not gain knowledge about verifications.
 
 - **non-messenger e-mail apps**: instead of groups, traditional e-mail apps could
   possibly offer the techniques described here for "secure threads".
