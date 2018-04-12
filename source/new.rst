@@ -140,14 +140,12 @@ work flow for establishing a secure contact between two contacts, Alice and Bob.
 
    If any verification fails, Alice's device signals "Could not establish
    secure connection to Bob" and the protocol terminates.
+   Otherwise it shows "Secure contact with Bob <bob-adr> established".
 
-6. Alice and Bob send "vc-contact-confirm" messages to each other:
+6. Alice sends Bob a "vc-contact-confirm" message:
 
-   a) Bob receives "vc-confirm" and
-      shows "Secure contact with Alice <alice-adr> established".
-
-   b) Alice receives "vc-confirm" and
-      shows "Secure contact with Bob <bob-adr> established".
+   Bob receives "vc-confirm" and
+   shows "Secure contact with Alice <alice-adr> established".
 
 
 Message layer attackers can not impersonate Bob nor Alice
