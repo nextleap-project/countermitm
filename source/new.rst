@@ -310,6 +310,8 @@ to remove people from the group? What if they were vital in setting up the
 verification network in the initial thread?
 
 
+.. _`keyhistory-verification`:
+
 Out-of-band Key history verification
 ------------------------------------
 
@@ -334,28 +336,17 @@ improves on the current situation:
 - peers need to perform only one "show" and one "read" of out-of-band
   information (typically transmitted via showing QR codes and scanning them).
   Both peers receive assessments about the integrity of their past communication.
-
-- peers compare their historic records of which keys they sent and which
-  keys they received in which message. To compare history, tamper-proof
-  key verification messages are sent between the peers.
-
-The protocol first needs to establish Alice and Bob as verified contacts
-towards each other, i.e. an out-of-band initial bootstrap allows them to
-be safe against message layer MITM attacks regarding their keys. They can
-then safely perform the `keyhistory-verification`_ protocol. After completion,
-users gain assurance that not only their current communication is safe
-but that their past communications have not been tampered with.
-
-
-
-.. _`keyhistory-verification`:
-
-The "keyhistory-verification" protocol
----------------------------------------
+  By contrast, current key fingerprint verification work flows (signal, whatsapp)
+  require both peers each showing and scanning fingerprints, and they
+  will only get assurance about their current keys, and thus miss out
+  on temporary malfeasant substitutions of keys in messages.
 
 The goal of this protocol is to allow two peers to verify key integrity
-of their shared historic messages.  The protocol starts
-with steps 1-5 of the `establish-verified-contact`_ protocol
+of their shared historic messages.  After completion, users gain assurance
+that not only their current communication is safe but that their past
+communications have not been tampered with.
+
+The protocol starts with steps 1-5 of the `establish-verified-contact`_ protocol
 using a ``kg-`` prefix instread of the ``vc-`` one. The steps
 from step 6 are performed as follows:
 
