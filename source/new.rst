@@ -364,7 +364,7 @@ from step 6 are performed as follows:
    with respective Dates and a list of (email-address, key fingerprints)
    tuples which were sent or received in a particular message.
 
-7. Alice and Bob now independently perform the following historic comparison
+7. Alice and Bob now independently perform the following historic verification
    algorithm:
 
    a) determine the start-date as the date of the earliest message (by Date)
@@ -378,7 +378,7 @@ from step 6 are performed as follows:
 
 8. Present a summary which lists:
 
-   - time frame of comparison
+   - time frame of verification
    - NUM messages successfully verified
    - NUM messages had mangled encryption
    - NUM dropped messages, i.e. sent but not received or vice versa
