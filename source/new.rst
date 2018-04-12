@@ -1,6 +1,6 @@
 
-Securing groups with new message and UI flows
-=============================================
+Securing communications against active attacks
+==============================================
 
 Autocrypt-enabled e-mail apps like https://delta.chat implement
 longer-lived groups as is typical for messenging apps (Whatsapp, Signal etc.).
