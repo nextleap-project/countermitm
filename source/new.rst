@@ -34,14 +34,14 @@ are decentralized in that they describe ways of how peers (or
 their devices) can interact with each other, thus fitting nicely
 into the decentralized Autocrypt key distribution model.
 
-In the basic `establish-verified-contact`_ we outline a new UI
+In the basic `setup-contact`_ we outline a new UI
 and message work flow for establishing contacts between two peers, where
 both learn the correct keys and e-mail addresses of each other. A message
 layer attacker (including the provider) may observe the contact establishment
 but it cannot substitute cryptographic keys without causing error messages
 or time outs with both users.
 
-In `oob-verified-group`_ we describe a new UI work flow for constructing
+In `verified-group`_ we describe a new UI work flow for constructing
 a **verified group** which guarantees security against active
 attacks.  A network or provider attacker is unable to read subsequent group
 messages because all communication is e2e encrypted between the peers and any
@@ -72,15 +72,15 @@ members involved in an onion query to manipulate the result and
 consistently launch an active key substitution attack.
 
 
-.. _`establish-verified-contact`:
+.. _`setup-contact`:
 
-The "Establish verified contact" protocol
+The "Setup Verified Contact" protocol
 -----------------------------------------
 
 The goal of this protocol is to allow two peers to conveniently establish
 contact, introducing their e-mail addresses and cryptographic
 identities to each other.  It is re-used as a building block for
-the `keyhistory-verification`_ and `oob-verified-group`_ protocols.
+the `keyhistory-verification`_ and `verified-group`_ protocols.
 
 The establish-verified-contact protocol is safe against message layer modification and
 message layer impersonation attacks
@@ -186,7 +186,7 @@ Open Questions
   what's a good default?
 
 
-.. _`oob-verified-group`:
+.. _`verified-group`:
 
 Out-of-band verified groups
 ---------------------------
@@ -207,7 +207,7 @@ Joining a verified group ("secure-join")
 
 The goal of the secure-join protocol is to let a new
 member Bob join a verified group that Alice created or is herself a member of.
-The protocol re-uses the first five steps of the `establish-verified-contact`_
+The protocol re-uses the first five steps of the `setup-contact`_
 protocol with the following modifications:
 
 - all message names starting with "vc-" use the "vg-" prefix instead.
@@ -218,7 +218,7 @@ protocol with the following modifications:
 - in step 2 Bob manually confirms he wants to join the group X.
   before his device sends the ``vg-request-X`` message.
 
-Step 6 of the `establish-verified-contact`_ protocol is then replaced
+Step 6 of the `setup-contact`_ protocol is then replaced
 with the following steps:
 
 6. Alice broadcasts an encrypted "member added" message to all group
@@ -313,14 +313,6 @@ verification network in the initial thread?
 Out-of-band Key history verification
 ------------------------------------
 
-With existing secure messengers (Signal, Threema etc.) and with PGP,
-users perform Out-of-Band key verification by showing and scanning
-each other's public key fingerprints.  The need to verify with each peer is
-cumbersome. Moreover, users often do not succeed in distinguishing
-Lost/Reinstalled Device events (with new keys) from Machine-in-the-Middle
-(MITM) attacks . See for example
-`When Signal hits the Fan <https://eurousec.secuso.org/2016/presentations/WhenSignalHitsFan.pdf>`_.
-
 We present a "keyhistory-verification" techno-social protocol which
 improves on the current situation:
 
@@ -344,7 +336,7 @@ of their shared historic messages.  After completion, users gain assurance
 that not only their current communication is safe but that their past
 communications have not been tampered with.
 
-The protocol starts with steps 1-5 of the `establish-verified-contact`_ protocol
+The protocol starts with steps 1-5 of the `setup-contact`_ protocol
 using a ``kg-`` prefix instread of the ``vc-`` one. The steps
 from step 6 are performed as follows:
 
@@ -447,7 +439,7 @@ Do we want to prevent dropping back to
 not encrypting or encrypting with a different key if a peer's autocrypt
 key state changes? Key change or drop back to cleartext is opportunistically
 accepted by the Autocrypt Level 1 key processing logic and eases communication in
-cases of device or key loss.  The "establish-secure-contact" also conveniently
+cases of device or key loss.  The "setup-contact" also conveniently
 allows two peers who have no address of each other to establish contact.
 Ultimately, it depends on the guarantees a mail app wants to provide
 and how it represents cryptographic properties to the user.
