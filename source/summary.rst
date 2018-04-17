@@ -65,14 +65,15 @@ be used as a more efficient efficient way than Autocrypt Key Gossip to learn key
 providers to know who is communicating with whom.
 
 All of our new protocols depend on being able to send "internal" messages between
-mail applications.
-While messengers such as Delta.chat already use "internal" messages
-e.g. for group member management, traditional e-mail clients typically display all
-messages, including machine-generated ones for rejected or non-delivered mails.
+mail apps.
+While messengers such as `Delta.chat <https://delta.chat>`_
+already use "internal" messages e.g. for group member management,
+traditional e-mail clients typically display all messages,
+including machine-generated ones for rejected or non-delivered mails.
 Our presented protocols make the case that
 allowing special internal messages between mail apps
-can considerably improve user experiences, security and privacy in the
-e-mail eco-system.
+can considerably improve user experiences, security and privacy
+in the e-mail eco-system.
 In the spirit of the strong convenience focus of the
 Autocrypt specification, we however suggest
 to only send special messages to peers
@@ -88,18 +89,19 @@ messages in order to impersonate a user or to learn if a user is online.
 Lastly, regarding the default "opportunistic" Autocrypt mode,
 with no special verifications in place,
 we present several ways of how mail apps can notice key inconsistencies,
-namely through Autocrypt Key Gossiping, DKIM signatures and
-through employing the ClaimChain_ protocol,
+namely through the existing Autocrypt Key Gossip and DKIM signature deployments and
+through employing a new ClaimChain_ protocol,
 which makes it hard for users and their providers to perform key equivocation.
 Even if key inconsistencies or broken signatures can not be interpreted
 as proof of malfeasance, mail apps can track such events and recommend
 users on "Who is the most interesting peer to out-of-band verify with?".
 If a messaging provider isolates a user and consistently injects MITM-keys,
-it can avoid such "inconsistency detection" but any single oob-verification
-of that user will result in conclusive evidence of malfeasance. Moreover, if a
-provider can not even distinguish opportunistic from verified contact setups,
-it faces a "Reverse Panopticon": it can not know if an attack will be detected,
-possibly even immediately.
+it can avoid such "inconsistency detection" but any out-of-band key
+history verification of that user will result in conclusive evidence of
+malfeasance.
+Moreover, if a provider can not even distinguish opportunistic from verified
+contact setups, it faces a "Reverse Panopticon": it can not know if an
+attack will be detected, possibly even immediately.
 
 .. note::
 

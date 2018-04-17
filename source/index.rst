@@ -12,7 +12,7 @@ Detecting and preventing active attacks against Autocrypt
    :maxdepth: 2
 
    summary.rst
+   new.rst
+   gossip.rst
    dkim.rst
    online-cc.rst
-   gossip.rst
-   new.rst

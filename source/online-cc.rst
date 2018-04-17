@@ -1,5 +1,5 @@
-Detecting inconsistencies and equivocation with Claim Chains
-============================================================
+Detecting Autocrypt key equivocation with Claim Chains
+======================================================
 
 XXX introduce ClaimChain concepts and qualify the description
 here as being a ClaimChain integration with Autocrypt mechanics for
