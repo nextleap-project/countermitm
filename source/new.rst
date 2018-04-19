@@ -210,19 +210,19 @@ protocol with the following modifications:
 - in step 2 Bob manually confirms he wants to join the group X.
   before his device sends the ``vg-request-X`` message.
 
-Step 6 of the `establish-verified-contact`_ protocol is then replaced
+The steps from Step 6 of the `establish-verified-contact`_ protocol are replaced
 with the following steps:
 
-6. Alice broadcasts an encrypted "member added" message to all group
+6. Alice broadcasts an encrypted "vg-member-added" message to all group
    members (including Bob), gossiping the Autocrypt keys of everyone,
    including the new member Bob.
 
-7. Bob receives the encrypted "member added" message and learns all the keys
+7. Bob receives the encrypted "vg-member-added" message and learns all the keys
    and e-mail addresses of group members. Bob's device sends a final
    "vg-member-added-received" message to Alice's device.
    Bob's device shows "You successfully joined the verified group 'X'".
 
-8. Alice's device receives the "member-added-received" reply from Bob and
+8. Alice's device receives the "vg-member-added-received" reply from Bob and
    shows a screen "Bob <email-address> securely joined group 'X'"
 
 Bob and Alice may now both invite and add more members which in turn
