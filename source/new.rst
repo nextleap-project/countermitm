@@ -131,11 +131,12 @@ work flow for establishing a secure contact between two contacts, Alice and Bob.
 
    If any verification fails, Alice's device signals "Could not establish
    secure connection to Bob" and the protocol terminates.
-   Otherwise it shows "Secure contact with Bob <bob-adr> established".
 
-6. Alice sends Bob a "vc-contact-confirm" message:
+6. If the verification succeeds on Alices device
+   it shows "Secure contact with Bob <bob-adr> established".
+   In addition it sends Bob a "vc-contact-confirm" message.
 
-   Bob receives "vc-confirm" and
+7. Bobs device receives "vc-contact-confirm" and
    shows "Secure contact with Alice <alice-adr> established".
 
 
