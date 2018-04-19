@@ -128,7 +128,7 @@ without risking detection.
 In this section we will discuss the likelyhood of detecting mitm attacks
 on randomly selected members of a group. This probabilistic discussion
 assumes the likelyhood of a member being attacked as uniform and
-independent of the likelyhood of out-of-band verification. It therefor
+independent of the likelyhood of out-of-band verification. It therefore
 serves as a model of randomly spread broad scale attacks rather than
 targetted attacks.
 
