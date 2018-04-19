@@ -55,15 +55,6 @@ both the current keys of two peers and their shared message history. The
 protocol allows the detection of mangled messages (i.e. substituted
 keys).
 
-happened. to detect constructing
-a **verified group** which guarantees security against active
-attacks.  A network or provider attacker is unable to read subsequent group
-messages because all communication is e2e encrypted between the peers and any
-attempt at key substitution ("MITM attack") will remove that
-member from the group automatically. A removed member (e.g. because of a
-new device) needs to verify with only a single member of the group to re-join
-the verified group.
-
 In `onion-verified-keys`_ we discuss new privacy-preserving hidden
 messages which allow a member of a group to verify keys from other
 members through **onion-routed key verification** queries and replies.
@@ -140,11 +131,12 @@ work flow for establishing a secure contact between two contacts, Alice and Bob.
 
    If any verification fails, Alice's device signals "Could not establish
    secure connection to Bob" and the protocol terminates.
-   Otherwise it shows "Secure contact with Bob <bob-adr> established".
 
-6. Alice sends Bob a "vc-contact-confirm" message:
+6. If the verification succeeds on Alices device
+   it shows "Secure contact with Bob <bob-adr> established".
+   In addition it sends Bob a "vc-contact-confirm" message.
 
-   Bob receives "vc-confirm" and
+7. Bobs device receives "vc-contact-confirm" and
    shows "Secure contact with Alice <alice-adr> established".
 
 
