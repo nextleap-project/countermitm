@@ -73,7 +73,7 @@ contact, introducing their e-mail addresses and cryptographic
 identities to each other.  It is re-used as a building block for
 the `keyhistory-verification`_ and `verified-group`_ protocols.
 
-The establish-verified-contact protocol is safe against message layer modification and
+The setup-verified-contact protocol is safe against message layer modification and
 message layer impersonation attacks
 as both peers will learn the true keys of each other or else both get an error message.
 The protocol aims to provide the simplest possible UI workflow, in that a peer
@@ -210,7 +210,7 @@ protocol with the following modifications:
 - in step 2 Bob manually confirms he wants to join the group X.
   before his device sends the ``vg-request-X`` message.
 
-The steps from Step 6 of the `establish-verified-contact`_ protocol are replaced
+The steps from Step 6 of the `setup-contact`_ protocol are replaced
 with the following steps:
 
 6. Alice broadcasts an encrypted "vg-member-added" message to all group
