@@ -1,8 +1,8 @@
 Summary
 =======
 
-We discuss new protocols and ways for preventing and detecting active
-attacks against Autocrypt. The Level 1 Autocrypt spec from
+We present new ways for preventing and detecting active
+attacks against Autocrypt_. The Level 1 Autocrypt spec from
 December 2017 offers users single-click, opt-in encryption for e-mail apps.
 It eases group communications and
 introduces a way to setup encryption on multiple devices.
@@ -10,91 +10,85 @@ However, Autocrypt Level 1 does not address or discuss active attacks
 from the message layer such as tampering
 with the Autocrypt header during e-mail message transport.
 
-First off, we note that any defense against attacks requires out-of-band key
-verifications, i.e. peers verifying their respective keys in ways that
-can not be manipulated by the "in-band" message layer.
-Without out-of-band key verifications, even automated key consistency systems
-such as CONIKS_ or ClaimChain_, or the Signal protocol variants,
-can not prevent a messaging provider from impersonating or reading
-messages of one of its users. A peer who does not perform any out-of-band
-verifications is inherently vulnerable against targetted message layer attacks.
-Our design goal is therefore to make it easy for users to setup and maintain
-channels using oob-verified encryption keys.
+Any defense against attacks requires end-user key verification,
+i.e. peers verifying their respective keys in ways that can not be manipulated
+by the "in-band" message layer.
+We talk about "in-band" key distribution if a single entity relays both
+messages and keys (e.g. Autocrypt, Web Key Directory, Signal's keyserver).
+With in-band key distribution, users which do not perform
+key verification are vulnerable against active message layer attacks.
 
 With existing e2e-encrypting messengers (Signal, Whatsapp, Threema etc.)
-users perform key verification by triggering a special "fingerprint verification"
-workflow. This is not always easy to find for users and rarely used.
-Two peers each show and read Out-of-Band data (a QR code typically) to verify
-their current key fingerprints. The need to verify in both directions and with each
-peer is cumbersome. Any two peers who do not oob-verify their key fingerprints
-remain vulnerable to active attacks from the central messenger provider. Moreover,
-users often do not succeed in distinguishing Lost/Reinstalled Device events
-from Machine-in-the-Middle (MITM) attacks, see for example
-`When Signal hits the Fan <https://eurousec.secuso.org/2016/presentations/WhenSignalHitsFan.pdf>`_.
+users perform key verification by triggering an extra fingerprint validation workflow:
+two peers each show and read Out-of-Band data (a QR code typically)
+to verify their current key fingerprints.  We observe the following issues with
+these schemes:
 
-By contrast, our suggested key verification protocols are not implemented
-as a "special" activity but are part of setting up initial contacts and
-joining a group.
-Out-of-band data, shown by one peer and read by another,
-transfers addressing information
-so that there is no need to type in addresses on initial contact.
-The base :ref:`Setup Contact protocol <setup-contact>` is re-used and
-extended for setting up :ref:`verified groups <verified-group>`.
-In a verified group, all messages are consistently end-to-end encrypted
-with verified keys.
-All members of a verified group are connected
-through a chain of oob-verifications with all other members.
-Loosing a key (e.g. device loss) requires re-joining via one of the members of the
-verified group. We aim to make it hard for the message layer to up-front distinguish
-if two peers are establishing contact with each other opportunistically or
-in a verified way. A message provider can thus not base his decision about
-key manipulation on whether two peers are about to verify their keys.
+- Two peers need to start two validation work flows to assert
+  that both of their encryption keys are not manipulated.
 
-We also define a :ref:`key history verification <keyhistory-verification>`
-which not only
-verifies current keys between peers but also if past messages contained
-keys consistently. We discuss how keyhistory verification can
-happen implicitly as part of setup-contact or setup-group work flows and
-how it can alert users with strong evidence that messages have been
-manipulated.
+- In a group, a peer needs to compare with each group member to assert
+  that messages are coming from and encrypted to the true keys of members.
+  This requires ``N*(N-1)`` verifications for a group of size ``N``
+  and is impractical even for moderately sized groups.
 
-We discuss and suggest resolving a privacy concern with the Autocrypt Key gossiping mechanism as it leaks information of who recently communicated with each other.
+- Fingerprint validation only verifies the current keys,
+  past temporary key manipulations remain undetected.
+
+- Users often fail to distinguish Lost/Reinstalled Device events
+  from Machine-in-the-Middle (MITM) attacks, see for example
+  `When Signal hits the Fan <https://eurousec.secuso.org/2016/presentations/WhenSignalHitsFan.pdf>`_.
+
+In :doc:`new` we describe new protocols that aim to resolve these issues,
+by integrating key verification into existing messeging use cases:
+
+- the :ref:`Setup Contact protocol <setup-contact>` allows a user
+  to establish a verified contact with another user.
+  Out-of-band data, shown by one peer and read by another,
+  transfers not only fingerprint but also addressing information
+  so that there is no need to type in addresses on initial contact.
+
+- the :ref:`verified group protocol <verified-group>` extends the
+  previous setup-contact protocol.
+  The initial out-of-band data is presented as an invite code.
+  The "joining" peer establishes verified contact and the inviter
+  then announces the joiner as a new member. Any member may invite new members.
+  All members of a verified group are consistently connected
+  through a chain of key verifications with all other members.
+  Loosing a key (e.g. through device loss) requires re-joining
+  via one of the members of the verified group.
+  Therefore, a group of size ``N`` requires only ``N-1`` verifications
+  overall to assert that the message layer can not compromise end-to-end
+  encryption between group members.
+
+- the :ref:`key history verification protocol <keyhistory-verification>`
+  not only verifies the current keys between peers but also
+  if past messages contained keys consistently. The protocol can
+  precisely point to a message where key information has been modified
+  by the message provider/layer.
+
+Moreover, we discuss and suggest resolving a privacy concern with the
+Autocrypt Key gossiping mechanism as it leaks information of who
+recently communicated with each other.
 We present an "onion-key-lookup" protocol which allows peers to verify keys of a peer without
-other peers learning who is querying a key from whom. Onion key lookups may also
-be used as a more efficient efficient way than Autocrypt Key Gossip to learn key updates from group members. They also introduce noise so that it is harder for
-providers to know who is communicating with whom.
+other peers learning who is querying a key from whom. Onion key lookups may
+be used as an efficient way to learn and verify key updates from group members:
+if a peer notices inconsistent key information for a peer it can send an onion-key query
+to resolve the inconsistency. Onion key lookups also introduce encrypted noise so that
+it is harder for providers to know which user is actually communicating with whom.
 
-All of our new protocols depend on being able to send "internal" messages between
-mail apps.
-While messengers such as `Delta.chat <https://delta.chat>`_
-already use "internal" messages e.g. for group member management,
-traditional e-mail clients typically display all messages,
-including machine-generated ones for rejected or non-delivered mails.
-Our presented protocols make the case that
-allowing special internal messages between mail apps
-can considerably improve user experiences, security and privacy
-in the e-mail eco-system.
-In the spirit of the strong convenience focus of the
-Autocrypt specification, we however suggest
-to only send special messages to peers
-when there there is confidence
-they will not be displayed "raw" to users,
-and at best only send them on explicit request of users --
-which is the case for the base out-of-band verification protocols.
-Note that with automated processing of "internal" messages arises
-a new attack vector that the classical out-of-band key verification work flow
-does not have: malfeasant non-message layer actors can try to inject
-messages in order to impersonate a user or to learn if a user is online.
+
+XXX briefly discuss Coniks and ClaimChain as key verification and make claimchain chapter the third one.
 
 Lastly, regarding the default "opportunistic" Autocrypt mode,
-with no special verifications in place,
+with no key verifications happening,
 we present several ways of how mail apps can notice key inconsistencies,
 namely through the existing Autocrypt Key Gossip and DKIM signature deployments and
 through employing a new ClaimChain_ protocol,
 which makes it hard for users and their providers to perform key equivocation.
 Even if key inconsistencies or broken signatures can not be interpreted
 as proof of malfeasance, mail apps can track such events and recommend
-users on "Who is the most interesting peer to out-of-band verify with?".
+users on "Who is the most interesting peer to verify keys with?".
 If a messaging provider isolates a user and consistently injects MITM-keys,
 it can avoid such "inconsistency detection" but any out-of-band key
 history verification of that user will result in conclusive evidence of
@@ -112,3 +106,4 @@ attack will be detected, possibly even immediately.
 
 .. _coniks: https://coniks.cs.princeton.edu/
 .. _claimchain: https://claimchain.github.io/
+.. _autocrypt: https://autocrypt.org

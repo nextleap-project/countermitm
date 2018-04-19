@@ -82,7 +82,7 @@ is typically achieved with QR codes but transfering data via USB, Bluetooth
 or WLAN channels is possible as well. Out-of-band data is characterized by
 the inability of the "in-band" message layer to observe or modify the data.
 
-Here is a conceptual step-by-step example of the proposed UI and internal message
+Here is a conceptual step-by-step example of the proposed UI and administrative message
 work flow for establishing a secure contact between two contacts, Alice and Bob.
 
 1. Alice sends a bootstrap code to Bob via an Out-of-Band channel.
@@ -237,7 +237,8 @@ Autocrypt key as that member being removed from the group.
 Notes on the verified group protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **More Asynchronous UI flow**: All steps after 2 (the sending of internal messages)
+- **More Asynchronous UI flow**: All steps after 2 (the sending of
+  adminstrative messages)
   could happen asynchronously and in the background.  This might
   be useful because e-mail providers often delay initial messages
   ("greylisting") as mitigation against spam.
@@ -475,3 +476,26 @@ An open question is how to choose the users to rely messages. This choice should
 The other point to be discussed is bandwidth. Having everyone publishing their status implies N*(N-1) messages. The proposed solution employs 2*N*n*t messages. For small groups the traffic can be higher. Thus, there is a tradeoff privacy vs. overhead.
 
 
+The need for "administrative" messages
+--------------------------------------
+
+Our key verification and lookup protocols in this chapter depend on
+mail apps being able to send "administrative" messages.
+While messengers such as `Delta-chat <https://delta.chat>`_
+already use administrative messages e.g. for group member management,
+traditional e-mail clients typically display all messages without special rendering
+of the content, including machine-generated ones for rejected or non-delivered mails.
+Our presented protocols make the case that
+automated sending and interpreting of administrative messages
+between mail apps can considerably improve
+user experiences, security and privacy in the e-mail eco-system.
+In the spirit of the strong convenience focus of the
+Autocrypt specification, we however suggest
+to only exchange administrative messages with peers
+when there there is confidence
+they will not be displayed "raw" to users,
+and at best only send them on explicit request of users.
+Note that with automated processing of "administrative" messages arises
+a new attack vector that the simple fingerprint-validation work flows
+do not have: malfeasant peers can try to inject adminstrative messages
+in order to impersonate another user or to learn if a particular user is online.
