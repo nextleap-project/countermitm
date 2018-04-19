@@ -55,15 +55,6 @@ both the current keys of two peers and their shared message history. The
 protocol allows the detection of mangled messages (i.e. substituted
 keys).
 
-happened. to detect constructing
-a **verified group** which guarantees security against active
-attacks.  A network or provider attacker is unable to read subsequent group
-messages because all communication is e2e encrypted between the peers and any
-attempt at key substitution ("MITM attack") will remove that
-member from the group automatically. A removed member (e.g. because of a
-new device) needs to verify with only a single member of the group to re-join
-the verified group.
-
 In `onion-verified-keys`_ we discuss new privacy-preserving hidden
 messages which allow a member of a group to verify keys from other
 members through **onion-routed key verification** queries and replies.
