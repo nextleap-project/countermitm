@@ -15,4 +15,4 @@ Detecting and preventing active attacks against Autocrypt
    new.rst
    gossip.rst
    dkim.rst
-   online-cc.rst
+   claimchains.rst
