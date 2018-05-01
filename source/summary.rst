@@ -13,9 +13,15 @@ This document presents research results from the NEXTLEAP EU project
 and aims to contribute to discussions to further the Autocrypt and
 e-mail encryption community efforts.
 
-Any defense against attacks requires end-user key verification,
+We only consider those active attacks in which the messaging layer (e.g.
+the e-mail provider, network router) is malfeasant and all peers are honest.
+We do not consider here active attacks in which one or more malfeasant peers
+collaborate with a messaging provider in order to compromise
+communications of other peers.
+
+Any defense against active attacks requires end-user key verification,
 i.e. peers verifying their respective keys in ways that can not be manipulated
-by the "in-band" message layer.
+by the in-band message layer.
 We talk about "in-band" key distribution if a single entity relays both
 messages and keys (e.g. Autocrypt, Web Key Directory, Signal's keyserver).
 With in-band key distribution, users which do not perform
