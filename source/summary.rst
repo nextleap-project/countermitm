@@ -1,14 +1,17 @@
 Summary
 =======
 
-We present new ways for preventing and detecting active
-attacks against Autocrypt_. The Level 1 Autocrypt spec from
-December 2017 offers users single-click, opt-in encryption for e-mail apps.
+We present and discuss new ways for preventing and detecting active
+attacks against Autocrypt_. The Level 1 Autocrypt spec
+offers users single-click, opt-in encryption for e-mail apps.
 It eases group communications and
 introduces a way to setup encryption on multiple devices.
 However, Autocrypt Level 1 does not address or discuss active attacks
 from the message layer such as tampering
 with the Autocrypt header during e-mail message transport.
+This document presents research results from the NEXTLEAP EU project
+and aims to contribute to discussions to further the Autocrypt and
+e-mail encryption community efforts.
 
 Any defense against attacks requires end-user key verification,
 i.e. peers verifying their respective keys in ways that can not be manipulated
@@ -29,18 +32,19 @@ these schemes:
 
 - In a group, a peer needs to compare with each group member to assert
   that messages are coming from and encrypted to the true keys of members.
-  This requires ``N*(N-1)`` verifications for a group of size ``N``
+  This requires ``N*(N-1) / 2`` verifications for a group of size ``N``
   and is impractical even for moderately sized groups.
 
-- Fingerprint validation only verifies the current keys,
-  past temporary key manipulations remain undetected.
+- Fingerprint validation only verifies the current keys. It does not
+  detect if there was a past temporary MITM-exchange of keys (say the provider
+  exchanged keys for a few weeks but changed back to the "correct" keys afterwards).
 
 - Users often fail to distinguish Lost/Reinstalled Device events
   from Machine-in-the-Middle (MITM) attacks, see for example
   `When Signal hits the Fan <https://eurousec.secuso.org/2016/presentations/WhenSignalHitsFan.pdf>`_.
 
 In :doc:`new` we describe new protocols that aim to resolve these issues,
-by integrating key verification into existing messeging use cases:
+by integrating key verification into existing messaging use cases:
 
 - the :ref:`Setup Contact protocol <setup-contact>` allows a user
   to establish a verified contact with another user.

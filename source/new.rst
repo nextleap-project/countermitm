@@ -3,7 +3,7 @@ Securing communications against active attacks
 ==============================================
 
 Autocrypt-enabled e-mail apps like https://delta.chat implement
-longer-lived groups as is typical for messenging apps (Whatsapp, Signal etc.).
+longer-lived groups as is typical for messaging apps (Whatsapp, Signal etc.).
 Earlier chapters discussed opportunistic techniques to increase the likelyhood
 for detecting active attacks, without introducing new work flows or
 new network messages between peers. In this section we discuss
@@ -95,7 +95,7 @@ work flow for establishing a secure contact between two contacts, Alice and Bob.
    - a ``TYPE=vc-INVITENUMBER`` where the ``INVITENUMBER`` is a small
      random number which Bob sends back to Alice in step 2b so that her device
      can in step 3 automatically accept Bob's contact request. (Usually
-     a new contact needs to be manually affirmed in most messenging apps).
+     a new contact needs to be manually affirmed in most messaging apps).
 
    - a random secret ``AUTH`` which Bob uses in step 4 to authenaticate
      with Alice.
