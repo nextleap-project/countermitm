@@ -5,9 +5,9 @@ Securing communications against active attacks
 Autocrypt-enabled e-mail apps like https://delta.chat implement
 longer-lived groups as is typical for messaging apps (Whatsapp, Signal etc.).
 Earlier chapters discussed opportunistic techniques to increase the likelyhood
-for detecting active attacks, without introducing new work flows or
+for detecting active attacks, without introducing new workflows or
 new network messages between peers. In this section we discuss
-how allowing new work flows or hidden messages between peers
+how allowing new workflows or hidden messages between peers
 can substantially increase security against active attacks.
 
 Verifying key consistency is important to establish
@@ -27,7 +27,7 @@ They have reached very limited adoption. Autocrypt intentionally
 does not use public keyservers.
 
 In this section, we consider how introducing new kinds of (hidden)
-messages and work flows between peers can substantially help
+messages and workflows between peers can substantially help
 with maintaining communication security against active
 attacks from providers or the network. The described protocols
 are decentralized in that they describe ways of how peers (or
@@ -35,13 +35,13 @@ their devices) can interact with each other, thus fitting nicely
 into the decentralized Autocrypt key distribution model.
 
 In the basic `setup-contact`_ we outline a new UI
-and message work flow for establishing contacts between two peers, where
+and message workflow for establishing contacts between two peers, where
 both learn the correct keys and e-mail addresses of each other. A message
 layer attacker (including the provider) may observe the contact establishment
 but it cannot substitute cryptographic keys without causing error messages
 or time outs with both users.
 
-In `verified-group`_ we describe a new UI work flow for constructing
+In `verified-group`_ we describe a new UI workflow for constructing
 a **verified group** which guarantees security against active
 attacks.  A network or provider attacker is unable to read subsequent group
 messages because all communication is e2e encrypted between the peers and any
@@ -50,7 +50,7 @@ member from the group automatically. A removed member (e.g. because of a
 new device) needs to verify with only a single member of the group to re-join
 the verified group.
 
-In `keyhistory-verification`_ we describe a new UI work flow for verifying
+In `keyhistory-verification`_ we describe a new UI workflow for verifying
 both the current keys of two peers and their shared message history. The
 protocol allows the detection of mangled messages (i.e. substituted
 keys).
@@ -83,7 +83,7 @@ or WLAN channels is possible as well. Out-of-band data is characterized by
 the inability of the "in-band" message layer to observe or modify the data.
 
 Here is a conceptual step-by-step example of the proposed UI and administrative message
-work flow for establishing a secure contact between two contacts, Alice and Bob.
+workflow for establishing a secure contact between two contacts, Alice and Bob.
 
 1. Alice sends a bootstrap code to Bob via an Out-of-Band channel.
    The bootstrap code consists of:
@@ -226,7 +226,7 @@ with the following steps:
    shows a screen "Bob <email-address> securely joined group 'X'"
 
 Bob and Alice may now both invite and add more members which in turn
-can add more members. Through the described secure-join work flow
+can add more members. Through the described secure-join workflow
 we know that everybody in the group has been oob-verified with
 at least one member and that all members are fully connected.
 
@@ -291,7 +291,7 @@ of the members?  How safe is it in practise to allow directly creating
 the group if the creator has not verified all keys himself?
 
 Of course, a safe answer would be to always require a
-new secure-join work flow for not directly verified members.
+new secure-join workflow for not directly verified members.
 A creator could send a message to initial group members to
 add peers they have directly verified already.
 
@@ -311,7 +311,7 @@ improves on the current situation:
 
 - the detection of active attacks is communicated when users engage in
   out-of-band verification which is the right time to alert users.
-  By contrast, today's key verification work flows alert the users when a
+  By contrast, today's key verification workflows alert the users when a
   previously verified key has changed, but at that point users typically
   are not physically next to each other and want to get a different job done,
   e.g. of sending or reading a message.
@@ -319,7 +319,7 @@ improves on the current situation:
 - peers need to perform only one "show" and one "read" of out-of-band
   information (typically transmitted via showing QR codes and scanning them).
   Both peers receive assessments about the integrity of their past communication.
-  By contrast, current key fingerprint verification work flows (signal, whatsapp)
+  By contrast, current key fingerprint verification workflows (signal, whatsapp)
   require both peers each showing and scanning fingerprints, and they
   will only get assurance about their current keys, and thus miss out
   on temporary malfeasant substitutions of keys in messages.
@@ -496,6 +496,6 @@ when there there is confidence
 they will not be displayed "raw" to users,
 and at best only send them on explicit request of users.
 Note that with automated processing of "administrative" messages arises
-a new attack vector that the simple fingerprint-validation work flows
+a new attack vector that the simple fingerprint-validation workflows
 do not have: malfeasant peers can try to inject adminstrative messages
 in order to impersonate another user or to learn if a particular user is online.

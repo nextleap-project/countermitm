@@ -27,7 +27,7 @@ two peers each show and read Out-of-Band data (a QR code typically)
 to verify their current key fingerprints.  We observe the following issues with
 these schemes:
 
-- Two peers need to start two validation work flows to assert
+- Two peers need to start two validation workflows to assert
   that both of their encryption keys are not manipulated.
 
 - In a group, a peer needs to compare with each group member to assert
