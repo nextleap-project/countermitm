@@ -5,7 +5,7 @@ Securing communications against active attacks
 Autocrypt-enabled e-mail apps like https://delta.chat implement
 longer-lived groups as is typical for messaging apps (Whatsapp, Signal etc.).
 Earlier chapters discussed opportunistic techniques to increase the likelyhood
-for detecting active attacks, without introducing new workflows or
+of detecting active attacks, without introducing new workflows or
 new network messages between peers. In this section we discuss
 how allowing new workflows or hidden messages between peers
 can substantially increase security against active attacks.
@@ -34,34 +34,6 @@ are decentralized in that they describe ways of how peers (or
 their devices) can interact with each other, thus fitting nicely
 into the decentralized Autocrypt key distribution model.
 
-In the basic `setup-contact`_ we outline a new UI
-and message workflow for establishing contacts between two peers, where
-both learn the correct keys and e-mail addresses of each other. A message
-layer attacker (including the provider) may observe the contact establishment
-but it cannot substitute cryptographic keys without causing error messages
-or time outs with both users.
-
-In `verified-group`_ we describe a new UI workflow for constructing
-a **verified group** which guarantees security against active
-attacks.  A network or provider attacker is unable to read subsequent group
-messages because all communication is e2e encrypted between the peers and any
-attempt at key substitution ("MITM attack") will remove that
-member from the group automatically. A removed member (e.g. because of a
-new device) needs to verify with only a single member of the group to re-join
-the verified group.
-
-In `keyhistory-verification`_ we describe a new UI workflow for verifying
-both the current keys of two peers and their shared message history. The
-protocol allows the detection of mangled messages (i.e. substituted
-keys).
-
-In `onion-verified-keys`_ we discuss new privacy-preserving hidden
-messages which allow a member of a group to verify keys from other
-members through **onion-routed key verification** queries and replies.
-An attacker would need to attack and substitute keys between all
-members involved in an onion query to manipulate the result and
-consistently launch an active key substitution attack.
-
 
 .. _`setup-contact`:
 
@@ -76,16 +48,20 @@ the `keyhistory-verification`_ and `verified-group`_ protocols.
 The setup-verified-contact protocol is safe against message layer modification and
 message layer impersonation attacks
 as both peers will learn the true keys of each other or else both get an error message.
-The protocol aims to provide the simplest possible UI workflow, in that a peer
-"shows" out-of-band data that is then "read" by another peer. On mobiles this
-is typically achieved with QR codes but transfering data via USB, Bluetooth
-or WLAN channels is possible as well. Out-of-band data is characterized by
-the inability of the "in-band" message layer to observe or modify the data.
+This is achieved in a single simple UI workflow, in that a peer
+"shows" out-of-band data that is then "read" by the other peer.  On mobiles such
+a trusted channel is typically achieved with QR codes but transfering data via
+USB, Bluetooth, WLAN channels or phone calls is possible as well.
+A trusted channel is characterized by
+the inability of the message layer to observe or modify the data.
+Note that unlike with current fingerprint validation workflows, the protocol
+only runs once instead of twice yet results in the two peers having verified
+keys of each other.
 
 Here is a conceptual step-by-step example of the proposed UI and administrative message
 workflow for establishing a secure contact between two contacts, Alice and Bob.
 
-1. Alice sends a bootstrap code to Bob via an Out-of-Band channel.
+1. Alice sends a bootstrap code to Bob via a trusted (Out-of-Band) channel.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
@@ -100,7 +76,7 @@ workflow for establishing a secure contact between two contacts, Alice and Bob.
    - a random secret ``AUTH`` which Bob uses in step 4 to authenaticate
      with Alice.
 
-2. Bob receives the oob-transmitted bootstrap data and
+2. Bob receives the OOB-transmitted bootstrap data from the trusted channel and
 
    a) If Bob's device knows a key that matches ``Alice_FP``
       the protocol continues with 4b)

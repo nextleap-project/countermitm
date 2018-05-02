@@ -1,7 +1,7 @@
 Summary
 =======
 
-We present and discuss new ways for preventing and detecting active
+We present and discuss new ways to prevent and detect active
 attacks against Autocrypt_. The Level 1 Autocrypt spec
 offers users single-click, opt-in encryption for e-mail apps.
 It eases group communications and
@@ -15,17 +15,16 @@ e-mail encryption community efforts.
 
 We only consider those active attacks in which the messaging layer (e.g.
 the e-mail provider, network router) is malfeasant and all peers are honest.
-We do not consider here active attacks in which one or more malfeasant peers
-collaborate with a messaging provider in order to compromise
-communications of other peers.
+The messaging layer is also characterized as an "in-band", "untrusted" channel.
 
 Any defense against active attacks requires end-user key verification,
-i.e. peers verifying their respective keys in ways that can not be manipulated
-by the in-band message layer.
-We talk about "in-band" key distribution if a single entity relays both
+i. e. peers verifying their respective keys in ways that can not be manipulated
+by the untrusted in-band message layer.
+We refer to in-band key distribution if a single entity relays both
 messages and keys (e.g. Autocrypt, Web Key Directory, Signal's keyserver).
-With in-band key distribution, users which do not perform
-key verification are vulnerable against active message layer attacks.
+With in-band key distribution, users who do not perform
+key verification through an out-of-band channel are vulnerable
+to active message layer attacks.
 
 With existing e2e-encrypting messengers (Signal, Whatsapp, Threema etc.)
 users perform key verification by triggering an extra fingerprint validation workflow:
@@ -33,7 +32,7 @@ two peers each show and read Out-of-Band data (a QR code typically)
 to verify their current key fingerprints.  We observe the following issues with
 these schemes:
 
-- Two peers need to start two validation workflows to assert
+- The two peers need to start two validation workflows to assert
   that both of their encryption keys are not manipulated.
 
 - In a group, a peer needs to compare with each group member to assert
@@ -54,7 +53,7 @@ by integrating key verification into existing messaging use cases:
 
 - the :ref:`Setup Contact protocol <setup-contact>` allows a user
   to establish a verified contact with another user.
-  Out-of-band data, shown by one peer and read by another,
+  Out-of-band data, shown by one peer and read by the other,
   transfers not only fingerprint but also addressing information
   so that there is no need to type in addresses on initial contact.
 
@@ -73,7 +72,7 @@ by integrating key verification into existing messaging use cases:
 
 - the :ref:`key history verification protocol <keyhistory-verification>`
   not only verifies the current keys between peers but also
-  if past messages contained keys consistently. The protocol can
+  whether past messages contained keys consistently. The protocol can
   precisely point to a message where key information has been modified
   by the message provider/layer.
 
@@ -92,7 +91,7 @@ XXX briefly discuss Coniks and ClaimChain as key verification and make claimchai
 
 Lastly, regarding the default "opportunistic" Autocrypt mode,
 with no key verifications happening,
-we present several ways of how mail apps can notice key inconsistencies,
+we present several ways how mail apps can notice key inconsistencies,
 namely through the existing Autocrypt Key Gossip and DKIM signature deployments and
 through employing a new ClaimChain_ protocol,
 which makes it hard for users and their providers to perform key equivocation.
