@@ -19,16 +19,17 @@ prior verifications, requiring the tedious task of redoing them all.
 In practice, very few users consistently perform key verification.
 This is true for users of Signal, Threema, Wire and Whatsapp.
 
-A traditional approach to reducing the necessity of out-of-band
-verification is the web of trust. Existing implementations such as the
-OpenPGP keyservers however publicly leak the social graph and require a
-substantial learning effort to understand the underlying concepts.
-They have reached very limited adoption. Autocrypt intentionally
-does not use public keyservers.
+A traditional approach to reducing the number of neccessary key verifications
+is the web of trust. It requires a substantial learning effort for users
+to understand the underlying concepts. Moreover, with OpenPGP the web of trust
+is usually interacting with OpenPGP key servers
+which however publicly leak the social "trust" graph.
+Both key servers and the web of trust have reached very limited adoption.
+Autocrypt therefore does not use public keyservers or the web of trust.
 
 In this section, we consider how introducing new kinds of (hidden)
 messages and workflows between peers can substantially help
-with maintaining communication security against active
+with maintaining end-to-end security against active
 attacks from providers or the network. The described protocols
 are decentralized in that they describe ways of how peers (or
 their devices) can interact with each other, thus fitting nicely
@@ -49,7 +50,8 @@ The setup-verified-contact protocol is safe against message layer modification a
 message layer impersonation attacks
 as both peers will learn the true keys of each other or else both get an error message.
 This is achieved in a single simple UI workflow, in that a peer
-"shows" out-of-band data that is then "read" by the other peer.  On mobiles such
+"shows" bootstrap data that is then "read" by the other peer through a trusted channel.
+On mobiles such
 a trusted channel is typically achieved with QR codes but transfering data via
 USB, Bluetooth, WLAN channels or phone calls is possible as well.
 A trusted channel is characterized by
@@ -61,7 +63,7 @@ keys of each other.
 Here is a conceptual step-by-step example of the proposed UI and administrative message
 workflow for establishing a secure contact between two contacts, Alice and Bob.
 
-1. Alice sends a bootstrap code to Bob via a trusted (Out-of-Band) channel.
+1. Alice sends a bootstrap code to Bob through a trusted (Out-of-Band) channel.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
@@ -156,7 +158,7 @@ Open Questions
 
 .. _`verified-group`:
 
-Out-of-band verified groups
+Verified Groups
 ---------------------------
 
 We introduce a new secure **verified group** which is consistently secure
@@ -250,8 +252,9 @@ Notes on the verified group protocol
   group protocol would thus contribute to securing the e-mail encryption eco-system,
   rather than just securing the group at hand.
 
-- **full out-of-band**: messages from step 2 on could be transferred via
-  Bluetooth or WLAN to fully perform the invite/join protocol out-of-band.
+- **send all protocol messages through trusted channel**:
+  messages from step 2 on could be transferred via
+  Bluetooth or WLAN to fully perform the invite/join protocol in a trusted channel.
   The provider would not gain knowledge about verifications.
 
 - **non-messenger e-mail apps**: instead of groups, traditional e-mail apps could
@@ -279,20 +282,20 @@ verification network in the initial thread?
 
 .. _`keyhistory-verification`:
 
-Out-of-band Key history verification
+Key history verification
 ------------------------------------
 
 We present a "keyhistory-verification" techno-social protocol which
 improves on the current situation:
 
 - the detection of active attacks is communicated when users engage in
-  out-of-band verification which is the right time to alert users.
+  key verification workflows which is the right time to alert users.
   By contrast, today's key verification workflows alert the users when a
   previously verified key has changed, but at that point users typically
   are not physically next to each other and want to get a different job done,
   e.g. of sending or reading a message.
 
-- peers need to perform only one "show" and one "read" of out-of-band
+- peers need to perform only one "show" and one "read" of bootstrap
   information (typically transmitted via showing QR codes and scanning them).
   Both peers receive assessments about the integrity of their past communication.
   By contrast, current key fingerprint verification workflows (signal, whatsapp)
