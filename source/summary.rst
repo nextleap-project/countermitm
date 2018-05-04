@@ -1,15 +1,25 @@
 Summary
 =======
 
+.. note::
+
+    All of the presented ideas and approaches here are under active
+    discussion and implementation.  Future revisions might refine
+    this document and its contained protocols.
+
 We present and discuss new ways to prevent and detect active
 attacks against Autocrypt_. The Level 1 Autocrypt spec
 offers users single-click, opt-in e-mail encryption but does
 not discuss active attacks
 from the message layer such as tampering
 with the Autocrypt header during e-mail message transport.
-This document presents research results from the NEXTLEAP EU project
-which aim to establish a "reverse panopticon": attackers can not know
-if peers look and discover malfeasant manipulations.
+This document comprises research results of the NEXTLEAP EU project,
+striving to establish a "reverse panopticon": attackers can not know
+when or if peers look and discover malfeasant manipulations.
+
+
+Attack model and terminology
+++++++++++++++++++++++++++++
 
 We only consider those active attacks in which the messaging layer (e.g.
 the e-mail provider, network router) is malfeasant and all peers are honest.
@@ -110,12 +120,6 @@ If a messaging provider isolates a user and consistently injects MITM-keys,
 it can avoid such "inconsistency detection" but any out-of-band key
 history verification of that user will result in conclusive evidence of
 malfeasance.
-
-.. note::
-
-    All of the presented ideas and approaches here are under active
-    discussion. There is ongoing implementation work in https://delta.chat
-    and https://github.com/nextleap-project/muacryptcc .
 
 
 .. _coniks: https://coniks.cs.princeton.edu/
