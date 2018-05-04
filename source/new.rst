@@ -197,13 +197,13 @@ protocol with the following modifications:
 
 - all message names starting with "vc-" use the "vg-" prefix instead.
 
-- in step 1 the oob-transferred type is ``TYPE=vg-INVITENUMBER-X`` indicating
-  Alice's offer of letting Bob join group X.
+- in step 1 the oob-transferred type is ``TYPE=vg-INVITENUMBER-GROUP`` indicating
+  Alice's offer of letting Bob join the group ``GROUP``.
 
-- in step 2 Bob manually confirms he wants to join the group X.
+- in step 2 Bob manually confirms he wants to join ``GROUP``
   before his device sends the ``vg-request`` message.
 
-- in step 4 b) Bob's device adds group X to the encrypted part of the
+- in step 4 b) Bob's device adds ``GROUP`` to the encrypted part of the
   'vc-request-with-auth' message, together with ``Bob_FP`` and the ``AUTH``
   value from step 1.
 
@@ -211,16 +211,16 @@ The steps from Step 6 of the `setup-contact`_ protocol are replaced
 with the following steps:
 
 6. Alice broadcasts an encrypted "vg-member-added" message to all members of
-   group X (including Bob), gossiping the Autocrypt keys of everyone,
+   ``GROUP`` (including Bob), gossiping the Autocrypt keys of everyone,
    including the new member Bob.
 
 7. Bob receives the encrypted "vg-member-added" message and learns all the keys
    and e-mail addresses of group members. Bob's device sends a final
    "vg-member-added-received" message to Alice's device.
-   Bob's device shows "You successfully joined the verified group 'X'".
+   Bob's device shows "You successfully joined the verified group ``GROUP``".
 
 8. Alice's device receives the "vg-member-added-received" reply from Bob and
-   shows a screen "Bob <email-address> securely joined group 'X'"
+   shows a screen "Bob <email-address> securely joined group ``GROUP``"
 
 Bob and Alice may now both invite and add more members which in turn
 can add more members. Through the described secure-join workflow
