@@ -6,13 +6,11 @@
 Detecting and preventing active attacks against Autocrypt
 =========================================================
 
-(Abstract)
-
 .. toctree::
    :maxdepth: 2
 
    summary.rst
    new.rst
+   claimchains.rst
    gossip.rst
    dkim.rst
-   claimchains.rst
