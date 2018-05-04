@@ -120,6 +120,12 @@ workflow for establishing a secure contact between two contacts, Alice and Bob.
 7. Bobs device receives "vc-contact-confirm" and
    shows "Secure contact with Alice <alice-adr> established".
 
+.. figure:: secure_channel_foto.png
+   :width: 200px
+
+   Setup Contact protocol step 2 with https://delta.chat.
+
+
 
 Message layer attackers can not impersonate Bob nor Alice
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,6 +226,10 @@ at least one member and that all members are fully connected.
 Note that all group members need to interpret a changed
 Autocrypt key as that member being removed from the group.
 
+.. figure:: join_verified_group.jpeg
+   :width: 200px
+
+   Join-Group protocol at step 2 with https://delta.chat.
 
 Notes on the verified group protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
