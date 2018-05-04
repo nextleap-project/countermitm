@@ -180,17 +180,21 @@ protocol with the following modifications:
 
 - all message names starting with "vc-" use the "vg-" prefix instead.
 
-- in step 1 the oob-transferred type is ``TYPE=vg-invite-X`` indicating
+- in step 1 the oob-transferred type is ``TYPE=vg-INVITENUMBER-X`` indicating
   Alice's offer of letting Bob join group X.
 
 - in step 2 Bob manually confirms he wants to join the group X.
-  before his device sends the ``vg-request-X`` message.
+  before his device sends the ``vg-request`` message.
+
+- in step 4 b) Bob's device adds group X to the encrypted part of the
+  'vc-request-with-auth' message, together with ``Bob_FP`` and the ``AUTH``
+  value from step 1.
 
 The steps from Step 6 of the `setup-contact`_ protocol are replaced
 with the following steps:
 
-6. Alice broadcasts an encrypted "vg-member-added" message to all group
-   members (including Bob), gossiping the Autocrypt keys of everyone,
+6. Alice broadcasts an encrypted "vg-member-added" message to all members of
+   group X (including Bob), gossiping the Autocrypt keys of everyone,
    including the new member Bob.
 
 7. Bob receives the encrypted "vg-member-added" message and learns all the keys
