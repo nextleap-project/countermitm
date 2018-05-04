@@ -8,8 +8,8 @@ not discuss active attacks
 from the message layer such as tampering
 with the Autocrypt header during e-mail message transport.
 This document presents research results from the NEXTLEAP EU project
-and aims to contribute to discussions to further the Autocrypt and
-e-mail encryption community efforts.
+which aim to establish a "reverse panopticon": attackers can not know
+if peers look and discover malfeasant manipulations.
 
 We only consider those active attacks in which the messaging layer (e.g.
 the e-mail provider, network router) is malfeasant and all peers are honest.
@@ -110,9 +110,6 @@ If a messaging provider isolates a user and consistently injects MITM-keys,
 it can avoid such "inconsistency detection" but any out-of-band key
 history verification of that user will result in conclusive evidence of
 malfeasance.
-Moreover, if a provider can not even distinguish opportunistic from verified
-contact setups, it faces a "Reverse Panopticon": it can not know if an
-attack will be detected, possibly even immediately.
 
 .. note::
 
