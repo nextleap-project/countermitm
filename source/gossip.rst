@@ -1,8 +1,5 @@
-Using Autocrypt key gossip to detect attacks during Message Transport
+Using Autocrypt key gossip to guide key verification
 =====================================================================
-
-Introduction
-------------
 
 Autocrypt Level 1 introduces `key gossip <https://autocrypt.org/level1.html#key-gossip>`_
 where a sender adds ``Autocrypt-Gossip`` headers to the encrypted part of a multi-recipient
@@ -13,12 +10,13 @@ the gossip keys as a form of third-party verification.
 In `gossip-attack`_ we look at how MUAs can check key consistency
 with respect to particular attacks.  MUAs can flag possible
 machine-in-the-middle (mitm) attacks on one of the direct connections
-which in turn can be used for helping users with **prioritizing Out-of-Band
-verifications** with those peers. To mitigate, attackers may intercept
+which in turn can be used for helping users
+with prioritizing :ref:`keyhistory-verification` with those peers.
+To mitigate, attackers may intercept
 multiple connections to split the recipients into mostly isolated
 groups. However, the need to attack multiple connections at once
 increases the chance of detecting the attack by even a small
-amount of out-of-band (OOB) verification.
+amount of Out-of-Band key verifications.
 
 The approaches described here are applicable to other asymmetric
 encryption schemes with multi recipient messages. They are independent of

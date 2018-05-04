@@ -1,3 +1,6 @@
+.. raw:: latex
+
+    \newpage
 
 Securing communications against active attacks
 ==============================================
@@ -152,9 +155,15 @@ completion of the protocol:
 Open Questions
 ~~~~~~~~~~~~~~
 
-- re-use or regenerate the step 1 INVITENUMBER across different peers?
-  what's a good default?
+- re-use or regenerate the step 1 INVITENUMBER and/or AUTH across different peers?
+  re-using would mean that the QR code can be printed on business cards
+  and used as a method for getting verified contact with someone.
 
+- (how) can messengers such as Delta.chat make "verified"
+  and "opportunistic" contact requests be indistinguishable from the message layer?
+
+- (how) could other mail apps such as K-9 Mail / OpenKeychain learn
+  to speak the "setup contact" protocol?
 
 .. _`verified-group`:
 

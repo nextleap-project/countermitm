@@ -1,8 +1,5 @@
-How DKIM can help verifying Autocrypt keys
-==========================================
-
-Introduction
-------------
+Using DKIM key gossip to guide key verification
+=======================================================
 
 With `DomainKeys Identified Mail (DKIM) <https://dkimorg>`_,
 a mail transfer agent (MTA) signals to other MTAs that a particular message passed through one of its machines. In particular, a MTA signs outoing mail from their
