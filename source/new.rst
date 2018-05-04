@@ -230,7 +230,7 @@ at least one member and that all members are fully connected.
 Note that all group members need to interpret a changed
 Autocrypt key as that member being removed from the group.
 
-.. figure:: join_verified_group.jpeg
+.. figure:: join_verified_group.jpg
    :width: 200px
 
    Join-Group protocol at step 2 with https://delta.chat.
