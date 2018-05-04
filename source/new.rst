@@ -73,7 +73,9 @@ workflow for establishing a secure contact between two contacts, Alice and Bob.
 
    - Alice's e-mail address (both name and routable address),
 
-   - a ``TYPE=vc-INVITENUMBER`` where the ``INVITENUMBER`` is a small
+   - oob-transferred type ``TYPE=vc-invite``
+
+   - a ``INVITENUMBER`` as a small
      random number which Bob sends back to Alice in step 2b so that her device
      can in step 3 automatically accept Bob's contact request. (Usually
      a new contact needs to be manually affirmed in most messaging apps).
@@ -197,7 +199,8 @@ protocol with the following modifications:
 
 - all message names starting with "vc-" use the "vg-" prefix instead.
 
-- in step 1 the oob-transferred type is ``TYPE=vg-INVITENUMBER-GROUP`` indicating
+- in step 1 the oob-transferred type is ``TYPE=vg-invite`` and ``GROUP`` is
+  added to the bootstrap code indicating
   Alice's offer of letting Bob join the group ``GROUP``.
 
 - in step 2 Bob manually confirms he wants to join ``GROUP``
