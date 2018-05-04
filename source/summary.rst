@@ -15,22 +15,22 @@ e-mail encryption community efforts.
 
 We only consider those active attacks in which the messaging layer (e.g.
 the e-mail provider, network router) is malfeasant and all peers are honest.
-The messaging layer is also characterized as an "in-band", "untrusted" channel.
+The messaging layer is refered to as an "in-band", "untrusted" channel.
+Any defense against active attacks requires end-user key verification through
+trusted channels, i. e. peers verifying their respective keys in ways
+that can not be manipulated by the untrusted message layer.
 
-Any defense against active attacks requires end-user key verification,
-i. e. peers verifying their respective keys in ways that can not be manipulated
-by the untrusted in-band message layer.
-We refer to in-band key distribution if a single entity relays both
-messages and keys (e.g. Autocrypt, Web Key Directory, Signal's keyserver).
-With in-band key distribution, users who do not perform
-key verification through an out-of-band channel are vulnerable
-to active message layer attacks.
+If a single entity relays both messages and keys (e.g. Autocrypt,
+Web Key Directory, Signal's keyserver) then users are vulnerable
+to active attacks from this entity, unless they perform
+bidirectional key verification through a trusted channel.
+We sometimes also refer to trusted channels as "out-of-band" channels.
 
 With existing e2e-encrypting messengers (Signal, Whatsapp, Threema etc.)
-users perform key verification by triggering an extra fingerprint validation workflow:
-two peers each show and read Out-of-Band data (a QR code typically)
-to verify their current key fingerprints.  We observe the following issues with
-these schemes:
+users perform key verification by triggering two extra fingerprint validation workflows:
+The two peers each show and read key fingerprint data through a trusted channel
+(a QR code show+scan typically) to verify their current key fingerprints.
+We observe the following issues with these schemes:
 
 - The two peers need to start two validation workflows to assert
   that both of their encryption keys are not manipulated.
@@ -53,13 +53,13 @@ by integrating key verification into existing messaging use cases:
 
 - the :ref:`Setup Contact protocol <setup-contact>` allows a user
   to establish a verified contact with another user.
-  Out-of-band data, shown by one peer and read by the other,
-  transfers not only fingerprint but also addressing information
-  so that there is no need to type in addresses on initial contact.
+  The out-of-band bootstrap data, shown by one peer and read by the other through
+  a trusted channel, transfers not only fingerprint but also addressing
+  information so that there is no need to type in addresses on initial contact.
 
 - the :ref:`verified group protocol <verified-group>` extends the
   previous setup-contact protocol.
-  The initial out-of-band data is presented as an invite code.
+  The bootstrap data functions as an invite code to the group.
   The "joining" peer establishes verified contact and the inviter
   then announces the joiner as a new member. Any member may invite new members.
   All members of a verified group are consistently connected
