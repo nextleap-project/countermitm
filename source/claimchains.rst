@@ -36,29 +36,14 @@ Any of the claims can be public(readable by anyone), or private. The readability
 Use and architecture
 ------------------------------------------
 
-XXX Explain how ClaimChains are used and the architecture (SI and STM).
-XXX
-
-
-Detecting Autocrypt key equivocation with Claim Chains
-------------------------------------------------------
-
-
-We describe the ClaimChain integration
-with Autocrypt mechanics.
-In this case we are using an in-band STM (contained
-in encrypted parts of e-mails) and an online publically
-accessible SI. The current ongoing implementation work
+This section discusses constructing a Claimchain system to work alongside Autocrypt.
+It uses email headers to transfer references to the claimchains of the
+sender and recipients.
+The Claimchains themselves are uploaded and retrieved from an online
+storage at message delivery and retrieval times.
+The current ongoing implementation work
 happens at https://github.com/nextleap-project/muacryptcc
 
-XXX work out the precise advantages and what features
-it offers to users -- in some cases we can safely detect
-equivocation, and we can always use detected inconcisstency
-to raise the priority of recommending oob-verifications
-with particular peers similar to how we discussed DKIM
-and Autocrypt-Gossip in previous sections -- they also
-lead to recommending oob-verifications with particular
-users.
 
 Inclusion in Messages
 ~~~~~~~~~~~~~~~~~~~~~
@@ -110,8 +95,34 @@ Due to the privacy preserving nature of claim chains
 these keys will not be revealed to anyone else even
 if if the block data is publically accessible.
 
+
+Detecting Autocrypt key equivocation with Claim Chains
+------------------------------------------------------
+
+
+XXX work out the precise advantages and what features
+it offers to users -- in some cases we can safely detect
+equivocation, and we can always use detected inconcisstency
+to raise the priority of recommending oob-verifications
+with particular peers similar to how we discussed DKIM
+and Autocrypt-Gossip in previous sections -- they also
+lead to recommending oob-verifications with particular
+users.
+
 Goals
 ~~~~~
+
+- Create a sorted list of recommendations for verifying contacts
+  through trusted channels.
+
+- Make use of Claimchains to automatically determine consistency
+  of key information accross peers.
+
+- Recommend verifying contacts in case of inconsistencies.
+
+- Force mitm attackers to split network into consistent world views.
+  This requires more mitm attacks and control over different servers
+  rendering the attack both harder and easier to detect.
 
 - if i see a new block for a contact, i can verify it references a chain i already know about a contact
 
