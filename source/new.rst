@@ -6,29 +6,11 @@ Securing communications against active attacks
 ==============================================
 
 Autocrypt-enabled e-mail apps like https://delta.chat implement
-longer-lived groups as is typical for messaging apps (Whatsapp, Signal etc.).
-Earlier chapters discussed opportunistic techniques to increase the likelyhood
-of detecting active attacks, without introducing new workflows or
-new network messages between peers. In this section we discuss
-how allowing new workflows or hidden messages between peers
-can substantially increase security against active attacks.
+longer-lived groups as is typical for messaging apps (Whatsapp, Signal etc.). 
+Verifying key consistency is important to establish secure, verified, group communication. Traditionally peers are required to verify keys with every other peer. This is highly unpractical. First, the number of verifications becomes too costly even for small groups. Second, a device loss will invalidate all prior verifications of a user. Recovering from this state requires redoing all of the verification, a tedious and costly task. Finally, without automatization of the process, in practice, very few users consistently perform key verification. This is true for users of Signal, Threema, Wire and Whatsapp.
 
-Verifying key consistency is important to establish
-securely verified group communication.
-Without automatically checking the consistency of keys between peers,
-peers are required to verify keys with every other peer.
-This is unpractical as a device loss will invalidate all
-prior verifications, requiring the tedious task of redoing them all.
-In practice, very few users consistently perform key verification.
-This is true for users of Signal, Threema, Wire and Whatsapp.
-
-A traditional approach to reducing the number of neccessary key verifications
-is the web of trust. It requires a substantial learning effort for users
-to understand the underlying concepts. Moreover, with OpenPGP the web of trust
-is usually interacting with OpenPGP key servers
-which however publicly leak the social "trust" graph.
-Both key servers and the web of trust have reached very limited adoption.
-Autocrypt therefore does not use public keyservers or the web of trust.
+A traditional approach to reduce the number of neccessary key verifications
+is the Web of Trust. This approach requires a substantial learning effort for users to understand the underlying concepts. Moreover, when using OpenPGP the web of trust is usually interacting with OpenPGP key servers. These servers make widely available the signed keys effectively making public the social "trust" graph. Both key servers and the web of trust have reached very limited adoption. Therefore, Autocrypt has been designed to not rely on public keyservers, nor on the web of trust.
 
 In this section, we consider how introducing new kinds of (hidden)
 messages and workflows between peers can substantially help
@@ -36,7 +18,9 @@ with maintaining end-to-end security against active
 attacks from providers or the network. The described protocols
 are decentralized in that they describe ways of how peers (or
 their devices) can interact with each other, thus fitting nicely
-into the decentralized Autocrypt key distribution model.
+into the decentralized Autocrypt key distribution model. 
+
+At the end of this document we discuss other opportunistic techniques that increase the likelihood of detecting active attacks without introducing new workflows or new network messages between peers.
 
 
 .. _`setup-contact`:
@@ -45,28 +29,19 @@ The "Setup Verified Contact" protocol
 -----------------------------------------
 
 The goal of this protocol is to allow two peers to conveniently establish
-contact, introducing their e-mail addresses and cryptographic
-identities to each other.  It is re-used as a building block for
+secure contact: exchange both their e-mail addresses and cryptographic
+identities in a verified manner. The Setup Verified Contact protocol is re-used as a building block for
 the `keyhistory-verification`_ and `verified-group`_ protocols.
 
-The setup-verified-contact protocol is safe against message layer modification and
-message layer impersonation attacks
-as both peers will learn the true keys of each other or else both get an error message.
-This is achieved in a single simple UI workflow, in that a peer
-"shows" bootstrap data that is then "read" by the other peer through a trusted channel.
-On mobiles such
-a trusted channel is typically achieved with QR codes but transfering data via
-USB, Bluetooth, WLAN channels or phone calls is possible as well.
-A trusted channel is characterized by
-the inability of the message layer to observe or modify the data.
-Note that unlike with current fingerprint validation workflows, the protocol
-only runs once instead of twice yet results in the two peers having verified
-keys of each other.
+After running the Setup Verified Contact protocol both peers will learn the true keys of each other or else both get an error message. The protocol is safe against message layer modification and message layer impersonation attacks. 
 
-Here is a conceptual step-by-step example of the proposed UI and administrative message
-workflow for establishing a secure contact between two contacts, Alice and Bob.
+The protocol follows a single simple UI workflow: A peer "shows" bootstrap data that is then "read" by the other peer through a trusted (Out-of-Band)channel. This means that, as opposed to current fingerprint validation workflows, the protocol only runs once instead of twice yet results in the two peers having verified keys of each other.
 
-1. Alice sends a bootstrap code to Bob through a trusted (Out-of-Band) channel.
+On mobiles trusted channels is typically implemented using QR codes, but transfering data via USB, Bluetooth, WLAN channels or phone calls is possible as well. A trusted channel is characterized by the inability of the message layer to observe or modify the data.
+
+Here is a conceptual step-by-step example of the proposed UI and administrative message workflow for establishing a secure contact between two contacts, Alice and Bob.
+
+1. Alice sends a bootstrap code to Bob through a trusted channel.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
@@ -75,13 +50,9 @@ workflow for establishing a secure contact between two contacts, Alice and Bob.
 
    - oob-transferred type ``TYPE=vc-invite``
 
-   - a ``INVITENUMBER`` as a small
-     random number which Bob sends back to Alice in step 2b so that her device
-     can in step 3 automatically accept Bob's contact request. (Usually
-     a new contact needs to be manually affirmed in most messaging apps).
+   - a ``INVITENUMBER`` a challenge of XXX bytes. This challenge is used by Bob's device in step 2b to prove to Alice's device that it is the device involved in the trusted out-of-band communication. Alice's device uses this information in step 3 to automatically accept Bob's contact request. This is in contrast with most messaging apps where new contacts typically need to be manually confirmed).
 
-   - a random secret ``AUTH`` which Bob uses in step 4 to authenaticate
-     with Alice.
+   - a second challenge ``AUTH`` of XXX bytes which Bob's device uses in step 4 to authenticate itself against Alice's device.
 
 2. Bob receives the OOB-transmitted bootstrap data from the trusted channel and
 
@@ -92,13 +63,12 @@ workflow for establishing a secure contact between two contacts, Alice and Bob.
       to Alice's e-mail address, adding the ``INVITENUMBER`` from step 1
       to the message.
 
-3. Alice's device receives the "vc-request" message, recognizes
-   the ``INVITENUMBER`` from step 1, processes Bob's Autocrypt key and sends
-   back an encrypted "vc-auth-required" reply to Bob which
-   also contains her own Autocrypt key.  If the ``INVITENUMBER`` does
+3. Alice's device receives the "vc-request" message. If she recognizes
+   the ``INVITENUMBER`` from step 1 and processes Bob's Autocrypt key. Then, she uses this key to encrypt a reply "vc-auth-required" that
+   also contains her own Autocrypt key. If the ``INVITENUMBER`` does
    not match then Alice terminates the protocol.
 
-4. Bob receives and decrypts the "vc-auth-required" message and
+4. Bob receive the "vc-auth-required" message, decrypts it, and
    verifies that Alice's Autocrypt key matches ``Alice_FP``.
 
    a) If verification fails, Bob gets a screen message "Error: Could not setup
@@ -119,7 +89,7 @@ workflow for establishing a secure contact between two contacts, Alice and Bob.
    it shows "Secure contact with Bob <bob-adr> established".
    In addition it sends Bob a "vc-contact-confirm" message.
 
-7. Bobs device receives "vc-contact-confirm" and
+7. Bob's device receives "vc-contact-confirm" and
    shows "Secure contact with Alice <alice-adr> established".
 
 .. figure:: secure_channel_foto.png
@@ -132,32 +102,25 @@ workflow for establishing a secure contact between two contacts, Alice and Bob.
 Message layer attackers can not impersonate Bob nor Alice
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A message layer attacker could try in step 3 to
-substitute Bob's "vc-request" message and use a Bob-MITM key before
-forwarding the message to Alice.  Alice can in step 3 not distinguish
-the Bob-MITM from Bob's real key and sends the encrypted "vc-auth-request"
-reply to the Bob-MITM key. The attacker can decrypt the
-content of this message but it will fail to cause a successful
-completion of the protocol:
+A message layer attacker could try to intercept messages and substitute the keys sent in them in order to carry on a MITM attack.
 
-- **failed Bob-impersonation**: If the provider forwards the step 3 "vc-auth-request"
-  message unmodified to Bob, then Bob will in 4b send the "vc-request-with-auth"
-  message, but it is encrypted to Alice's true key.
+The following messages can be tampered with (assuming that the adversary has learned Alice and Bob public keys, for a worst case scenario):
+
+1. Cleartext "vc-request" sent from Bob to Alice in step 2.
+- In step 3, Alice cannot distinguish the MITM key inserted by the adversary from Bob's real key, since she has not seen Bob's key in the past. Thus, she will follow the protocol an reply "vc-auth-request" encrypted with the key provided by the adversary.
+
+2. The attacker can decrypt the content of this message but it will fail to cause a successful completion of the protocol:
+
+- **failed Alice-impersonation**: If the provider substitutes the "vc-auth-required" message (step 3) from Alice to Bob with a Alice-MITM key, then the protocol terminates with 4a because the key does not match ``Alice_FP`` from step 1.
+
+- **failed Bob-impersonation**: If the provider forwards the step 3 "vc-auth-request" message unmodified to Bob, then Bob will in 4b send the "vc-request-with-auth" message encrypted to Alice's true key.
   There are now three possibilities for the attacker:
 
-  * dropping the message will terminate the protocol without success.
+  * dropping the message, which will terminate the protocol without success.
 
-  * inventing a new message will fail Alice's ``AUTH`` check in step 5
-    and the protocol terminates without success.
+  * create a fake message, which requires to guess the challenge ``AUTH`` that Bob received through the out of band channel. This guess will only be correct in 2**{-XXX}. Thus, with overwhelming probability Alice will detect the forgery in step 5 and the protocol terminates without success.
 
-  * if the attacker forwards Bob's original message then
-    Alice will find out in step 5 that Bob's "vc-request"
-    from step 3 had the wrong key (Bob-MITM) and the protocol terminates
-    unsuccessfully.
-
-- **failed Alice-impersonation**: If the provider substitutes the "vc-auth-required"
-  message (step 3) from Alice to Bob with a Alice-MITM key, then the protocol
-  terminates with 4a because the key does not match ``Alice_FP`` from step 1.
+  * forward Bob's original message to Alice. Since this message contains Bob's key fingerprint ``Bob_FP``, Alice will detect in step 5 that Bob's "vc-request" from step 3 had the wrong key (Bob-MITM) and the protocol terminates unsuccessfully.
 
 
 Open Questions
