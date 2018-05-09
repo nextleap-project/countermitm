@@ -50,9 +50,9 @@ Here is a conceptual step-by-step example of the proposed UI and administrative 
 
    - oob-transferred type ``TYPE=vc-invite``
 
-   - a ``INVITENUMBER`` a challenge of XXX bytes. This challenge is used by Bob's device in step 2b to prove to Alice's device that it is the device involved in the trusted out-of-band communication. Alice's device uses this information in step 3 to automatically accept Bob's contact request. This is in contrast with most messaging apps where new contacts typically need to be manually confirmed).
+   - a ``INVITENUMBER`` a challenge of at least 8 bytes. This challenge is used by Bob's device in step 2b to prove to Alice's device that it is the device involved in the trusted out-of-band communication. Alice's device uses this information in step 3 to automatically accept Bob's contact request. This is in contrast with most messaging apps where new contacts typically need to be manually confirmed).
 
-   - a second challenge ``AUTH`` of XXX bytes which Bob's device uses in step 4 to authenticate itself against Alice's device.
+   - a second challenge ``AUTH`` of at least 8 bytes which Bob's device uses in step 4 to authenticate itself against Alice's device.
 
 2. Bob receives the OOB-transmitted bootstrap data from the trusted channel and
 
@@ -118,7 +118,7 @@ The following messages can be tampered with (assuming that the adversary has lea
 
   * dropping the message, which will terminate the protocol without success.
 
-  * create a fake message, which requires to guess the challenge ``AUTH`` that Bob received through the out of band channel. This guess will only be correct in 2**{-XXX}. Thus, with overwhelming probability Alice will detect the forgery in step 5 and the protocol terminates without success.
+  * create a fake message, which requires to guess the challenge ``AUTH`` that Bob received through the out of band channel. This guess will only be correct in 2**{-64}. Thus, with overwhelming probability Alice will detect the forgery in step 5 and the protocol terminates without success.
 
   * forward Bob's original message to Alice. Since this message contains Bob's key fingerprint ``Bob_FP``, Alice will detect in step 5 that Bob's "vc-request" from step 3 had the wrong key (Bob-MITM) and the protocol terminates unsuccessfully.
 
