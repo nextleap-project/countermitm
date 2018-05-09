@@ -50,7 +50,7 @@ Here is a conceptual step-by-step example of the proposed UI and administrative 
 1. Alice sends a bootstrap code to Bob through a trusted channel.
    The bootstrap code consists of:
 
-   - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
+   - Alice's Openpgp4 public key fingerprint ``Alice_FP``, which acts as a commitment to the key that Alice's will send later in the protocol,
 
    - Alice's e-mail address (both name and routable address),
 
@@ -112,14 +112,19 @@ A message layer attacker could try to intercept messages and substitute the keys
 
 The following messages can be tampered with (assuming that the adversary has learned Alice and Bob public keys, for a worst case scenario):
 
-1. Cleartext "vc-request" sent from Bob to Alice in step 2.
-- In step 3, Alice cannot distinguish the MITM key inserted by the adversary from Bob's real key, since she has not seen Bob's key in the past. Thus, she will follow the protocol an reply "vc-auth-request" encrypted with the key provided by the adversary.
+1. Cleartext "vc-request" sent from Bob to Alice in step 2
 
-2. The attacker can decrypt the content of this message but it will fail to cause a successful completion of the protocol:
+- In step 3, Alice cannot distinguish the MITM key inserted by the adversary 
+  from Bob's real key, since she has not seen Bob's key in the past. Thus, she will follow the protocol an reply "vc-auth-request" encrypted with the key provided by the adversary.
 
-- **failed Alice-impersonation**: If the provider substitutes the "vc-auth-required" message (step 3) from Alice to Bob with a Alice-MITM key, then the protocol terminates with 4a because the key does not match ``Alice_FP`` from step 1.
+2. The attacker can decrypt the content of this message but it will fail to 
+  cause a successful completion of the protocol:
 
-- **failed Bob-impersonation**: If the provider forwards the step 3 "vc-auth-request" message unmodified to Bob, then Bob will in 4b send the "vc-request-with-auth" message encrypted to Alice's true key.
+- **failed Alice-impersonation**: If the provider substitutes the 
+  "vc-auth-required" message (step 3) from Alice to Bob with a Alice-MITM key, then the protocol terminates with 4a because the key does not match ``Alice_FP`` from step 1.
+
+- **failed Bob-impersonation**: If the provider forwards the step 3 
+  "vc-auth-request" message unmodified to Bob, then Bob will in 4b send the "vc-request-with-auth" message encrypted to Alice's true key.
   There are now three possibilities for the attacker:
 
   * dropping the message, which will terminate the protocol without success.
@@ -147,44 +152,38 @@ Open Questions
 Verified Groups
 ---------------------------
 
-We introduce a new secure **verified group** which is consistently secure
-against message transport layer attacks.  Verified groups provide a simple to
-understand guarantee:
-All messages in a verified group are end-to-end encrypted and safe against
-active provider/network attackers. There are never any warnings about
-changed keys (like in Signal) that could be clicked away or cause worry.
-Rather, a member who lost a device or key also looses the ability to read from or
-write to the verified group. It is required to find one group member to
-re-join the group.
+We introduce a new secure **verified group**. 
+Verified groups provide these simple to understand properties:
+
+1. All messages in a verified group are end-to-end encrypted and secure against
+   active provider/network attackers. That is, they cannot be read by a passive eavesdropper, nor intercepted by an active adversary attempting a Man-in-the-middle attack.
+
+2. There are never any warnings about changed keys (like in Signal) that could
+   be clicked away or cause worry. Rather, if a group member loses her device or her key, then she also looses the ability to read from or write to the verified group. To regain access it is required that this user joins the group again by find one group member an perform a "secure-join" as described below.
 
 
 Joining a verified group ("secure-join")
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The goal of the secure-join protocol is to let a new
-member Bob join a verified group that Alice created or is herself a member of.
+The goal of the secure-join protocol is to let Alice make Bob a member (i.e., let Bob join) a verified group of which Alice is a member. Alice may have  created the group or become a member prior to the addition of Bob.
+
 The protocol re-uses the first five steps of the `setup-contact`_
 protocol with the following modifications:
 
-- all message names starting with "vc-" use the "vg-" prefix instead.
+- the message prefix "vc-" is substituted by "vg-".
 
-- in step 1 the oob-transferred type is ``TYPE=vg-invite`` and ``GROUP`` is
-  added to the bootstrap code indicating
-  Alice's offer of letting Bob join the group ``GROUP``.
+- in step 1 there are two changes. First, the oob-transferred type is changed to ``TYPE=vg-invite``. Second, the name of the group ``GROUP`` is added to the bootstrap code indicating Alice's offer of letting Bob join the group ``GROUP``.
 
 - in step 2 Bob manually confirms he wants to join ``GROUP``
   before his device sends the ``vg-request`` message.
 
-- in step 4 b) Bob's device adds ``GROUP`` to the encrypted part of the
-  'vc-request-with-auth' message, together with ``Bob_FP`` and the ``AUTH``
-  value from step 1.
+- in step 4 b) the 'vc-request-with-auth' encrypted part includes ``GROUP`` besides with ``Bob_FP`` and ``AUTH``.
 
-The steps from Step 6 of the `setup-contact`_ protocol are replaced
+After Step 6, the actions of the `setup-contact`_ are replaced
 with the following steps:
 
 6. Alice broadcasts an encrypted "vg-member-added" message to all members of
-   ``GROUP`` (including Bob), gossiping the Autocrypt keys of everyone,
-   including the new member Bob.
+   ``GROUP`` (including Bob), gossiping the Autocrypt keys of all members (including Bob).  
 
 7. Bob receives the encrypted "vg-member-added" message and learns all the keys
    and e-mail addresses of group members. Bob's device sends a final
@@ -195,12 +194,9 @@ with the following steps:
    shows a screen "Bob <email-address> securely joined group ``GROUP``"
 
 Bob and Alice may now both invite and add more members which in turn
-can add more members. Through the described secure-join workflow
-we know that everybody in the group has been oob-verified with
-at least one member and that all members are fully connected.
+can add more members. The described secure-join workflow guarantees that all members of the group have been oob-verified with at least one member. The broadcasting of keys further ensures that all members are fully connected.
 
-Note that all group members need to interpret a changed
-Autocrypt key as that member being removed from the group.
+Recall that this protocol does **not** consider key loss or change. When users observe a change in one of the Autocrypt keys belonging to the group they must intepret this as the owner of that key being removed from the group. To become a member again this user needs to run the secure join with a user that is still a member.
 
 .. figure:: join_verified_group.jpg
    :width: 200px
@@ -211,41 +207,28 @@ Notes on the verified group protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - **More Asynchronous UI flow**: All steps after 2 (the sending of
-  adminstrative messages)
-  could happen asynchronously and in the background.  This might
-  be useful because e-mail providers often delay initial messages
+  adminstrative messages) could happen asynchronously and in the background.  This might be useful because e-mail providers often delay initial messages
   ("greylisting") as mitigation against spam.
   The eventual outcomes ("Could not establish verified connection"
-  and "successful join") can be done in asynchronous notifications
-  towards Alice and Bob including a
+  or "successful join") can be delivered in asynchronous notifications
+  towards Alice and Bob. These can include a notification
   "verified join failed to complete" if messages do not arrive
   within a fixed time frame.
-  In practise this means that one person can show the "Secure Group
-  invite" to a number of people in parallel, and everybody scans and
-  starts the secure-join.  After some time everybody will be joined
-  as the protocol messages flow in parallel between the members.
+  In practise this means that secure joins can be concurrent. A member can show the "Secure Group invite" to a number of people. Each of these peers scans the message and launches the secure-join. As 'vg-request-with-auth' messages arrive to Alice, she will send the broadcast message that introduces every new peer to the rest of the group. After some time everybody will become a member of the group.
 
 
 - **Ignoring Infiltrators, focusing on message transport attacks first**:
-  If one peer is "evil" it can already
-  read all messages in the group and leak it to outsiders. We do not consider here
-  advanced attacks like an "infiltrator" peer which exchanges
-  keys for a newly joined member and collaborates with an evil provider
-  to intercept/read messages outside the group.  We note, however, that such
-  an infiltrator (say Bob when adding Carol as a new member), will have
-  to sign the gossip fake keys. If Carol performs an oob-verification
-  with Alice, she can prove that Bob gossiped the wrong Alice key
-  because Bob has signed it.
+  If one group member is "malicious" or colludes with the adversary it can leak the messages' content to outsider as this peer can by definition of member read all messages. Thus, we do not aim at protecting against such peers.
 
-- **Leaving message transport attackers in the dark about verified
-  groups**. It might be feasible to design the step 3 "secure-join-requested"
+  We also choose to not consider advanced attacks in which an "infiltrator" peer exchanges collaborates with an evil provider to intercept/read messages. We note, however, that such an infiltrator (say Bob when adding Carol as a new member), will have to sign the gossip fake keys. If Carol performs an oob-verification with Alice, she can use Bob's signature to prove that Bob gossiped the wrong key for Alice.
+
+- **Leaving attackers in the dark about verified groups**. It might be  
+  feasible to design the step 3 "secure-join-requested"
   message from Bob (the joiner) to Alice (the inviter) to be indistinguishable
   from other initial "contact request" messages Bob sends to Alice to establish contact.
-  This means that the provider would, when trying to substitute an Autocrypt key
-  on a first message between two peers, run the risk of **immediate and
+  This means that the provider would, when trying to substitute an Autocrypt key on a first message between two peers, run the risk of **immediate and
   conclusive detection of malfeasance**. The introduction of the verified
-  group protocol would thus contribute to securing the e-mail encryption eco-system,
-  rather than just securing the group at hand.
+  group protocol would thus contribute to securing the e-mail encryption eco-system, rather than just securing the group at hand.
 
 - **send all protocol messages through trusted channel**:
   messages from step 2 on could be transferred via
