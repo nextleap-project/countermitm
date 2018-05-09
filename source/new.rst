@@ -6,7 +6,7 @@ Securing communications against active attacks
 ==============================================
 
 Autocrypt-enabled e-mail apps like https://delta.chat implement
-longer-lived groups as is typical for messaging apps (Whatsapp, Signal etc.). 
+longer-lived groups as is typical for messaging apps (Whatsapp, Signal etc.).
 Verifying key consistency is important to establish secure, verified, group communication. Traditionally peers are required to verify keys with every other peer. This is highly unpractical. First, the number of verifications becomes too costly even for small groups. Second, a device loss will invalidate all prior verifications of a user. Recovering from this state requires redoing all of the verification, a tedious and costly task. Finally, without automatization of the process, in practice, very few users consistently perform key verification. This is true for users of Signal, Threema, Wire and Whatsapp.
 
 A traditional approach to reduce the number of neccessary key verifications
@@ -18,7 +18,7 @@ with maintaining end-to-end security against active
 attacks from providers or the network. The described protocols
 are decentralized in that they describe ways of how peers (or
 their devices) can interact with each other, thus fitting nicely
-into the decentralized Autocrypt key distribution model. 
+into the decentralized Autocrypt key distribution model.
 
 At the end of this document we discuss other opportunistic techniques that increase the likelihood of detecting active attacks without introducing new workflows or new network messages between peers.
 
@@ -33,11 +33,17 @@ secure contact: exchange both their e-mail addresses and cryptographic
 identities in a verified manner. The Setup Verified Contact protocol is re-used as a building block for
 the `keyhistory-verification`_ and `verified-group`_ protocols.
 
-After running the Setup Verified Contact protocol both peers will learn the true keys of each other or else both get an error message. The protocol is safe against message layer modification and message layer impersonation attacks. 
+After running the Setup Verified Contact protocol both peers will learn the true keys of each other or else both get an error message. The protocol is safe against message layer modification and message layer impersonation attacks.
 
 The protocol follows a single simple UI workflow: A peer "shows" bootstrap data that is then "read" by the other peer through a trusted (Out-of-Band)channel. This means that, as opposed to current fingerprint validation workflows, the protocol only runs once instead of twice yet results in the two peers having verified keys of each other.
 
 On mobiles trusted channels is typically implemented using QR codes, but transfering data via USB, Bluetooth, WLAN channels or phone calls is possible as well. A trusted channel is characterized by the inability of the message layer to observe or modify the data.
+
+The protocol relies on the underlying encryption scheme being not
+malleable. In the case of OpenPGP this is achieved with Modification
+Detection Codes (MDC - see section 5.13 and 5.14 of RFC 4880).
+Implementers need to make sure to verify these and treat invalid or
+missing MDCs as an error.
 
 Here is a conceptual step-by-step example of the proposed UI and administrative message workflow for establishing a secure contact between two contacts, Alice and Bob.
 
