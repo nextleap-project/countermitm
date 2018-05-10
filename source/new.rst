@@ -12,12 +12,10 @@ Verifying key consistency is important to establish secure, verified, group comm
 A traditional approach to reduce the number of neccessary key verifications
 is the Web of Trust. This approach requires a substantial learning effort for users to understand the underlying concepts. Moreover, when using OpenPGP the web of trust is usually interacting with OpenPGP key servers. These servers make widely available the signed keys effectively making public the social "trust" graph. Both key servers and the web of trust have reached very limited adoption. Therefore, Autocrypt has been designed to not rely on public keyservers, nor on the web of trust.
 
-In this section, we consider how introducing new kinds of (hidden)
-messages and workflows between peers can substantially help
-with maintaining end-to-end security against active
-attacks from providers or the network. The described protocols
-are decentralized in that they describe ways of how peers (or
-their devices) can interact with each other, thus fitting nicely
+In this section, we consider how introducing new workflows between peers can substantially help with maintaining end-to-end security against active
+attacks from providers or the network. This new workflows introduce what we call "administrative messages", messages sent between users' devices that are transparent to the user. These messages support the authentication and security of the exchange of key process, with the additional advantage that they significantly improve usability by reducing the number of actions to be made by users. At the end of the section we discuss the need for this kind of messages.
+
+The described protocols are decentralized in that they describe ways of how peers (or their devices) can interact with each other, thus fitting nicely
 into the decentralized Autocrypt key distribution model.
 
 At the end of this document we discuss other opportunistic techniques that increase the likelihood of detecting active attacks without introducing new workflows or new network messages between peers.
@@ -230,21 +228,19 @@ Notes on the verified group protocol
   conclusive detection of malfeasance**. The introduction of the verified
   group protocol would thus contribute to securing the e-mail encryption eco-system, rather than just securing the group at hand.
 
-- **send all protocol messages through trusted channel**:
-  messages from step 2 on could be transferred via
-  Bluetooth or WLAN to fully perform the invite/join protocol in a trusted channel.
-  The provider would not gain knowledge about verifications.
+- **Sending all messages through trusted channel**: instead of being relayed
+  through the provider, all messages from step 2 onwards could be transferred via Bluetooth or WLAN. This way, the full invite/join protocol would be completed on a trusted channel. Besides increasing the security of the joining, an additional advantage is that the provider would not gain knowledge about verifications.
 
-- **non-messenger e-mail apps**: instead of groups, traditional e-mail apps could
-  possibly offer the techniques described here for "secure threads".
+- **Non-messenger e-mail apps**: instead of groups, traditional e-mail apps 
+  could possibly offer the techniques described here for "secure threads".
 
 
 Open Questions about reusing verifications for new groups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Given a verified group that grew as described in the previous section:
+Given a verified group that grows as described in the previous section:
 What if one of the members wants to start a new group with a subset
-of the members?  How safe is it in practise to allow directly creating
+of the members? How safe is it in practise to allow directly creating
 the group if the creator has not verified all keys himself?
 
 Of course, a safe answer would be to always require a
@@ -263,56 +259,44 @@ verification network in the initial thread?
 Key history verification
 ------------------------------------
 
-We present a "keyhistory-verification" techno-social protocol which
-improves on the current situation:
+We now present a "keyhistory-verification" techno-social protocol aimed at improving the security of communication beyond what is achieved by the other protocols in this document.
 
-- the detection of active attacks is communicated when users engage in
-  key verification workflows which is the right time to alert users.
+We seek the following improvements:
+
+- the detection of active attacks should be communicated when users engage in
+  in-person key verification workflows, as described above. This is the right time to alert users.
   By contrast, today's key verification workflows alert the users when a
-  previously verified key has changed, but at that point users typically
-  are not physically next to each other and want to get a different job done,
-  e.g. of sending or reading a message.
+  previously verified key has changed. At that point users typically
+  are not physically next to each other, and are rarely concerned with the key since they want to get a different job done, e.g., of sending or reading a message.
 
-- peers need to perform only one "show" and one "read" of bootstrap
-  information (typically transmitted via showing QR codes and scanning them).
-  Both peers receive assessments about the integrity of their past communication.
-  By contrast, current key fingerprint verification workflows (signal, whatsapp)
-  require both peers each showing and scanning fingerprints, and they
-  will only get assurance about their current keys, and thus miss out
-  on temporary malfeasant substitutions of keys in messages.
+- peers should only be required to perform only one "show" and one "read" of 
+  bootstrap information (typically transmitted via showing QR codes and scanning them). At the end of this process both peers must receive assessments about the integrity of their past communication.
+  By contrast, current key fingerprint verification workflows (Signal, Whatsapp) require both peers each showing and scanning fingerprints. Moreover, the process only provides assurance about their current keys, and thus miss out on temporary malfeasant substitutions of keys in messages.
 
-The goal of this protocol is to allow two peers to verify key integrity
-of their shared historic messages.  After completion, users gain assurance
-that not only their current communication is safe but that their past
-communications have not been tampered with.
+In summary, the goal of the "keyhistory-verification" protocol is to allow two peers to verify key integrity of their shared historic messages.  After completion, users gain assurance that not only their current communication is safe but that their past communications have not been tampered with.
 
 The protocol starts with steps 1-5 of the `setup-contact`_ protocol
-using a ``kg-`` prefix instread of the ``vc-`` one. The steps
-from step 6 are performed as follows:
+using a ``kg-`` prefix instread of the ``vc-`` one. From step 6 on, the protocol proceeds as follows:
 
-6. Alice and Bob have each others verified keydata. They each send
-   an encrypted message which contains **message/keydata list**: a list of message id's
-   with respective Dates and a list of (email-address, key fingerprints)
-   tuples which were sent or received in a particular message.
+6. Alice and Bob have each others verified keydata. With this data they 
+   encrypt a message to the other party which contains a **message/keydata list**. This is a list of the id's of the messages they have exchanged in the past. For each message, this list includes the Date when it was sent and a list of (email-address, key fingerprints) tuples which were sent or received in that particular message.
 
-7. Alice and Bob now independently perform the following historic verification
+7. Alice and Bob independently perform the following historic verification
    algorithm:
 
    a) determine the start-date as the date of the earliest message (by Date)
       for which both sides have records of.
 
-   b) verify key fingerprints for each message since the start-state for
-      which both sides have records of: if a key differs for any e-mail address,
-      show an error "Message at <DATE> from <From> to <recipients> has
-      mangled encryption". This is strong evidence that there was an active
-      attack.
+   b) verify the key fingerprints for each message since the start-state for
+      which both sides have records of: if a key differs for any e-mail address, we consider this is strong evidence that there was an active
+      attack. Therefore an error is shown to both Alice and Bob: "Message at <DATE> from <From> to <recipients> has mangled encryption". 
 
-8. Present a summary which lists:
+8. Alice and Bob are presented with a summary which lists:
 
    - time frame of verification
    - NUM messages successfully verified
-   - NUM messages had mangled encryption
-   - NUM dropped messages, i.e. sent but not received or vice versa
+   - NUM messages with mangled encryption
+   - NUM dropped messages, i.e. sent by one party but not received by the other, or vice versa
 
    If there are no dropped or mangled messages signal to the user "Message keyhistory verification successfull".
 
@@ -320,53 +304,39 @@ from step 6 are performed as follows:
 Device Loss
 ~~~~~~~~~~~
 
-One issue with comparing key history is that the typical scenario for a
-key change is device loss. However loosing access to ones device and
-private key in most cases also means loosing access to ones key history.
+A typical scenario for a key change is device loss, which leads to loosing access to one's private key. We note that when this happens, in most cases it entails also loosing access to ones key history.
 
-So in some cases if Bob lost his device Alice will have a much longer
-history for him then he has himself. Therefore Bob can only compare keys
-for the timespan since the last device loss. Never the less this would
-lead to the detection of attacks in that time.
+Thus, if Bob lost his device, it is likely that Alice will have a much longer
+history for him then he has himself. However, Bob can only compare keys
+for the timespan since the device loss. While this is certainly less useful, nevertheless it would enable Alice and Bob to detect of attacks in that time.
 
-In addition Bob could store his key history outside of his device. The
-security requirements for such a backup are much lower then for backing
-up the private key. It only needs to be temper proof - not confidential.
+On the other hand, we can also envision users storing their key history outside of their devices. The security requirements for such a backup are much lower than for backing up the private key. It only needs to be tamper proof, i.e., its integrity is guaranteed - not confidential. This is achievable even if the private key is loss. Integrity can be achieved for instance via cryptographic signatures. As long as Bob, and others, have access to his public key he can verify that the backup has not been tampered with.
 
-Another option would be recovering his key history from what Alice knows
-and then using that to compare to what other people saw during the next
-out of band verification. This way consistent attacks that replace Bobs
-keys with all of his peers including Alice could not be detected. It also
-leads to error cases that are much harder to investigate.
-
+An alternative is to permit that Bob recovers his key history from the message/keydata list that he receives from Alice. Then, he could validate such information with other people in subsequent out of band verifications.
+However, this method is vulnerable to collusion attacks in which Bob's
+keys are replaced in all of his peers, including Alice. It may also lead to other error cases that are much harder to investigate. We therefore discourage such an approach.
 
 
 Keeping records of keys in messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Our keyhistory verification considerations rely on each MUA
-keeping track of:
+The keyhistory verification described above rely on each MUA keeping track of the following information indexed the message-id:
 
-- each e-mail address/key-fingerprint tuple it ever saw in Autocrypt or Autocrypt-Gossip
-  headers (i.e. not just the most recent one(s)) from incoming mails
+- each e-mail address/key-fingerprint tuple it **ever** saw in an Autocrypt or an Autocrypt-Gossip from incoming mails. This means not just the most recent one(s), but the full history. 
 
-- each emailaddr/key association it ever sent out in
-  Autocrypt or Autocrypt Gossip headers
+- each emailaddr/key association it ever sent out in an Autocrypt or an Autocrypt Gossip header.
 
 
-Implementation advise on state tracking
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+State tracking suggested implementation
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 We suggest MUAs could maintain an outgoing and incoming "message-log"
-which keeps track of all incoming and outgoing mails, respectively.
-A message with multiple recipients would cause multiple entries in the log.
-Both incoming and outgoing message-logs would contain these attributes:
+which keeps track of the information in all incoming and outgoing mails, respectively. A message with N recipients would cause N entries in both the sender's outgoing and each of the recipient's incoming message logs. Both incoming and outgoing message-logs would contain these attributes:
 
 - ``message-id``: The message-id of the e-mail
 
 - ``date``: the parsed Date header as inserted by the sending MUA
 
-- ``from-addr``: the senders routable e-mail address part of the From header.
+- ``from-addr``: the sender's routable e-mail address part of the From header.
 
 - ``from-fingerprint``: the sender's key fingerprint of the sent Autocrypt key
   (NULL if no Autocrypt header was sent)
@@ -376,23 +346,12 @@ Both incoming and outgoing message-logs would contain these attributes:
 - ``recipient-fingerprint``: the fingerprint of the key we sent or received
   in a gossip header (NULL if not Autocrypt-Gossip header was sent)
 
-Each mail would cause N entries on both the sender's outgoing and each
-of the recipient's incoming message logs, with N being the number of recipients.
-It's also possible to serialize the list of recipient addresses and fingerprints
-into a single value, which would result in only one entry in the sender's
-outgoing and each recipient's incoming message log.
+It is also possible to serialize the list of recipient addresses and fingerprints into a single value, which would result in only one entry in the sender's outgoing and each recipient's incoming message log. This implementation may be more efficient but it is also less flexible in terms of how to share information.
 
 Usability question of "sticky" encryption and key loss
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Do we want to prevent dropping back to
-not encrypting or encrypting with a different key if a peer's autocrypt
-key state changes? Key change or drop back to cleartext is opportunistically
-accepted by the Autocrypt Level 1 key processing logic and eases communication in
-cases of device or key loss.  The "setup-contact" also conveniently
-allows two peers who have no address of each other to establish contact.
-Ultimately, it depends on the guarantees a mail app wants to provide
-and how it represents cryptographic properties to the user.
+Do we want to prevent dropping back to not encrypting or encrypting with a different key if a peer's autocrypt key state changes? Key change or drop back to cleartext is opportunistically accepted by the Autocrypt Level 1 key processing logic and eases communication in cases of device or key loss. The "setup-contact" also conveniently allows two peers who have no address of each other to establish contact. Ultimately, it depends on the guarantees a mail app wants to provide and how it represents cryptographic properties to the user.
 
 
 
@@ -401,34 +360,54 @@ and how it represents cryptographic properties to the user.
 Verifying keys through onion-queries
 ------------------------------------------
 
-A straightforward approach to ensure view consistency in a group is to have all members of the group continuously broadcasting their belief about other group member's keys. This enables every member to cross check their beliefs about others and find inconsistencies that reveal an attack.
+Up to this point this document has describe methods to securely add contacts, form groups, and verify key history in an offline scenario where users can establish an out of band channel to carry out the verification. We now discuss how the use of Autocrypt headers can be used to support continuous key verification in an online setting.
 
-However, this is problematic from a privacy perspective. When Alice publishes her latest belief about other's keys she is implicitly revealing when is the last time she had contact with them. If such contact happened outside of the group this may be problematic.
+A straightforward approach to ensure view consistency in a group is to have all members of the group continuously broadcasting their belief about other group member's keys. Unless they are fully isolated by the adversary (see Section for an analysis)This enables every member to cross check their beliefs about others and find inconsistencies that reveal an attack.
 
-We now propose an alternative situation in which group members do not need to broadcast information. The solution builds on the observation that the best person to verify Alice's key is Alice herself. Thus, if Bob wants to verify her key, it suffices to be able to create a secure channel between Bob and Alice so that she can confirm his belief on her key.
+However, this is problematic from a privacy perspective. When Alice publishes her latest belief about others' keys she is implicitly revealing what is the last status she observed which in turn allows to infer when was the last time she had contact with them. If such contact happened outside of the group this is revealing information that would not be available had keys not been gossiped.
 
-For this we propose that Bob chooses other :math:`n` members of the group as relying parties to form the channel to Alice. For simplicity let us take :math: `n=2` and assume these members are Charlie, key :math:`k_C`, and David, with key :math:`k_D` (both keys being the belief of Bob).
+We now propose an alternative in which group members do not need to broadcast information in order to enable key verification. The solution builds on the observation that the best person to verify Alice's key is Alice herself. Thus, if Bob wants to verify her key, it suffices to be able to create a secure channel between Bob and Alice so that she can confirm his belief on her key.
 
-- Bob encrypts a message (Bob,Alice,:math:`k_A`) encoding the question 'Bob asks: Alice, is your key :math:`k_A`?' with David and Charlies keys (like in onion encryption): :math:`E_{k_C}(David,E_{k_D}(Alice,(Bob,Alice,:math:`k_A`)))`
+However, Bob directly contacting Alice through the group channel reveals immediately that he is interested on verifying her key to the group members, which again raises privacy concerns. Instead, we propose that Bob relies on other members to rely the verifying message to Alice, similarly to a typical anonymous communication network. 
 
-- Bob sends the message to Charlie, who decrypts the message to find that it has to be relayed to David.
+The protocol works as follows:
 
-- David receives Charlie's message, decrypts and relays the message to Alice.
+1. Bob chooses :math:`n` members of the group as relying parties to form the 
+   channel to Alice. For simplicity let us take :math:`n=2` and assume these members are Charlie, key :math:`k_C`, and David, with key :math:`k_D` (both :math:`k_C` and :math:`k_D` being the current belief of Bob regarding Charlie and David's keys).
 
-- Alice receives the message and replies to Bob using another :math:`n`-members channel.
+2. Bob encrypts a message of the form (``Bob_ID``, ``Alice_ID`` , :math:`k_A`) 
+   with David and Charlie's keys in an onion encryption: 
 
-From a security perspective, this process has the same security properties as the broadcasting. For the adversary to be able to intercept the queries he must MITM all the keys between Bob and others.
+   :math:`E_{k_C}` (``David_ID``, :math:`E_{k_D}` (``Alice_ID``,(``Bob_ID``, ``Alice_ID``, :math:`k_A` ))), where :math:`E_{k_*}` indicates encrypted with key :math:`k_*`
+   
+   In this message ``Bob_ID`` and ``Alice_ID`` are the identifiers, e.g., email addresses, that Alice and Bob use to identify each other. The message effectively encodes the question 'Bob asks: Alice, is your key :math:`k_A`?' 
 
-From a privacy perspective it is better in the sense that not everyone learns each other status of belief. Also, Charlie knows that Bob is trying a verification but not of whom. However, in the scheme above David gets to learn that Bob is trying to verify Alice's key, thus his particular interest on her.
+3. Bob sends the message to Charlie, who decrypts the message to find that it has to be relayed to David.
+
+4. David receives Charlie's message, decrypts and relays the message to Alice.
+
+5. Alice receives the message and replies to Bob repeating steps 1 to 4 with other random :math:`n` members and inverting the IDs in the message.
+
+From a security perspective, i.e., in terms of resistance to adversaries, this process has the same security properties as the broadcasting. For the adversary to be able to intercept the queries he must MITM all the keys between Bob and others.
+
+From a privacy perspective it improves over broadcasting in the sense that not everyone learns each other status of belief. Also, Charlie knows that Bob is trying a verification but not of whom. However, David gets to learn that Bob is trying to verify Alice's key, thus his particular interest on her.
 
 This problem can be solved in two ways:
 
-1) All members of the group check each other continuously so as to provide plausible deniability regarding real checks.
+A. All members of the group check each other continuously so as to provide 
+   plausible deniability regarding real checks.
 
-2) Instead of sending (Bob,Alice,:math:`k_A`) directly, first Bob splits it into :math:`t` shares that combined reveal the messages. Then, instead of sending only one messages through one channel, he creates :math:`t` channels and sends a share in each of them. When Alice receives the :math:`t` shares she can recover the message and respond to Bob in the same way.
-In this new protocol, David only learns that someone is verifying Alice, but not whom, i.e., Bob's privacy is protected.
+B. Bob protects the message using secret sharing so that only Alice
+   can see the content once all shares are received. Instead of sending (``Bob_ID``, ``Alice_ID`` , :math:`k_A`) directly, Bob splits it
+   into :math:`t` shares. Each of this shares is sent to Alice through a *distinct* channel. This means that Bob needs toe create :math:`t` channels, as in step 1. 
 
-An open question is how to choose the users to rely messages. This choice should not reveal new information about users' relationships or the current groups. Thus, the most convenient is to choose members of the same group. Other selection strategies need to be analyzed with respect to their privacy properties.
+   When Alice receives the :math:`t` shares she can recover the message and respond to Bob in the same way. In this version of the protocol, David (or any of the last hops before Alice) only learns that someone is verifying Alice, but not whom, i.e., Bob's privacy is protected.
+
+
+
+Open Questions about onion online verification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+An open question is how to choose contacts to rely onion verification messages. This choice should not reveal new information about users' relationships nor the current groups where they belong. Thus, the most convenient is to always choose members of the same group. Other selection strategies need to be analyzed with respect to their privacy properties.
 
 The other point to be discussed is bandwidth. Having everyone publishing their status implies N*(N-1) messages. The proposed solution employs 2*N*n*t messages. For small groups the traffic can be higher. Thus, there is a tradeoff privacy vs. overhead.
 
@@ -436,22 +415,18 @@ The other point to be discussed is bandwidth. Having everyone publishing their s
 The need for "administrative" messages
 --------------------------------------
 
-Our key verification and lookup protocols in this chapter depend on
+The key verification and lookup protocols presented in this chapter depend on
 mail apps being able to send "administrative" messages.
 While messengers such as `Delta-chat <https://delta.chat>`_
 already use administrative messages e.g. for group member management,
-traditional e-mail clients typically display all messages without special rendering
-of the content, including machine-generated ones for rejected or non-delivered mails.
-Our presented protocols make the case that
-automated sending and interpreting of administrative messages
-between mail apps can considerably improve
-user experiences, security and privacy in the e-mail eco-system.
-In the spirit of the strong convenience focus of the
-Autocrypt specification, we however suggest
-to only exchange administrative messages with peers
-when there there is confidence
-they will not be displayed "raw" to users,
+traditional e-mail clients typically display all messages without special rendering of the content, including machine-generated ones for rejected or non-delivered mails.
+
+The presented protocols make the case that automated sending and interpreting of administrative messages between mail apps can considerably improve
+user experience, security and privacy in the e-mail eco-system.
+In the spirit of the strong convenience focus of the Autocrypt specification, we however suggest to only exchange administrative messages with peers
+when there there is confidence they will not be displayed "raw" to users,
 and at best only send them on explicit request of users.
+
 Note that with automated processing of "administrative" messages arises
 a new attack vector that the simple fingerprint-validation workflows
 do not have: malfeasant peers can try to inject adminstrative messages

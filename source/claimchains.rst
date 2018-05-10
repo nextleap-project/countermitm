@@ -1,3 +1,7 @@
+.. raw:: latex
+
+    \newpage
+
 ClaimChains: a data structure to support key consistency
 ============================================================
 
@@ -14,7 +18,7 @@ Third, as long as some honest users are distributing the correct packets, or use
 
 
 High level overview of the ClaimChain design
-------------------------------------------
+---------------------------------------------
 
 ClaimChains represent repositories of claims that users make about themselves or other users. To account for user beliefs evolving over time, ClaimChains are implemented as cryptographic hash chains of blocks, each block containing possibly a large number of claims. In order to optimize space, it is possible to only put commitments to claims in the block, and offload the claims themselves onto a separate data structure.
 

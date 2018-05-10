@@ -19,9 +19,13 @@ striving to establish a "reverse panopticon": an adversary should not be able to
 Attack model and terminology
 ++++++++++++++++++++++++++++
 
-We consider an adversary with access to the "messaging layer". This means that she has capabilities to access and modify the meta-data of messages sent by peers  (e.g., the e-mail provider, network router). We call the messaging layer the "in-band", "untrusted" channel.
+We consider an adversary with at least one of the following capabilities:
 
-The goal of the adversary is to perform a man-in-the-middle attack on the key exchange within peers. This would enable the adversary to i) read the content fo messages, and ii) impersonate peers. 
+1. access to the network layer. Examples of this advesary can be an ISP, an AS, or an eavesdropper on a wireless network.
+
+2. access to what we call the "messaging layer". This means that the adversary has capabilities to access and modify the meta-data of messages sent by peers. Examples of this adversary are the e-mail provider, or a network router when messages are not sent over an encrypted channel. Throughout this document we use the terms messaging layer, "in-band channel", and "untrusted channel" interchangeably.
+
+The goal of the adversary is to perform a man-in-the-middle attack on the key exchange within peers. This would enable her to i) read the content fo messages, and ii) impersonate peers. 
 
 We consider that all peers are honest. They do not collaborate with the adversary and always follow the protocols described in this document. Peers have access to a "trusted", "out-of-band", channel of communication that is not visible to the adversary, and thus cannot be manipulated. This channel can be used to run end-user key verification or key authentication without fear to intervention by the adversary in order to detect inconsistencies. 
 
