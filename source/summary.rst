@@ -79,7 +79,7 @@ by integrating key verification into existing messaging use cases:
   By introducing members in this incremental way, a group of size ``N`` requires only ``N-1`` verifications overall to assert that a network adversary can not compromise end-to-end encryption between group members. If one group member loses her key (e.g. through device loss), she must re-join the group via invitation of the remaining members of the verified group.
 
 - the :ref:`Key History verification protocol <keyhistory-verification>`
-verifies the current keys between peers and additionally it also verifies
+  verifies the current keys between peers and additionally it also verifies
   whether past messages contained keys consistently. The protocol can
   precisely point to messages where cryptographic key information has been modified
   by the network.

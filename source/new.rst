@@ -41,7 +41,7 @@ which also does not require extra services from third parties.
 
 .. _`setup-contact`:
 
-The "Setup Verified Contact" protocol
+Setup Contact protocol
 -----------------------------------------
 
 The goal of this protocol is to allow two peers to conveniently establish
@@ -165,8 +165,8 @@ Open Questions
 
 .. _`verified-group`:
 
-Verified Groups
----------------------------
+Verified Group protocol
+-----------------------
 
 We introduce a new secure **verified group**.
 Verified groups provide these simple to understand properties:
@@ -274,8 +274,8 @@ verification network in the initial thread?
 
 .. _`keyhistory-verification`:
 
-Key history verification
-------------------------------------
+Key history verification protocol
+---------------------------------
 
 We now present a "keyhistory-verification" techno-social protocol aimed at improving the security of communication beyond what is achieved by the other protocols in this document.
 
