@@ -1,3 +1,7 @@
+.. raw:: latex
+
+    \newpage
+
 ClaimChains: a data structure to support key consistency
 ============================================================
 
@@ -14,7 +18,7 @@ Third, as long as some honest users are distributing the correct packets, or use
 
 
 High level overview of the ClaimChain design
-------------------------------------------
+---------------------------------------------
 
 ClaimChains represent repositories of claims that users make about themselves or other users. To account for user beliefs evolving over time, ClaimChains are implemented as cryptographic hash chains of blocks, each block containing possibly a large number of claims. In order to optimize space, it is possible to only put commitments to claims in the block, and offload the claims themselves onto a separate data structure.
 
@@ -96,35 +100,35 @@ these keys will not be revealed to anyone else even
 if if the block data is publically accessible.
 
 
-Detecting Autocrypt key equivocation with Claim Chains
-------------------------------------------------------
+Evaluating ClaimChains to guide verification
+----------------------------------------------
+
+Verifying contacts requires effort and meeting in person or relying on another trusted channel. We therefore try to guide users to verify the contacts that are most relevant for the security of their communication.
+
+The first verification is particular important since it prevents isolating the user entirely by performing mitm attacks on all of her connections. Due to the small world phenomenon in social networks few verifications per user will already lead to a large cluster of verified contacts in the social graph. In this scenario any mitm attack will lead to inconsistencies observed by both the attacked parties and their neighbours.
+
+Therefore we evaluate ClaimChains of peers to detect inconsistencies. Inconsistencies appear as claims by one peer about another peers key material that differ from our own observations.
+
+In this situation it is not possible to identify which connection is under attack:
+
+* It may be the connection between the peers which leads to them seeing mitm keys for each other while we observe the actual ones.
+
+* It could also be that we are seeing mitm keys for one of them while the other one is claiming the correct keys.
+
+Verifying one of the contacts will allow determining whether that particular connection is being attacked. Therefor we will recommend verifying contacts based on the number of inconsistencies observed.
+
+Note however that if the claims of our peers are consistent with our observations this does not imply that no attack is taking place. It only means that any attack has to split the social graph into groups with consistent ideas about their peers keys. This is only possible if there are no verified connections between the different groups.
+
+In the absence of inconsistencies we would therefore like to guide the user towards verifying contacts they have no (multi-hop) verified connection to. But since we want to preserve the privacy of who verified whom we cannot detect this property. The best guidance we can offer is to verify users who we do not share a verified group with yet.
 
 
-XXX work out the precise advantages and what features
-it offers to users -- in some cases we can safely detect
-equivocation, and we can always use detected inconcisstency
-to raise the priority of recommending oob-verifications
-with particular peers similar to how we discussed DKIM
-and Autocrypt-Gossip in previous sections -- they also
-lead to recommending oob-verifications with particular
-users.
 
-Goals
-~~~~~
-
-- Create a sorted list of recommendations for verifying contacts
-  through trusted channels.
-
-- Make use of Claimchains to automatically determine consistency
-  of key information accross peers.
-
-- Recommend verifying contacts in case of inconsistencies.
+Ideas not (fully) covered yet
+~~~~~~~~~~~~~~~~~~~~~
 
 - Force mitm attackers to split network into consistent world views.
   This requires more mitm attacks and control over different servers
   rendering the attack both harder and easier to detect.
-
-- if i see a new block for a contact, i can verify it references a chain i already know about a contact
 
 - Cross-referenced chains allow for keeping consistency across contacts cryptographic information, making (temporary) isolation attacks harder:
 
