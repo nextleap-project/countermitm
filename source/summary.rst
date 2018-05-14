@@ -87,11 +87,10 @@ by integrating key verification into existing messaging use cases:
   The "joining" peer establishes verified contact with the inviter, and the inviter then announces the joiner as a new member. Any member may invite new members.
   By introducing members in this incremental way, a group of size ``N`` requires only :math:`N-1` verifications overall to assert that a network adversary can not compromise end-to-end encryption between group members. If one group member loses her key (e.g. through device loss), she must re-join the group via invitation of the remaining members of the verified group.
 
-- the :ref:`Key History verification protocol <keyhistory-verification>`
-  verifies the current keys between peers and additionally it also verifies
-  whether past messages contained keys consistently. The protocol can
-  precisely point to messages where cryptographic key information has been modified
-  by the network.
+- the :ref:`History verification protocol <history-verification>`
+  verifies the cryptograhic integrity of past messages and keys.
+  It can precisely point to messages where
+  cryptographic key information has been modified by the network.
 
 Moreover, in this section we discuss a privacy issue with the Autocrypt Key gossiping mechanism. The continuous gossipping of keys may enable an observer to infer who recently communicated with each other.
 We present an "onion-key-lookup" protocol which allows peers to verify their keys without other peers learning who is querying a key from whom.
@@ -111,7 +110,7 @@ The implementation of ClaimChains considered in this document relies on a self-a
 We suggest that providers provide a "dumb" block storage for their e-mail customers, re-using existing authentication techniques for guarding writes to the block storage.
 The head hashes that allow to verify a full chain are distributed along with Autocrypt Gossip headers. Given a head, peers can verify that a chain has not been tampered and represent the latest belief of another peer, and can use the information in the chain to perform consistency checks.
 
-ClaimChain permits users to check the evolution of others' keys over time. As such, it provides strong "inconsistency" evidence should a network adversary try to target a single communication connection. This can be used to guide peers to perform :ref:`keyhistory-verification` with identified inconsistent peers in order to gain conclusive evidence of malfeasance.
+ClaimChain permits users to check the evolution of others' keys over time. As such, it provides strong "inconsistency" evidence should a network adversary try to target a single communication connection. This can be used to guide peers to perform :ref:`history-verification` with identified inconsistent peers in order to gain conclusive evidence of malfeasance.
 
 
 
