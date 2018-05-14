@@ -292,9 +292,13 @@ We seek the following improvements:
   they want to get a different job done, e.g.,
   of sending or reading a message.
 
-- peers should only be required to perform only one "show" and one "read" of
-  bootstrap information (typically transmitted via showing QR codes and scanning them). At the end of this process both peers must receive assessments about the integrity of their past communication.
-  By contrast, current key fingerprint verification workflows (Signal, Whatsapp) require both peers each showing and scanning fingerprints. Moreover, the process only provides assurance about their current keys, and thus miss out on temporary malfeasant substitutions of keys in messages.
+- At the end of this process both peers must receive assessments about the integrity of their past communication.
+  By contrast, current key fingerprint verification workflows (Signal, Whatsapp) only provides assurance about the current keys,
+  and thus miss out on temporary malfeasant substitutions of keys in messages.
+
+- Like in the `setup-contact`_ protocol
+  peers should only be required to perform only one "show" and "read" of bootstrap information
+  (typically transmitted via showing QR codes and scanning them).
 
 In summary, the goal of the "history-verification" protocol is to allow two peers to verify key integrity of their shared historic messages.  After completion, users gain assurance that not only their current communication is safe but that their past communications have not been tampered with.
 
