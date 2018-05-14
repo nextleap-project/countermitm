@@ -47,7 +47,7 @@ Setup Contact protocol
 The goal of this protocol is to allow two peers to conveniently establish
 secure contact: exchange both their e-mail addresses and cryptographic
 identities in a verified manner. The Setup Verified Contact protocol is re-used as a building block for
-the `keyhistory-verification`_ and `verified-group`_ protocols.
+the `history-verification`_ and `verified-group`_ protocols.
 
 After running the Setup Verified Contact protocol both peers will learn the true keys of each other or else both get an error message. The protocol is safe against network modification and impersonation attacks.
 
@@ -272,26 +272,35 @@ to remove people from the group? What if they were vital in setting up the
 verification network in the initial thread?
 
 
-.. _`keyhistory-verification`:
+.. _`history-verification`:
 
-Key history verification protocol
+History verification protocol
 ---------------------------------
 
-We now present a "keyhistory-verification" techno-social protocol aimed at improving the security of communication beyond what is achieved by the other protocols in this document.
+The history verification protocol aims to improve the security of communication
+beyond what is achieved by the other protocols in this document.
 
 We seek the following improvements:
 
-- the detection of active attacks should be communicated when users engage in
-  in-person key verification workflows, as described above. This is the right time to alert users.
-  By contrast, today's key verification workflows alert the users when a
-  previously verified key has changed. At that point users typically
-  are not physically next to each other, and are rarely concerned with the key since they want to get a different job done, e.g., of sending or reading a message.
+- communicate the detection of active attacks when users
+  are engaging in verification workflows, as described above.
+  This is the right time to alert users.
+  By contrast, today's verification workflows alert the users when a
+  previously key has changed. At that point users typically
+  are not physically next to each other,
+  and are rarely concerned with the key since
+  they want to get a different job done, e.g.,
+  of sending or reading a message.
 
-- peers should only be required to perform only one "show" and one "read" of
-  bootstrap information (typically transmitted via showing QR codes and scanning them). At the end of this process both peers must receive assessments about the integrity of their past communication.
-  By contrast, current key fingerprint verification workflows (Signal, Whatsapp) require both peers each showing and scanning fingerprints. Moreover, the process only provides assurance about their current keys, and thus miss out on temporary malfeasant substitutions of keys in messages.
+- At the end of this process both peers must receive assessments about the integrity of their past communication.
+  By contrast, current key fingerprint verification workflows (Signal, Whatsapp) only provides assurance about the current keys,
+  and thus miss out on temporary malfeasant substitutions of keys in messages.
 
-In summary, the goal of the "keyhistory-verification" protocol is to allow two peers to verify key integrity of their shared historic messages.  After completion, users gain assurance that not only their current communication is safe but that their past communications have not been tampered with.
+- Like in the `setup-contact`_ protocol
+  peers should only be required to perform only one "show" and "read" of bootstrap information
+  (typically transmitted via showing QR codes and scanning them).
+
+In summary, the goal of the "history-verification" protocol is to allow two peers to verify key integrity of their shared historic messages.  After completion, users gain assurance that not only their current communication is safe but that their past communications have not been tampered with.
 
 The protocol starts with steps 1-5 of the `setup-contact`_ protocol
 using a ``kg-`` prefix instread of the ``vc-`` one. From step 6 on, the protocol proceeds as follows:
@@ -316,21 +325,21 @@ using a ``kg-`` prefix instread of the ``vc-`` one. From step 6 on, the protocol
    - NUM messages with mangled encryption
    - NUM dropped messages, i.e. sent by one party but not received by the other, or vice versa
 
-   If there are no dropped or mangled messages signal to the user "Message keyhistory verification successfull".
+   If there are no dropped or mangled messages signal to the user "history verification successfull".
 
 
 Device Loss
 ~~~~~~~~~~~
 
-A typical scenario for a key change is device loss, which leads to loosing access to one's private key. We note that when this happens, in most cases it entails also loosing access to ones key history.
+A typical scenario for a key change is device loss, which leads to loosing access to one's private key. We note that when this happens, in most cases it entails also loosing access to ones message and key history.
 
 Thus, if Bob lost his device, it is likely that Alice will have a much longer
 history for him then he has himself. However, Bob can only compare keys
 for the timespan since the device loss. While this is certainly less useful, nevertheless it would enable Alice and Bob to detect of attacks in that time.
 
-On the other hand, we can also envision users storing their key history outside of their devices. The security requirements for such a backup are much lower than for backing up the private key. It only needs to be tamper proof, i.e., its integrity is guaranteed - not confidential. This is achievable even if the private key is loss. Integrity can be achieved for instance via cryptographic signatures. As long as Bob, and others, have access to his public key he can verify that the backup has not been tampered with.
+On the other hand, we can also envision users storing their history outside of their devices. The security requirements for such a backup are much lower than for backing up the private key. It only needs to be tamper proof, i.e., its integrity is guaranteed - not confidential. This is achievable even if the private key is loss. Integrity can be achieved for instance via cryptographic signatures. As long as Bob, and others, have access to his public key he can verify that the backup has not been tampered with.
 
-An alternative is to permit that Bob recovers his key history from the message/keydata list that he receives from Alice. Then, he could validate such information with other people in subsequent out of band verifications.
+An alternative is to permit that Bob recovers his history from the message/keydata list that he receives from Alice. Then, he could validate such information with other people in subsequent out of band verifications.
 However, this method is vulnerable to collusion attacks in which Bob's
 keys are replaced in all of his peers, including Alice. It may also lead to other error cases that are much harder to investigate. We therefore discourage such an approach.
 
@@ -338,7 +347,7 @@ keys are replaced in all of his peers, including Alice. It may also lead to othe
 Keeping records of keys in messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The keyhistory verification described above rely on each MUA keeping track of the following information indexed the message-id:
+The history verification described above rely on each MUA keeping track of the following information indexed the message-id:
 
 - each e-mail address/key-fingerprint tuple it **ever** saw in an Autocrypt or an Autocrypt-Gossip from incoming mails. This means not just the most recent one(s), but the full history.
 
@@ -378,7 +387,7 @@ Do we want to prevent dropping back to not encrypting or encrypting with a diffe
 Verifying keys through onion-queries
 ------------------------------------------
 
-Up to this point this document has describe methods to securely add contacts, form groups, and verify key history in an offline scenario where users can establish an out of band channel to carry out the verification. We now discuss how the use of Autocrypt headers can be used to support continuous key verification in an online setting.
+Up to this point this document has describe methods to securely add contacts, form groups, and verify history in an offline scenario where users can establish an out of band channel to carry out the verification. We now discuss how the use of Autocrypt headers can be used to support continuous key verification in an online setting.
 
 A straightforward approach to ensure view consistency in a group is to have all members of the group continuously broadcasting their belief about other group member's keys. Unless they are fully isolated by the adversary (see Section for an analysis)This enables every member to cross check their beliefs about others and find inconsistencies that reveal an attack.
 
