@@ -51,7 +51,7 @@ the `keyhistory-verification`_ and `verified-group`_ protocols.
 
 After running the Setup Verified Contact protocol both peers will learn the true keys of each other or else both get an error message. The protocol is safe against network modification and impersonation attacks.
 
-The protocol follows a single simple UI workflow: A peer "shows" bootstrap data that is then "read" by the other peer through a trusted (Out-of-Band)channel. This means that, as opposed to current fingerprint validation workflows, the protocol only runs once instead of twice yet results in the two peers having verified keys of each other.
+The protocol follows a single simple UI workflow: A peer "shows" bootstrap data that is then "read" by the other peer through a trusted (Out-of-Band)channel. This means that, as opposed to current fingerprint verification workflows, the protocol only runs once instead of twice yet results in the two peers having verified keys of each other.
 
 On mobiles trusted channels is typically implemented using QR codes, but transfering data via USB, Bluetooth, WLAN channels or phone calls is possible as well. A trusted channel is characterized by the inability of the network layer to observe or modify the data.
 

@@ -35,30 +35,36 @@ Attack model and terminology
 We consider a *network adversary* which can access and modify network messages.
 Examples of this adversary can be an ISP, an e-mail provider, an AS,
 or an eavesdropper on a wireless network.
-The goal of the adversary is to perform a machine-in-the-middle attack on the key exchange within peers. This would enable her to i) read the content fo messages, and ii) impersonate peers.
+The goal of the adversary is to perform a machine-in-the-middle attack on the key exchange within peers. This would enable her to i) read the content of messages, and ii) impersonate peers.
 We presume that all peers are honest. They do not collaborate with the adversary and follow the protocols described in this document.
 
-Peers need access to a *trusted*, *out-of-band*, channel of communication that is not visible to the adversary, and thus cannot be manipulated. This channel can be used from end-user key verification or key authentication protocols, without fear of intervention by the adversary.
+Peers need access to a *trusted*, *out-of-band* channel of communication that is not visible to the adversary, and thus cannot be manipulated. This channel can be used from end-user key verification or key authentication protocols, without fear of intervention by the adversary.
 
 
 Problems of current key verification techniques
 +++++++++++++++++++++++++++++++++++++++++++++++
 
 In existing e2e-encrypting messengers (Signal, Whatsapp, Threema etc.)
-users perform key verification by triggering two fingerprint validation workflows: each of the two peers show and read the other's key fingerprint data through a trusted channel (often a QR code show+scan).
+users perform key verification by triggering two fingerprint verification workflows: each of the two peers show and read the other's key fingerprint data through a trusted channel (often a QR code show+scan).
 
 We observe the following issues with these schemes:
 
-- The scheme requires that both peers start the validation workflow to assert
-  that both of their encryption keys are not manipulated. Such double work has an impact on usability.
+- The scheme requires that both peers start the verification workflow to assert
+  that both of their encryption keys are not manipulated.
+  Such double work has an impact on usability.
 
-- In the case of a group group, every peer needs to verify keys with each group member to be able to assert that messages are coming from and encrypted to the true keys of members.   This requires ``N*(N-1) / 2`` verifications for a group of size ``N`` and thus it is impractical even for moderately sized groups.
+- In the case of a group, every peer needs to verify keys with each group member to
+  be able to assert that messages are coming from and encrypted to the true keys of members.
+  This requires :math:`N*(N-1) / 2` verifications for a group of size ``N`` and
+  thus it is impractical even for moderately sized groups.
 
-- This fingerprint validation only verifies the current keys. Since protocols do not store any historical information about keys, the verification can not
-  detect if there was a past temporary MITM-exchange of keys (say the network adversary
+- Fingerprint verification only involves the current keys.
+  Since protocols do not store any historical information about keys,
+  the verification can not detect if there was a past temporary
+  MITM-exchange of keys (say the network adversary
   exchanged keys for a few weeks but changed back to the "correct" keys afterwards).
 
-- The process result in users often failing to distinguish Lost/Reinstalled Device events from Machine-in-the-Middle (MITM) attacks, see for example
+- Users often fail to distinguish Lost/Reinstalled Device events from Machine-in-the-Middle (MITM) attacks, see for example
   `When Signal hits the Fan <https://eurousec.secuso.org/2016/presentations/WhenSignalHitsFan.pdf>`_.
 
 
@@ -70,13 +76,16 @@ by integrating key verification into existing messaging use cases:
 
 - the :ref:`Setup Contact protocol <setup-contact>` allows a user
   to establish a verified contact with another user.
-  The out-of-band bootstrap data, shown by one peer and read by the other through a trusted channel, transfers not only the fingerprint but also contact information (e.g., email address) so that there is no need to type in this information during the first interaction.
+  The out-of-band bootstrap data,
+  shown by one peer and read by the other through a trusted channel,
+  transfers not only the fingerprint but also contact information (e.g., email address)
+  so that there is no need to type in this information during the first interaction.
 
 - the :ref:`Verified Group protocol <verified-group>`, that extends the
   previous setup-contact protocol.
   In this protocol, the bootstrap data functions as an invite code to the group.
   The "joining" peer establishes verified contact with the inviter, and the inviter then announces the joiner as a new member. Any member may invite new members.
-  By introducing members in this incremental way, a group of size ``N`` requires only ``N-1`` verifications overall to assert that a network adversary can not compromise end-to-end encryption between group members. If one group member loses her key (e.g. through device loss), she must re-join the group via invitation of the remaining members of the verified group.
+  By introducing members in this incremental way, a group of size ``N`` requires only :math:`N-1` verifications overall to assert that a network adversary can not compromise end-to-end encryption between group members. If one group member loses her key (e.g. through device loss), she must re-join the group via invitation of the remaining members of the verified group.
 
 - the :ref:`Key History verification protocol <keyhistory-verification>`
   verifies the current keys between peers and additionally it also verifies
