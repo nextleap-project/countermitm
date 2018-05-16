@@ -228,7 +228,7 @@ can add more members. The described secure-join workflow guarantees that all mem
 
 Recall that this protocol does **not** consider key loss or change. When users observe a change in one of the Autocrypt keys belonging to the group they must intepret this as the owner of that key being removed from the group. To become a member again this user needs to run the secure join with a user that is still a member.
 
-.. figure:: join_verified_group.jpg
+.. figure:: img/join_verified_group.jpg
    :width: 200px
 
    Join-Group protocol at step 2 with https://delta.chat.
