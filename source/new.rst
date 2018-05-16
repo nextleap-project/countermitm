@@ -76,6 +76,7 @@ we however suggest
 to only exchange administrative messages with peers
 when there there is confidence they will not be displayed "raw" to users,
 and at best only send them on explicit request of users.
+
 Note that, with automated processing of administrative messages
 arises a new attack vector:
 malfeasant peers can try to inject adminstrative messages
@@ -229,7 +230,7 @@ The following messages can be tampered with
 (assuming that the adversary has learned Alice and Bob public keys,
 for a worst case scenario):
 
-1. Cleartext "vc-request" sent from Bob to Alice in step 2
+1. Cleartext "vc-request" sent from Bob to Alice in step 2, with a substituted Bob-MITM key
 
   In step 3,
   Alice cannot distinguish the MITM key inserted by the adversary
@@ -372,7 +373,7 @@ To become a member again,
 this user needs to run the secure join with a user
 that is still a member.
 
-.. figure:: join_verified_group.jpg
+.. figure:: img/join_verified_group.jpg
    :width: 200px
 
    Join-Group protocol at step 2 with https://delta.chat.
@@ -481,8 +482,7 @@ We seek the following improvements:
   are engaging in verification workflows,
   as described above.
   This is the right time to alert users.
-  By contrast,
-  today's verification workflows alert the users when a
+  By contrast, today's verification workflows alert the users when a
   previously key has changed.
   At that point users typically are not physically next to each other,
   and are rarely concerned with the key since they want
@@ -491,7 +491,7 @@ We seek the following improvements:
 - At the end of this process both peers must receive assessments
   about the integrity of their past communication.
   By contrast,
-  current key fingerprint verification workflows (Signal, Whatsapp)
+  current key fingerprint verification workflows
   only provides assurance about the current keys,
   and thus miss out on temporary malfeasant substitutions of keys in messages.
 

@@ -266,9 +266,8 @@ The best guidance we can offer is to verify users
 who we do not share a verified group with yet.
 
 
-
 Ideas not (fully) covered yet
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Force mitm attackers to split network into consistent world views.
   This requires more mitm attacks and control over different servers
