@@ -222,7 +222,7 @@ few verifications per user will already lead to a large cluster
 of verified contacts in the social graph.
 In this scenario any MITM attack will lead to inconsistencies
 observed by both the attacked parties and their neighbours.
-We quantify the likelihood of an attack in `gossip-attack`_.
+We quantify the likelihood of an attack in :ref:`gossip-attack`.
 
 To detect inconsistencies we propose
 that clients compare their own ClaimChains with those of peers,
