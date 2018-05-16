@@ -10,6 +10,7 @@ funded through the EU Horizon 2020 programme.
 During the remainder of 2018 we'd like to incorporate 
 feedback, comments and contributions,
 before publishing a "1.0" version of this paper. 
+Contributors will be listed with the final release.
 
 If you want to do Pull Requests please note that we are using 
 [Semantic Linefeeds](http://rhodesmill.org/brandon/2012/one-sentence-per-line/).
