@@ -92,8 +92,7 @@ Our key verification approach thus fits into the Autocrypt key distribution mode
 which also does not require extra services from third parties.
 
 
-..
-_`setup-contact`:
+.. _`setup-contact`:
 
 Setup Contact protocol
 -----------------------------------------
@@ -212,8 +211,7 @@ Alice and Bob.
 7. Bob's device receives "vc-contact-confirm" and shows
    "Secure contact with Alice <alice-adr> established".
 
-..
-figure:: secure_channel_foto.png
+.. figure:: secure_channel_foto.png
    :width: 200px
 
    Setup Contact protocol step 2 with https://delta.chat.
@@ -289,8 +287,7 @@ Open Questions
 - (how) could other mail apps such as K-9 Mail / OpenKeychain learn
   to speak the "setup contact" protocol?
 
-..
-_`verified-group`:
+.. _`verified-group`:
 
 Verified Group protocol
 -----------------------
@@ -375,8 +372,7 @@ To become a member again,
 this user needs to run the secure join with a user
 that is still a member.
 
-..
-figure:: join_verified_group.jpg
+.. figure:: join_verified_group.jpg
    :width: 200px
 
    Join-Group protocol at step 2 with https://delta.chat.
@@ -470,8 +466,7 @@ But what happens if the new group creator chooses to remove people from the grou
 What if they were vital in setting up the verification network in the initial thread?
 
 
-..
-_`history-verification`:
+.. _`history-verification`:
 
 History verification protocol
 ---------------------------------
@@ -657,8 +652,7 @@ and how it represents cryptographic properties to the user.
 
 
 
-..
-_`onion-verified-keys`:
+.. _`onion-verified-keys`:
 
 Verifying keys through onion-queries
 ------------------------------------------
