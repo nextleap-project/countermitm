@@ -15,7 +15,7 @@ In `gossip-attack`_ we look at how MUAs can check key consistency
 with respect to particular attacks.  MUAs can flag possible
 machine-in-the-middle (mitm) attacks on one of the direct connections
 which in turn can be used for helping users
-with prioritizing :ref:`keyhistory-verification` with those peers.
+with prioritizing :ref:`history-verification` with those peers.
 To mitigate, attackers may intercept
 multiple connections to split the recipients into mostly isolated
 groups. However, the need to attack multiple connections at once

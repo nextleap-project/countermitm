@@ -17,10 +17,10 @@ ClaimChains store *claims* that users make about their keys and their view of ot
 
 ClaimChains provide the following properties:
 
-- **Privacy of the claim it stores**, only authorized users can access the 
-   key material and cross-references being distributed. 
+- **Privacy of the claim it stores**, only authorized users can access the
+   key material and cross-references being distributed.
 
-- **Privacy of the user's social graph**, nor providers nor unauthorized 
+- **Privacy of the user's social graph**, nor providers nor unauthorized
    users can learn whose contacts a user has referenced in her ClaimChain.
 
 Additionally ClaimCains are designed to prevent *equivocation*. That is, given Alices ClaimChain, every other user must have the same view of the cross-references. In other words, it cannot be that Carol and Donald observe different versions of Bob's key. If such equivocation were possible, it would hinder the ability to resolve correct public keys.
@@ -38,13 +38,13 @@ We envision that a user stores three types of information in a ClaimChain:
 - **Self-claims**. Most importantly these include cryptographic encryption
     keys. There may also be other claims about the user herself such as identity information (screen name, real name, email or chat identifiers) or other cryptographic material needed for particular applications, like verification keys to support digital signatures. Claims about user's own data are initially self-asserted, and gain credibility by being cross-referenced in chains of other users.
 
-- **Cross-claims**. The primary claim about another user is endorsing other 
+- **Cross-claims**. The primary claim about another user is endorsing other
   user's ClaimChain as being authoritative, i.e. indicate the belief that the key material found in the self-claims of those chains is correct.
 
-- **Cryptographic metadata**. ClaimChains must contain enough information to 
-   authenticate all past states, as well as future updates of the repository. For this purpose they include digital signatures and corresponding signing public keys. 
+- **Cryptographic metadata**. ClaimChains must contain enough information to
+   authenticate all past states, as well as future updates of the repository. For this purpose they include digital signatures and corresponding signing public keys.
 
-In order to enable efficient operations without the need for another party to have full visibility of all claims in the chain, ClaimChains also have cryptographic links to past states. Furthermore, blocks include roots of high-integrity data structures that enable fast proofs of inclusion of a claim in the ClaimChain. 
+In order to enable efficient operations without the need for another party to have full visibility of all claims in the chain, ClaimChains also have cryptographic links to past states. Furthermore, blocks include roots of high-integrity data structures that enable fast proofs of inclusion of a claim in the ClaimChain.
 
 Any of the claims can be public(readable by anyone), or private. The readability of private claims on a chain is enforced using a cryptographic access control mechanism based on capabilities. Only users that are provided with a capability for reading a particular cross-reference in a ClaimChain can read such claim, or even learn about its existence.
 
@@ -55,7 +55,7 @@ Use and architecture
 
 This section discusses how ClaimChains can be integrated into Autocrypt. It considers that:
 
-- ClaimChains themselves are retrieved and uploaded from an online storage whenever a message is sent or received times, 
+- ClaimChains themselves are retrieved and uploaded from an online storage whenever a message is sent or received times,
 - ClaimChains heads are transferred using email headers.
 
 This version is currently being implementated at https://github.com/nextleap-project/muacryptcc
@@ -90,7 +90,16 @@ Evaluating ClaimChains to guide verification
 
 Verifying contacts requires effort and meeting in person or relying on another trusted channel. We aim at providing users with means to identify which contacts are the most relevant to validate in order to maintain the security of their communication.
 
-The first in-person verification is particularly important. Getting a good first verified contact prevents full isolation of the user, since at that point it is not possible anymoire to perform MITM attacks on all of her connections. Due to the small world phenomenon in social networks few verifications per user will already lead to a large cluster of verified contacts in the social graph. In this scenario any MITM attack will lead to inconsistencies observed by both the attacked parties and their neighbours. We quantify the likelihood of an attack in `gossip-attack`_.
+The first in-person verification is particularly important.
+Getting a good first verified contact prevents full isolation of the user,
+since at that point it is not possible anymoire to perform MITM attacks on all
+of her connections.
+Due to the small world phenomenon in social networks
+few verifications per user will already lead to a large cluster of
+verified contacts in the social graph.
+In this scenario any MITM attack will lead to inconsistencies
+observed by both the attacked parties and their neighbours.
+We quantify the likelihood of an attack in :ref:`gossip-attack`.
 
 To detect inconsistencies we propose that clients compare their own ClaimChains of with those of peers, as well as the peers ClaimChains with each other. Inconsistencies appear as claims by one peer about another peer's key material that differ accross the evaluated ClaimChains.
 
@@ -109,7 +118,7 @@ In the absence of inconsistencies we would therefore like to guide the user towa
 
 
 Ideas not (fully) covered yet
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Force mitm attackers to split network into consistent world views.
   This requires more mitm attacks and control over different servers
