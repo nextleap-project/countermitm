@@ -188,7 +188,7 @@ Verified groups provide these simple to understand properties:
 1. All messages in a verified group are end-to-end encrypted and secure against
    active provider/network attackers. That is, they cannot be read by a passive eavesdropper, nor intercepted by an active adversary attempting a Man-in-the-middle attack.
 
-2. There are never any warnings about changed keys (like in Signal) that could
+2. There are never any warnings about changed keys that could
    be clicked away or cause worry. Rather, if a group member loses her device or her key, then she also looses the ability to read from or write to the verified group. To regain access it is required that this user joins the group again by find one group member an perform a "secure-join" as described below.
 
 
@@ -307,7 +307,7 @@ We seek the following improvements:
   of sending or reading a message.
 
 - At the end of this process both peers must receive assessments about the integrity of their past communication.
-  By contrast, current key fingerprint verification workflows (Signal, Whatsapp) only provides assurance about the current keys,
+  By contrast, current key fingerprint verification workflows only provides assurance about the current keys,
   and thus miss out on temporary malfeasant substitutions of keys in messages.
 
 - Like in the `setup-contact`_ protocol

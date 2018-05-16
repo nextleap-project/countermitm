@@ -55,7 +55,7 @@ without fear of intervention by the adversary.
 Problems of current key verification techniques
 +++++++++++++++++++++++++++++++++++++++++++++++
 
-In existing e2e-encrypting messengers (Signal, Whatsapp, Threema etc.)
+In existing e2e-encrypting messengers
 users perform key verification by triggering two fingerprint verification workflows:
 each of the two peers show and read the other's key fingerprint data
 through a trusted channel (often a QR code show+scan).
