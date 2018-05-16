@@ -35,6 +35,7 @@ in order to impersonate another user or to learn if a particular user is online.
 Lastly we note that all described protocols are *decentralized* in that they describe
 ways of how peers (or their devices) can interact with each other, without having
 to rely on services from third parties.
+
 Our key verification approach thus fits into the Autocrypt key distribution model
 which also does not require extra services from third parties.
 
@@ -128,26 +129,39 @@ A network layer attacker could try to intercept messages and substitute the keys
 
 The following messages can be tampered with (assuming that the adversary has learned Alice and Bob public keys, for a worst case scenario):
 
-1. Cleartext "vc-request" sent from Bob to Alice in step 2
+1. Cleartext "vc-request" sent from Bob to Alice in step 2, with a substituted Bob-MITM key
 
-- In step 3, Alice cannot distinguish the MITM key inserted by the adversary
-  from Bob's real key, since she has not seen Bob's key in the past. Thus, she will follow the protocol an reply "vc-auth-request" encrypted with the key provided by the adversary.
+   In step 3, Alice cannot distinguish the MITM key inserted by the adversary
+   from Bob's real key, since she has not seen Bob's key in the past.
+   Thus, she will follow the protocol and send a "vc-auth-request" message
+   encrypted with Bob-MITM.
 
-2. The attacker can decrypt the content of this message but it will fail to
-  cause a successful completion of the protocol:
+2. The adversary can decrypt the content of the ``vc-auth-request`` message
+   but it will fail to cause a successful completion of the protocol:
 
-- **failed Alice-impersonation**: If the provider substitutes the
-  "vc-auth-required" message (step 3) from Alice to Bob with a Alice-MITM key, then the protocol terminates with 4a because the key does not match ``Alice_FP`` from step 1.
+   - **failed Alice-impersonation**: If the provider substitutes the
+     "vc-auth-required" message (step 3) from Alice to Bob with a
+     Alice-MITM key, then the protocol terminates with 4a because
+     the key does not match ``Alice_FP`` from step 1.
 
-- **failed Bob-impersonation**: If the provider forwards the step 3
-  "vc-auth-request" message unmodified to Bob, then Bob will in 4b send the "vc-request-with-auth" message encrypted to Alice's true key.
-  There are now three possibilities for the attacker:
+   - **failed Bob-impersonation**: If the provider forwards the step 3
+     "vc-auth-request" message unmodified to Bob, then Bob will in 4b send
+     the "vc-request-with-auth" message encrypted to Alice's true key.
+     There are now three possibilities for the attacker:
 
-  * dropping the message, which will terminate the protocol without success.
+     * dropping the message, which will terminate the protocol without success.
 
-  * create a fake message, which requires to guess the challenge ``AUTH`` that Bob received through the out of band channel. This guess will only be correct in 2**{-64}. Thus, with overwhelming probability Alice will detect the forgery in step 5 and the protocol terminates without success.
+     * create a fake message, which requires to guess the challenge ``AUTH`` that
+       Bob received through the out of band channel.
+       This guess will only be correct in 2**{-64}.
+       Thus, with overwhelming probability Alice will
+       detect the forgery in step 5 and the protocol terminates without success.
 
-  * forward Bob's original message to Alice. Since this message contains Bob's key fingerprint ``Bob_FP``, Alice will detect in step 5 that Bob's "vc-request" from step 3 had the wrong key (Bob-MITM) and the protocol terminates unsuccessfully.
+     * forward Bob's original message to Alice.
+       Since this message contains Bob's true key fingerprint ``Bob_FP``,
+       Alice will detect in step 5 that Bob's "vc-request"
+       from step 3 had the wrong key (Bob-MITM) and
+       the protocol terminates unsuccessfully.
 
 
 Open Questions

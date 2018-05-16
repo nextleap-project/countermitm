@@ -1,14 +1,19 @@
+.. raw:: latex
+
+   \pagestyle{plain}
+   \cfoot{countermitm \countermitmrelease}
+
 Introduction
 ============
 
 We present and discuss new ways to prevent and detect active
 network attacks against Autocrypt_-capable mail apps.
-The Level 1 Autocrypt spec offers users single-click,
+The Level 1 Autocrypt spec offers users
 opt-in e-mail encryption
 but does not discuss active network adversaries who could
 tamper with the Autocrypt header during e-mail message transport.
 
-With our efforts we aim to help establish a "reverse panopticon":
+We aim to help establish a "reverse panopticon":
 a network adversary should not be able to distinguish when or if peers
 discover malfeasant manipulations,
 or even if they exchange information to investigate attacks.

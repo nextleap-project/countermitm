@@ -231,6 +231,11 @@ latex_elements = {
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
 
+     'preamble': '''
+\\newcommand{\\countermitmrelease}{%s}
+\\setcounter{secnumdepth}{3}
+'''%(release,),
+
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
 }
@@ -277,7 +282,7 @@ latex_domain_indices = False
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'countermitm', u'Counter Mitm Documentation',
+    (master_doc, 'countermitm', u'Detecting and preventing active attacks against Autocrypt',
      [author], 1)
 ]
 
