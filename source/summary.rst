@@ -13,7 +13,7 @@ opt-in e-mail encryption
 but does not discuss active network adversaries who could
 tamper with the Autocrypt header during e-mail message transport.
 
-We aim to help establish a "reverse panopticon":
+We aim to help establish a *reverse panopticon*:
 a network adversary should not be able to distinguish when or if peers
 discover malfeasant manipulations,
 or even if they exchange information to investigate attacks.
