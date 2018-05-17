@@ -212,7 +212,7 @@ Alice and Bob.
 7. Bob's device receives "vc-contact-confirm" and shows
    "Secure contact with Alice <alice-adr> established".
 
-.. figure:: secure_channel_foto.jpg
+.. figure:: ../images/secure_channel_foto.jpg
    :width: 200px
 
    Setup Contact protocol step 2 with https://delta.chat.
@@ -373,7 +373,7 @@ To become a member again,
 this user needs to run the secure join with a user
 that is still a member.
 
-.. figure:: img/join_verified_group.jpg
+.. figure:: ../images/join_verified_group.jpg
    :width: 200px
 
    Join-Group protocol at step 2 with https://delta.chat.
