@@ -212,7 +212,7 @@ Alice and Bob.
 7. Bob's device receives "vc-contact-confirm" and shows
    "Secure contact with Alice <alice-adr> established".
 
-.. figure:: secure_channel_foto.png
+.. figure:: secure_channel_foto.jpg
    :width: 200px
 
    Setup Contact protocol step 2 with https://delta.chat.
