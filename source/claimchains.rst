@@ -120,7 +120,7 @@ for reading a particular cross-reference in a ClaimChain
 can read such claim,
 or even learn about its existence.
 
-Other material needed for ensuring privacy and non-equivocatoin is also included,
+Other material needed for ensuring privacy and non-equivocation is also included,
 as described in detail in `here <https://claimchain.github.io/>`_.
 
 Use and architecture
@@ -135,7 +135,7 @@ It considers that:
 
 - ClaimChains heads are transferred using email headers.
 
-This version is currently being implementated at
+This version is currently being implemented at
 https://github.com/nextleap-project/muacryptcc
 
 
@@ -165,7 +165,7 @@ This is currently not available in the implementation
 Constructing New Blocks
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The absence of a claim can not be destinguished
+The absence of a claim can not be distinguished
 from the lack of a capability for that claim.
 Therefore,
 to prove that a ClaimChain is not equivocating about keys gossiped in the past
@@ -223,7 +223,7 @@ To detect inconsistencies we propose
 that clients compare their own ClaimChains with those of peers,
 as well as the peers ClaimChains with each other.
 Inconsistencies appear as claims by one peer about another peer's key material
-that differ accross the evaluated ClaimChains.
+that differ across the evaluated ClaimChains.
 
 Given inconsistency of a key it is not possible
 to identify unequivocally which connection is under attack:
@@ -289,14 +289,14 @@ Open Questions
 ~~~~~~~~~~~~~~
 
 how could we signal/mark entries or create claims
-that relate to successfull OOB-verifications between keys?
+that relate to successful OOB-verifications between keys?
 
 
 Problems noticed
 ~~~~~~~~~~~~~~~~
 
 
-- complex to specify interoperable wire format of Claimchains
+- complex to specify interoperable wire format of ClaimChains
   and all of the involved cryptographic algorithms
 
 - Autocrypt-gossip + DKIM already make it hard for providers to equivocate.
@@ -314,7 +314,7 @@ Mitigating Equivocation in different blocks
 The easiest way to circumvent the non-equivocation property
 is to send different blocks to two different parties.
 
-We work around this by prooving to our peers
+We work around this by proving to our peers
 that we did not equivocate in any of the blocks.
 
 The person who can best confirm the data in a block
