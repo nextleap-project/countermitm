@@ -2,7 +2,7 @@
 
     \newpage
 
-Using DKIM key gossip to guide key verification
+Using DKIM signature checks to guide key verification
 =======================================================
 
 With `DomainKeys Identified Mail (DKIM) <https://dkimorg>`_,
