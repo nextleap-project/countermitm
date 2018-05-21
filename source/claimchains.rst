@@ -5,11 +5,6 @@
 Key consistency with ClaimChains
 ================================
 
-In the previous section we proposed a "keyhistory-verification" protocol
-that enable users to verify
-that they have not have been subject
-to a man in the middlea attack during a timeframe.
-
 In this section we show how ClaimChains,
 a data structure
 that can be used to store users' key history in a secure and privacy-preserving way,
@@ -306,9 +301,6 @@ Problems noticed
 
 - Autocrypt-gossip + DKIM already make it hard for providers to equivocate.
   CC don't add that much (especially in relation to the complexity they introduce)
-
-- D2.4 (encrypted messaging, updated identity)
-  also discusses benefits of Autocrypt/gossip
 
 - lack of underlying implementation for different languages
 
