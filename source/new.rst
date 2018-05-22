@@ -446,6 +446,28 @@ Notes on the verified group protocol
   the techniques described here for "secure threads".
 
 
+Autocrypt and verified key state
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Verified key material
+- whether from verified contacts or verified groups -
+provides stronger security guarantees
+then keys discovered in Autocrypt headers.
+
+Therefore the address key mappings should be stored separately
+and used over Autocrypt keys in case of conflicts.
+
+This way verified contacts and groups prevent key injection through
+Autocrypt headers.
+
+In order to allow users to recover from device loss
+the recommendation is to perform new verifications.
+
+Since this may not always be feasible
+clients should provide the users with a way
+to actively move back to an unverified state.
+
+
 Open Questions about reusing verifications for new groups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
