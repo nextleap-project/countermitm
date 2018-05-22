@@ -6,10 +6,13 @@ Using Autocrypt key gossip to guide key verification
 =====================================================================
 
 Autocrypt Level 1 introduces `key gossip <https://autocrypt.org/level1.html#key-gossip>`_
-where a sender adds ``Autocrypt-Gossip`` headers to the encrypted part of a multi-recipient
-message.  This was introduced to ensure users are able to reply encrypted.
-Because encrypted message parts are always signed, recipients may interpret
-the gossip keys as a form of third-party verification.
+where a sender adds ``Autocrypt-Gossip`` headers
+to the encrypted part of a multi-recipient message.
+This was introduced to ensure users are able to reply encrypted.
+Because according to the Autocrypt specification
+encrypted message parts are always signed,
+recipients may interpret the gossip keys
+as a form of third-party verification.
 
 In `gossip-attack`_ we look at how MUAs can check key consistency
 with respect to particular attacks.  MUAs can flag possible
@@ -42,26 +45,29 @@ Attacking group communication on a single connection
    Targetted attack on a single connection
 
 
-The attacker intercepts the initial message from Alice to Bob (1) and
-replaces Alices key ``a`` with a mitm key ``a'`` (2). When Bob replies
-(3) the attacker decrypts the message, replaces Bobs key ``b`` with
-``b'``, encrypts the message to ``a`` and passes it on to Alice (4).
+The attacker intercepts the initial message from Alice to Bob (1)
+and replaces Alices key ``a`` with a mitm key ``a'`` (2).
+When Bob replies (3)
+the attacker decrypts the message,
+replaces Bobs key ``b`` with ``b'``,
+encrypts the message to ``a``
+and passes it on to Alice (4).
 
-Both Bob and Alice also communicate with Claire (5,6,7,8). Even if the
-attacker chooses to not attack this communication the attack on a single
-connection poses a significant risk for group communication amongst the
-three.
+Both Bob and Alice also communicate with Claire (5,6,7,8).
+Even if the attacker chooses to not attack this communication
+the attack on a single connection poses a significant risk
+for group communication amongst the three.
 
-Since each group message goes out to everyone in the group the attacker
-can read the content of all messages sent by Alice or Bob. Even worse
-... it's a common habit in a number of messaging systems to include
-quoted text from previous messages. So despite only targetting two
-participants the attack can provide access to a large part of the groups
-conversation.
+Since each group message goes out to everyone in the group
+the attacker can read the content of all messages sent by Alice or Bob.
+Even worse ... it's a common habit in a number of messaging systems
+to include quoted text from previous messages.
+So despite only targetting two participants
+the attack can provide access to a large part of the groups conversation.
 
-Therefore participants need to worry about the correctness of the
-encryption keys they use but also of those of everyone else in the
-group.
+Therefore participants need to worry
+about the correctness of the encryption keys they use
+but also of those of everyone else in the group.
 
 Detecting mitm through gossip inconsistencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,16 +159,19 @@ unnoticed in v verification attempts is:
 :math:`= \frac{ \frac{g!}{(g-v)!} }{ \frac{c!}{(c-v)!} }`
 :math:`= \frac{ g! (c-v)! }{ c! (g-v)! }`
 
-The attached tables list the resulting detection probabilities for
-groups of up to 18 members.
-
 Single Attack
 ~~~~~~~~~~~~~
 
 As said above without checking gossip an attacker can access a relevant
 part of the group conversation and all direct messages between two
-people by attacking their connection and nothing else. The likelihood of
-a single such verification being successful is shown in the first table.
+people by attacking their connection and nothing else.
+
+In order to detect the attack
+key verification needs to be performed on the right connection.
+In a group of 3 users there are 3 direct connections.
+Therefor the chance of a single key verificatoin for detecting
+the attack is :math:`\frac{1}{3}`.
+In a group of 10 the chances are even slimmer: `\frac{1}{45} \approx 2%`
 
 Isolation attack
 ~~~~~~~~~~~~~~~~
@@ -172,10 +181,6 @@ This is the smallest attack possible that still provides consistent
 world views for all group members. Even a single verification will
 detect an isolation attack with a probability > 20% in groups smaller
 than 10 people and > 10% in groups smaller than 20 people.
-
-One verification per participant on average (yellow background) would
-lead to detection rates of > 66%. With two verifications per
-participant, this can go up to > 99% detection probability.
 
 Isolation attacks can be detected in all cases if every participant
 performs at least 1 OOB-verification.
@@ -200,27 +205,3 @@ person and two members of the group are socially or geographically
 isolated chances are they will verify each others fingerprints and are
 less likely to verify fingerprints with anyone else. Including such
 information can significantly reduce the risk for an attacker.
-
-
-
-Open Questions
---------------
-
-Establishing key consistency in an existing group
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Dealing with device loss
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Improving privacy properties
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-So far the introduction of a new user to group communication leaks the
-information who introduced the new user. This may be a desired property
-of the communication scheme and is similar to how email users already
-learn who added a new participant to a CC'ed email thread. However in
-contexts similar to mailing lists it may be interesting to provide
-confidentiality guarantees without revealing who met whom for
-out-of-band verification. Notice however that the idea of key gossip
-does not allow for recipient anonymity.
-
