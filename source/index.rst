@@ -8,6 +8,7 @@ Detecting and preventing active attacks against Autocrypt
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
    summary.rst
    new.rst
