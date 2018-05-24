@@ -21,6 +21,11 @@ High level overview of the ClaimChain design
 
 ClaimChains store *claims*
 that users make about their keys and their view of others' keys.
+The chain is self-authenticating and encrypted.
+Cryptographic access control is implemented via capabilities.
+This way the chains can be made publicly available in a block store
+without privacy implications.
+
 Claims come in two forms:
 self-claims,
 in which a user shares information about her own key material,
@@ -78,7 +83,7 @@ and authenticate the validity of newer blocks.
 In particular,
 a user with access to the *head* of the chain can validate the full chain.
 
-We envision that a user stores three types of information in a ClaimChain:
+We consider that a user stores three types of information in a ClaimChain:
 
 - **Self-claims**.
     Most importantly these include cryptographic encryption keys.
@@ -121,7 +126,7 @@ can read such claim,
 or even learn about its existence.
 
 Other material needed for ensuring privacy and non-equivocation is also included,
-as described in detail in `here <https://claimchain.github.io/>`_.
+as described in detail at https://claimchain.github.io .
 
 Use and architecture
 --------------------
@@ -135,15 +140,19 @@ It considers that:
 
 - ClaimChain heads are transferred using email headers.
 
-This version is currently being implemented at
-https://github.com/nextleap-project/muacryptcc
+This version is being implemented at
+https://github.com/nextleap-project/muacryptcc .
 
 
 Inclusion in Messages
 ~~~~~~~~~~~~~~~~~~~~~
 
-The Autocrypt and Gossip headers are the same as usual.
-In addition we include a header
+When Autocrypt gossip includes keys of other users in an email
+claims about these keys are included in the senders chain.
+The email will reference the senders chain as follows:
+
+The Autocrypt and gossip headers are the same as usual.
+In addition we include a single header
 that is used to transmit
 the sender head imprint (root hash of our latest CC block)
 in the encrypted and signed part of the message:
@@ -152,8 +161,11 @@ in the encrypted and signed part of the message:
 
 Once a header is available,
 the corresponding ClaimChain block can be retrieved
-from the online service.
-This block contains pointers to previous blocks
+from the block service.
+After retrieving the chain the recipients can verify
+that the other recipients keys are properly included in the chain.
+
+The block also contains pointers to previous blocks
 such that the chain can be efficiently traversed.
 
 Mitigating Equivocation in different blocks
@@ -232,14 +244,13 @@ to learn each other keys and ClaimChain heads.
 
 Note that due to the privacy preserving nature of ClaimChain
 these keys will not be revealed to anyone else
-even if if the block data is publically accessible.
+even if the block data is publically accessible.
 
 
 Evaluating ClaimChains to guide verification
 ----------------------------------------------
 
-Verifying contacts requires effort,
-and meeting in person,
+Verifying contacts requires meeting in person,
 or relying on another trusted channel.
 We aim at providing users with means to identify
 which contacts are the most relevant to validate
@@ -257,8 +268,7 @@ In this scenario any MITM attack will lead to inconsistencies
 observed by both the attacked parties and their neighbours.
 We quantify the likelihood of an attack in :ref:`gossip-attack`.
 
-To detect inconsistencies we propose
-that clients compare their own ClaimChains with those of peers.
+To detect inconsistencies clients can compare their own ClaimChains with those of peers.
 Inconsistencies appear as claims by one peer about another peer's key material
 that differ from ones own observation.
 
