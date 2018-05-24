@@ -23,8 +23,9 @@ ClaimChains store *claims*
 that users make about their keys and their view of others' keys.
 The chain is self-authenticating and encrypted.
 Cryptographic access control is implemented via capabilities.
-This way the chains can be made publicly available in a block store
-without privacy implications.
+In our design, the chains are stored as linked blocks
+with a publicly accessible block storage service
+in a privacy-preserving way.
 
 Claims come in two forms:
 self-claims,
@@ -160,8 +161,8 @@ in the encrypted and signed part of the message:
    GossipClaims: <head imprint of my claim chain>
 
 Once a header is available,
-the corresponding ClaimChain block can be retrieved
-from the block service.
+the corresponding ClaimChain block(s) can be retrieved
+from the block storage service.
 After retrieving the chain the recipients can verify
 that the other recipients keys are properly included in the chain.
 
