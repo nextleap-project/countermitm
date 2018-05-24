@@ -131,9 +131,9 @@ It considers that:
 
 - ClaimChains themselves are retrieved and uploaded
   from an online storage
-  whenever a message is sent or received times,
+  whenever a message is sent or received,
 
-- ClaimChains heads are transferred using email headers.
+- ClaimChain heads are transferred using email headers.
 
 This version is currently being implemented at
 https://github.com/nextleap-project/muacryptcc
@@ -151,15 +151,51 @@ in the encrypted and signed part of the message:
    GossipClaims: <head imprint of my claim chain>
 
 Once a header is available,
-the corresponding ClaimChain block can be retrieved from the online service.
+the corresponding ClaimChain block can be retrieved
+from the online service.
 This block contains pointers to previous blocks
 such that the chain can be efficiently traversed.
+
+Mitigating Equivocation in different blocks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The easiest way to circumvent the non-equivocation property
+is to send different blocks to two different parties.
+
+We work around this by proving to our peers
+that we did not equivocate in any of the blocks.
+
+The person who can best confirm the data in a block
+is the owner of the respective key.
+
+Proofs of inclusion
+~~~~~~~~~~~~~~~~~~~
+
+Proofs of inclusion allow
+verifying the inclusion of claims in the chain
+without retrieving the entire block.
 
 The ClaimChain design suggests
 to include proofs of inclusion
 for the gossiped keys in the headers.
 This way the inclusion in the given block could be verified offline.
-This is currently not available in the implementation
+
+However in order to prevent equivocation
+all blocks since the last one we know need to be checked.
+Therefore we would have to include proofs of inclusion
+for all recipients and for all blocks
+since they last saw the chain.
+This in turn would require tracking the state
+each peer last saw of our own chain.
+
+We decided against adding the complexity involved.
+Instead we require users to be online
+to verify the inclusion of their own keys
+in peers chains and the overall consistency
+of their peers claims.
+
+This fits nicely with the recommendation guidance workflow
+described below.
 
 
 Constructing New Blocks
@@ -167,13 +203,14 @@ Constructing New Blocks
 
 The absence of a claim can not be distinguished
 from the lack of a capability for that claim.
-Therefore,
-to prove that a ClaimChain is not equivocating about keys gossiped in the past
+Therefore, to prove
+that a ClaimChain is not equivocating about keys gossiped in the past
 they need to include,
 in every block,
 claims corresponding to those keys,
 and grant access to all peers
 with whom the key was shared in the past.
+
 When constructing a new block
 we start by including all claims about keys present in the last block,
 and their corresponding capabilities.
@@ -212,6 +249,7 @@ The first in-person verification is particularly important.
 Getting a good first verified contact prevents full isolation of the user,
 since at that point it is not possible anymore
 to perform MITM attacks on all of her connections.
+
 Due to the small world phenomenon in social networks
 few verifications per user will already lead to a large cluster
 of verified contacts in the social graph.
@@ -220,10 +258,9 @@ observed by both the attacked parties and their neighbours.
 We quantify the likelihood of an attack in :ref:`gossip-attack`.
 
 To detect inconsistencies we propose
-that clients compare their own ClaimChains with those of peers,
-as well as the peers ClaimChains with each other.
+that clients compare their own ClaimChains with those of peers.
 Inconsistencies appear as claims by one peer about another peer's key material
-that differ across the evaluated ClaimChains.
+that differ from ones own observation.
 
 Given inconsistency of a key it is not possible
 to identify unequivocally which connection is under attack:
@@ -242,6 +279,9 @@ Therefore we suggest
 that the recommendation regarding the verification of contacts
 is based on the number of inconsistencies observed.
 
+Split world view attacks
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 Note, however,
 that the fact that peers' claims are consistent does not imply
 that no attack is taking place.
@@ -250,6 +290,9 @@ that to get to this situation an attacker has to split the social graph
 into groups with consistent ideas about their peers keys.
 This is only possible
 if there are no verified connections between the different groups.
+It also requires mitm attacks on more connections
+possibly involving different providers.
+Therefore checking consistency makes the attack both harder and easier to detect.
 
 In the absence of inconsistencies
 we would therefore like to guide the user towards verifying contacts
@@ -260,36 +303,29 @@ we cannot detect this property.
 The best guidance we can offer is to verify users
 who we do not share a verified group with yet.
 
+Inconsistencies between other peoples chains
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Ideas not (fully) covered yet
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In addition to checking consistency with the own chain
+the clients could also compare claims
+across the ClaimChains of other people.
+However, inconsistencies between the chains of others
+are a lot harder to investigate.
+Therefore their use for guiding the user is very limited.
+Effectively the knowledge about conflicts
+between other peoples chains
+is not actionable for the user.
+They could verify with one of their peers
+- but even that would not lead to conclusive evidence.
 
-- Force mitm attackers to split network into consistent world views.
-  This requires more mitm attacks and control over different servers
-  rendering the attack both harder and easier to detect.
-
-- Cross-referenced chains
-  allow for keeping consistency across contacts cryptographic information,
-  making (temporary) isolation attacks harder:
-
-  -> if A and B know C's head imprint...
-  they can verify
-  that neither C nor C's provider equivocate on any gossiped email
-
-- claim chains provide an ordered history of keys.
-  This allows determining which is the later one of two available keys.
-
-- on device loss key history could maybe be recovered
-  from claim chains through peers who serve as an entry point.
-  (claims may remain unreadable though.)
-
-
-
-Open Questions
-~~~~~~~~~~~~~~
-
-how could we signal/mark entries or create claims
-that relate to successful OOB-verifications between keys?
+In addition our implementation stores claims
+about all keys in active use
+in its own claimchain.
+Therefore if the user communicates with the person in question
+at least one of the conflicting keys of peers
+will conflict with our own recorded key.
+We refrain from asking the user to verify people
+they do not communicate with.
 
 
 Problems noticed
@@ -300,7 +336,8 @@ Problems noticed
   and all of the involved cryptographic algorithms
 
 - Autocrypt-gossip + DKIM already make it hard for providers to equivocate.
-  CC don't add that much (especially in relation to the complexity they introduce)
+  CC don't add that much
+  (especially in relation to the complexity they introduce)
 
 - lack of underlying implementation for different languages
 
@@ -308,14 +345,3 @@ Problems noticed
   (we can postpone storage updates to the time we actually send mail)
 
 
-Mitigating Equivocation in different blocks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The easiest way to circumvent the non-equivocation property
-is to send different blocks to two different parties.
-
-We work around this by proving to our peers
-that we did not equivocate in any of the blocks.
-
-The person who can best confirm the data in a block
-is the owner of the respective key.
