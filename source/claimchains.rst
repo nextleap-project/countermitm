@@ -156,7 +156,7 @@ The Autocrypt and gossip headers are the same as usual.
 In addition we include a single header
 that is used to transmit
 the sender head imprint (root hash of our latest CC block)
-in the encrypted and signed part of the message:
+in the encrypted and signed part of the message::
 
    GossipClaims: <head imprint of my claim chain>
 
