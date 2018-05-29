@@ -1,10 +1,12 @@
 
-0.9.1
------
+0.9.1 (typo/word/format-fixing)
+-------------------------------
 
-- fix several typos
+- enable html numbering
 
-- fix title of dkim section
+- fix title of dkim section, and several typos
+
+- streamline wording in claimchain, fix typos
 
 0.9.0
 -----
