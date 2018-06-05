@@ -109,33 +109,42 @@ which does not require extra services from third parties either.
 Setup Contact protocol
 -----------------------------------------
 
-The goal of this protocol is
+The goal of the Setup Contact protocol is
 to allow two peers to conveniently establish secure contact:
 exchange both their e-mail addresses and cryptographic identities in a verified manner.
-The Setup Verified Contact protocol is re-used
+This protocol is re-used
 as a building block
 for the `history-verification`_ and `verified-group`_ protocols.
 
-After running the Setup Verified Contact protocol,
-both peers will learn the true keys of each other
+After running the Setup Contact protocol,
+both peers will learn the cryptographic identities (i.e., the keys) of each other
 or else both get an error message.
-The protocol is safe against network modification and impersonation attacks.
+The protocol is safe against active attackers that can modify, create and delete
+messages.
 
 The protocol follows a single simple UI workflow:
 A peer "shows" bootstrap data
-that is then "read" by the other peer through a trusted (Out-of-Band)channel.
+that is then "read" by the other peer through a trusted (out-of-band) channel.
 This means that,
 as opposed to current fingerprint verification workflows,
 the protocol only runs once instead of twice,
 yet results in the two peers having verified keys of each other.
 
-On mobiles trusted channels is typically implemented using QR codes,
-but transfering data via USB, Bluetooth, WLAN channels or phone calls
+On mobile phones, trusted channels are typically implemented using QR codes,
+but transferring data via USB, Bluetooth, WLAN channels or phone calls
 is possible as well.
-A trusted channel is characterized by the inability of the network layer
-to observe or modify the data.
+Recall that
+we assume that
+our active attacker *cannot* observe or modify data transferred via the
+trusted channel.
 
-The protocol relies on the underlying encryption scheme being not malleable.
+..
+  TODO: where is the non-malleability is needed? What is the non-malleability
+  property that this requires. Would it not be better to have or suggest
+  authenticated encryption
+
+The Setup Contact protocol requires that
+the underlying encryption scheme is non-malleable.
 In the case of OpenPGP this is achieved
 with Modification Detection Codes (MDC - see section 5.13 and 5.14 of RFC 4880).
 Implementers need to make sure
@@ -147,18 +156,18 @@ of the proposed UI and administrative message workflow
 for establishing a secure contact between two contacts,
 Alice and Bob.
 
-1. Alice sends a bootstrap code to Bob through a trusted channel.
+1. Alice sends a bootstrap code to Bob through a trusted out-of-band channel.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
-     which acts as a commitment to the key
-     that Alice's will send later in the protocol,
+     which acts as a commitment to the 
+     Alice's Autocrypt key, which she will send later in the protocol,
 
    - Alice's e-mail address (both name and routable address),
 
-   - oob-transferred type ``TYPE=vc-invite``
+   - A type ``TYPE=vc-invite`` of the out-of-band transfer
 
-   - a ``INVITENUMBER`` a challenge of at least 8 bytes.
+   - a challenge ``INVITENUMBER`` of at least 8 bytes.
      This challenge is used by Bob's device in step 2b
      to prove to Alice's device
      that it is the device involved in the trusted out-of-band communication.
@@ -171,7 +180,7 @@ Alice and Bob.
      which Bob's device uses in step 4
      to authenticate itself against Alice's device.
 
-2. Bob receives the OOB-transmitted bootstrap data from the trusted channel and
+2. Bob receives the bootstrap data from the trusted out-of-band channel and
 
    a) If Bob's device knows a key that matches ``Alice_FP``
       the protocol continues with 4b)
@@ -179,14 +188,15 @@ Alice and Bob.
    b) otherwise Bob's device sends
       a cleartext "vc-request" message to Alice's e-mail address,
       adding the ``INVITENUMBER`` from step 1 to the message.
+      Bob's device automatically includes Bob's AutoCrypt key in the message.
 
 3. Alice's device receives the "vc-request" message.
 
    If she recognizes the ``INVITENUMBER`` from step 1
    she processes Bob's Autocrypt key.
    Then, she uses this key
-   to encrypt a reply "vc-auth-required"
-   that also contains her own Autocrypt key.
+   to create an encrypted "vc-auth-required" message
+   containing her own Autocrypt key, which she sends to Bob.
 
    If the ``INVITENUMBER`` does not match
    then Alice terminates the protocol.
@@ -204,7 +214,7 @@ Alice and Bob.
       a 'vc-request-with-auth' encrypted message
       whose encrypted part contains
       Bob's own key fingerprint ``Bob_FP``
-      and the ``AUTH`` value from step 1.
+      and the second challenge ``AUTH`` from step 1.
 
 5. Alice decrypts Bob's 'vc-request-with-auth' message,
    and verifies
@@ -216,12 +226,19 @@ Alice and Bob.
    "Could not establish secure connection to Bob"
    and the protocol terminates.
 
-6. If the verification succeeds on Alices device it shows
+6. If the verification succeeds on Alice's device it shows
    "Secure contact with Bob <bob-adr> established".
    In addition it sends Bob a "vc-contact-confirm" message.
 
 7. Bob's device receives "vc-contact-confirm" and shows
    "Secure contact with Alice <alice-adr> established".
+
+
+At the end of this protocol, Alice has learned and validated the contact
+information and Autocrypt key of Bob, the person to whom she sent the bootstrap
+code via the trusted channel. Moreover, Bob has learned and validated the
+contact information and Autocrypt key of Alice, the person who sent the
+bootstrap code via the trusted channel to Bob.
 
 .. figure:: ../images/secure_channel_foto.jpg
    :width: 200px
@@ -229,60 +246,109 @@ Alice and Bob.
    Setup Contact protocol step 2 with https://delta.chat.
 
 
+An active attacker cannot break the security of the Setup Contact protocol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Network attackers can not impersonate Bob nor Alice
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+..
+  TODO: Network adversaries *can* learn who is authenticating with whom
 
-A network layer attacker could try
-to intercept messages and substitute the keys sent in them
-in order to carry on a MITM attack.
+Recall that an active attacker can
+read, modify, and create messages
+that are sent via a regular channel.
+The attacker cannot observe or modify the bootstrap code
+that Alice sends via the trusted channel.
+We argue that such an attacker cannot
+break the security of the Setup Contact protocol,
+that is, the attacker cannot
+impersonate Alice to Bob, or Bob to Alice.
 
-The following messages can be tampered with
-(assuming that the adversary has learned Alice and Bob public keys,
-for a worst case scenario):
+Assume,
+for a worst-case scenario,
+that the adversary knows the public Autocrypt keys of Alice and Bob.
+At all steps except step 1,
+the adversary can drop messages.
+Whenever the adversary drops a message,
+the protocol fails to complete.
+Therefore,
+we do not consider dropping of messages further.
 
-1. Cleartext "vc-request" sent from Bob to Alice in step 2, with a substituted Bob-MITM key
+1. The adversary cannot impersonate Alice to Bob,
+   that is,
+   it cannot replace Alice's key with a key Alice-MITM known to the adversary.
+   Alice sends her key to Bob in the encrypted "vc-auth-required" message
+   (step 3).
+   The attacker can replace this message with a new "vc-auth-required" message,
+   again encrypted against Bob's real key,
+   containing a fake Alice-MITM key.
+   However, Bob will detect this modification step 4a,
+   because the fake Alice-MITM key does not match
+   the fingerprint ``Alice_FP``
+   that Alice sent to Bob using the trusted channel.
+   (Recall that the adversary cannot modify the bootstrap code sent via the
+   trusted channel.)
 
-  In step 3,
-  Alice cannot distinguish the MITM key inserted by the adversary
-  from Bob's real key,
-  since she has not seen Bob's key in the past.
-  Thus, she will follow the protocol
-  and reply "vc-auth-request" encrypted with the key provided by the adversary.
+2. The adversary also cannot impersonate Bob to Alice,
+   that is,
+   it cannot replace Bob's key with a key Bob-MITM known to the adversary.
+   The cleartext "vc-request" message, sent from Bob to Alice in step 2,
+   contains Bob's key.
+   To impersonate Bob,
+   the adversary must substitute this key with
+   the fake Bob-MITM key.
 
-  The attacker can decrypt the content of this message,
-  but it will fail to cause a successful completion of the protocol:
+   In step 3,
+   Alice cannot distinguish the fake key Bob-MITM inserted by the adversary
+   from Bob's real key,
+   since she has not seen Bob's key in the past.
+   Thus, she will follow the protocol
+   and send the reply "vc-auth-required" encrypted with the key provided by the
+   adversary.
 
-- **failed Alice-impersonation**:
-  If the provider substitutes
-  the "vc-auth-required" message (step 3) from Alice to Bob
-  with a Alice-MITM key,
-  then the protocol terminates with 4a
-  because the key does not match ``Alice_FP`` from step 1.
+   We saw in the previous part that
+   if the adversary modifies Alice's key in the "vc-auth-required" message,
+   then this is detected by Bob.
+   Therefore,
+   it forwards the "vc-auth-required" message unmodified to Bob.
 
-- **failed Bob-impersonation**:
-  If the provider forwards
-  the step 3 "vc-auth-request" message unmodified to Bob,
-  then Bob will in 4b
-  send the "vc-request-with-auth" message encrypted to Alice's true key.
-  There are now three possibilities for the attacker:
+   Since ``Alice_FP`` matches the key in "vc-auth-required",
+   Bob will in step 4b
+   send the "vc-request-with-auth" message encrypted to Alice's true key.
+   This message contains
+   Bob's fingerprint ``Bob_FP`` and the challenge ``AUTH``.
 
-  * dropping the message,
-    which will terminate the protocol without success.
+   Since the message is encrypted to Alice's true key,
+   the adversary cannot decrypt the message
+   to read its content.
+   There are now three possibilities for the attacker:
 
-  * create a fake message,
-    which requires to guess the challenge ``AUTH``
-    that Bob received through the out of band channel.
-    This guess will only be correct in 2**{-64}.
-    Thus, with overwhelming probability
-    Alice will detect the forgery in step 5,
-    and the protocol terminates without success.
+   * The adversary modifies
+     the "vc-request-with-auth" message
+     to replace ``Bob_FP`` (which it knows) with the fingerprint of the fake
+     Bob-MITM key.
+     However,
+     the encryption scheme is non-malleable,
+     therefore,
+     the adversary cannot modify the message, without being detected by Alice.
 
-  * forward Bob's original message to Alice.
-    Since this message contains Bob's key fingerprint ``Bob_FP``,
-    Alice will detect in step 5
-    that Bob's "vc-request" from step 3 had the wrong key (Bob-MITM)
-    and the protocol terminates unsuccessfully.
+   * The adversary drops Bob's message and
+     create a new fake message containing
+     the finger print of the fake key Bob-MITM and
+     a guess for the challenge ``AUTH``.
+     The adversary cannot learn the challenge ``AUTH``:
+     it cannot observe the bootstrap data in step 1 because of the trusted
+     channel, and
+     it cannot decrypt the message "vc-request-with-auth".
+     Therefore,
+     this guess will only be correct with probability :math:`2^{-64}`.
+     Thus, with overwhelming probability
+     Alice will detect the forgery in step 5,
+     and the protocol terminates without success.
+
+   * The adversary forwards Bob's original message to Alice.
+     Since this message contains Bob's key fingerprint ``Bob_FP``,
+     Alice will detect in step 5
+     that Bob's "vc-request" from step 3 had the wrong key (Bob-MITM)
+     and the protocol terminates with failure.
 
 
 Open Questions
