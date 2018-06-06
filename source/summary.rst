@@ -6,6 +6,8 @@
 Introduction
 ============
 
+This document considers how
+to secure Autocrypt_-capable mail apps against active network attackers.
 Autocrypt aims to achieve convenient end-to-end encryption of e-mail.
 The Level 1 Autocrypt specification offers users opt-in e-mail encryption,
 but only considers passive adversaries.
@@ -15,7 +17,7 @@ for example, tamper with the Autocrypt header during e-mail message transport,
 are not considered in the Level 1 specification.
 Yet,
 such active attackers might undermine the security of Autocrypt.
-Therefore, in this document,
+Therefore,
 we present and discuss new ways to prevent and detect active
 network attacks against Autocrypt_-capable mail apps.
 
