@@ -65,8 +65,7 @@ an active adversary might try, for example,
 to perform a machine-in-the-middle attack on the key exchange protocol
 between peers.
 
-Peers learn the content of the messages.
-Therefore,
+Because peers learn the content of the messages,
 we assume that all peers are honest.
 They do not collaborate with the adversary and follow the protocols described in this document.
 
