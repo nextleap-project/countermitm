@@ -96,8 +96,11 @@ We observe the following issues with these schemes:
 
 - In the case of a group, every peer needs to verify keys with each group member to
   be able to assert that messages are coming from and are encrypted to the true keys of members.
-  This requires :math:`N(N-1) / 2` verifications for a group of size :math:`N` and
-  thus it is impractical even for moderately sized groups.
+  A peer that joins a group of size :math:`N`
+  must perform :math:`N` verifications.
+  Forming a group of size :math:`N` therefore requires
+  :math:`N(N-1) / 2` verifications in total.
+  Thus this approach is impractical even for moderately sized groups.
 
 - The verification of the fingerprint only checks the current keys.
   Since protocols do not store any historical information about keys,
