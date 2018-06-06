@@ -555,20 +555,20 @@ Autocrypt and verified key state
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Verified key material
-- whether from verified contacts or verified groups -
+|--| whether from verified contacts or verified groups |--|
 provides stronger security guarantees
 then keys discovered in Autocrypt headers.
 
-Therefore the address key mappings should be stored separately
-and used over Autocrypt keys in case of conflicts.
-
+Therefore the address-to-key mappings obtained using the verification protocols
+should be stored separately
+and used in preference to keys distributed in the AutoCrypt headers
+in case of conflicts.
 This way verified contacts and groups prevent key injection through
 Autocrypt headers.
 
-In order to allow users to recover from device loss
-the recommendation is to perform new verifications.
-
-Since this may not always be feasible
+To enable users to recover from device loss,
+we recommend performing new verifications.
+Since performing new verifications may not always be feasible,
 clients should provide the users with a way
 to actively move back to an unverified state.
 
@@ -591,7 +591,7 @@ and ask them to add other peers they have directly verified.
 Another option seems to be
 to allow starting a new group with exactly the same group of people.
 But what happens if the new group creator chooses to remove people from the group?
-What if they were vital in setting up the verification network in the initial thread?
+What if they were vital in setting up the verification network in the initial group?
 
 
 .. _`history-verification`:
@@ -911,3 +911,7 @@ Having everyone publishing their status implies N*(N-1) messages.
 The proposed solution employs 2*N*n*t messages.
 For small groups the traffic can be higher.
 Thus, there is a tradeoff privacy vs. overhead.
+
+.. |--| unicode:: U+2013   .. en dash
+.. |---| unicode:: U+2014  .. em dash, trimming surrounding whitespace
+   :trim:
