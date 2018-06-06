@@ -370,14 +370,20 @@ Open Questions
 Verified Group protocol
 -----------------------
 
-We introduce a new secure **verified group**.
+We introduce a new secure **verified group** that enables secure
+communication among the members of the group.
 Verified groups provide these simple to understand properties:
 
+..
+  TODO: Does autocrypt also protect against modification of group messages?
+
 1. All messages in a verified group are end-to-end encrypted
-   and secure against active provider/network attackers.
-   That is,
-   they cannot be read by a passive eavesdropper,
-   nor intercepted by an active adversary attempting a Man-in-the-middle attack.
+   and secure against active attackers.
+   In particular,
+   neither a passive eavesdropper,
+   nor an attactive network attacker
+   (e.g., capable of man-in-the-middle attacks)
+   can read or modify messages.
 
 2. There are never any warnings about changed keys (like in Signal)
    that could be clicked away or cause worry.
@@ -385,8 +391,8 @@ Verified groups provide these simple to understand properties:
    then she also looses the ability
    to read from or write
    to the verified group.
-   To regain access it is required
-   that this user joins the group again
+   To regain access,
+   this user must join the group again
    by finding one group member and perform a "secure-join" as described below.
 
 
@@ -400,24 +406,37 @@ Alice may have created the group
 or become a member prior to the addition of Bob.
 
 The protocol re-uses the first five steps of the `setup-contact`_ protocol
-with the following modifications:
+(with small modifications)
+so that Alice and Bob verify each other's keys.
+We make small modifications to indicate that
+the messages are part of the verified group protocol,
+to include the group's identifier,
+and to ask for Bob's explicit consent.
+More precisely:
 
-- the message prefix "vc-" is substituted by "vg-".
+- we substitute the message prefix "vc-" by "vg-".
 
 - in step 1 there are two changes.
-  First, the oob-transferred type is changed to ``TYPE=vg-invite``.
-  Second, the name of the group ``GROUP`` is added to the bootstrap code
-  indicating Alice's offer of letting Bob join the group ``GROUP``.
+  We change the type of the out-of-band transferred to ``TYPE=vg-invite``.
+  Second, Alice adds the name of the group ``GROUP`` to the bootstrap code
+  to indicate that Alice offers Bob to join the group ``GROUP``.
 
 - in step 2 Bob manually confirms he wants to join ``GROUP``
   before his device sends the ``vg-request`` message.
 
-- in step 4 b) the 'vc-request-with-auth' encrypted part includes ``GROUP``
-  besides with ``Bob_FP`` and ``AUTH``.
+- in step 4b Bob adds to the encrypted part of ``vc-request-with-auth``
+  the group identifier ``GROUP``
+  in addition to the fingerprint ``Bob_FP`` of Bob's key and
+  the second challenge ``AUTH``.
 
-After Step 6,
-the actions of the `setup-contact`_ are replaced
-with the following steps:
+- in step 5 Alice verifies the group identifier ``GROUP``
+  in addition to the challenge ``AUTH``.
+
+If no failure occurred up to this point,
+Alice and Bob have again verified each other's keys,
+and Alice knows that Bob wants to join the group ``GROUP``.
+The protocol then continues as follows
+(steps 6 and 7 of the `setup-contact`_ are not used):
 
 6. Alice broadcasts an encrypted "vg-member-added" message to all members of
    ``GROUP`` (including Bob),
@@ -437,18 +456,18 @@ with the following steps:
 Bob and Alice may now both invite and add more members
 which in turn can add more members.
 The described secure-join workflow guarantees
-that all members of the group have been oob-verified with at least one member.
+that all members of the group have been out-of-band verified with at least one member.
 The broadcasting of keys further ensures
 that all members are fully connected.
 
 Recall that this protocol does **not** consider key loss or change.
 When users observe a change
-in one of the Autocrypt keysbelonging to the group
+in one of the Autocrypt keys belonging to the group
 they must intepret this
 as the owner of that key being removed from the group.
 To become a member again,
-this user needs to run the secure join with a user
-that is still a member.
+a user whose key changed needs to run the secure join with
+a user that is still a member.
 
 .. figure:: ../images/join_verified_group.jpg
    :width: 200px
@@ -477,12 +496,15 @@ Notes on the verified group protocol
   that introduces every new peer to the rest of the group.
   After some time everybody will become a member of the group.
 
+..
+  TODO: I don't understand how the infiltrator attack works.
 
-- **Ignoring Infiltrators, focusing on message transport attacks first**:
+- **Ignoring infiltrators, focusing on message transport attacks first**:
   If one group member is "malicious" or colludes with the adversary,
   it can leak the messages' content to outsiders
-  as this peer can by definition of member read all messages.
-  Thus, we do not aim at protecting against such peers.
+  as this group member can by construction read all messages.
+  Thus, we do not aim at protecting against such peers,
+  and instead assume that they are honest.
 
   We also choose to not consider advanced attacks
   in which an "infiltrator" peer collaborates with an evil provider
@@ -494,6 +516,12 @@ Notes on the verified group protocol
   If Carol performs an oob-verification with Alice,
   she can use Bob's signature to prove
   that Bob gossiped the wrong key for Alice.
+
+..
+  TODO: could it be that the next point is stale? It references messages in
+  steps that don't exist. And I don't see how (after translating this to the
+  vg-request/vc-request setting), the malfeasance detection differs between
+  joining groups and verifying contacts.
 
 - **Leaving attackers in the dark about verified groups**.
   It might be feasible to design
