@@ -86,10 +86,6 @@ through a trusted channel (often a QR code show+scan).
 
 We observe the following issues with these schemes:
 
-..
-  TODO: I'm not sold on the second argument. I think the problem is that to _join_
-  the group, I must verify ``N`` times.
-
 - The schemes require that both peers start the verification workflow to assert
   that both of their encryption keys are not manipulated.
   Such double work has an impact on usability.
@@ -155,9 +151,6 @@ by integrating key verification into existing messaging use cases:
   verifies the cryptograhic integrity of past messages and keys.
   It can precisely point to messages where
   cryptographic key information has been modified by the network.
-
-..
-  TODO: not sure to which "this section" in the next para refers.
 
 Moreover, in :doc:`new` we also discuss a privacy issue
 with the Autocrypt Key gossiping mechanism.
