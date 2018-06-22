@@ -555,20 +555,20 @@ Autocrypt and verified key state
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Verified key material
-- whether from verified contacts or verified groups -
+|--| whether from verified contacts or verified groups |--|
 provides stronger security guarantees
 then keys discovered in Autocrypt headers.
 
-Therefore the address key mappings should be stored separately
-and used over Autocrypt keys in case of conflicts.
-
+Therefore the address-to-key mappings obtained using the verification protocols
+should be stored separately
+and used in preference to keys distributed in the AutoCrypt headers
+in case of conflicts.
 This way verified contacts and groups prevent key injection through
 Autocrypt headers.
 
-In order to allow users to recover from device loss
-the recommendation is to perform new verifications.
-
-Since this may not always be feasible
+To enable users to recover from device loss,
+we recommend performing new verifications.
+Since performing new verifications may not always be feasible,
 clients should provide the users with a way
 to actively move back to an unverified state.
 
@@ -591,121 +591,145 @@ and ask them to add other peers they have directly verified.
 Another option seems to be
 to allow starting a new group with exactly the same group of people.
 But what happens if the new group creator chooses to remove people from the group?
-What if they were vital in setting up the verification network in the initial thread?
+What if they were vital in setting up the verification network in the initial group?
 
 
 .. _`history-verification`:
 
-History verification protocol
+History-verification protocol
 ---------------------------------
 
-The history verification protocol aims to
-improve the security of communication
-beyond what is achieved by the other protocols in this document.
+The two protocols we have described so far
+assure the user about the validity of
+the keys they verify and of the keys of their peers in groups they join.
+If the protocols detect an active attack
+(for example because keys are substituted)
+they immediately alert the user.
+Since users are involved in a verification process,
+this is the right time to alert users.
+By contrast, today's verification workflows alert the users when a
+previously key has changed.
+At that point users typically are not physically next to each other,
+and are rarely concerned with the key since they want
+to get a different job done, e.g., of sending or reading a message.
 
-We seek the following improvements:
-
-- communicate the detection of active attacks when users
-  are engaging in verification workflows,
-  as described above.
-  This is the right time to alert users.
-  By contrast, today's verification workflows alert the users when a
-  previously key has changed.
-  At that point users typically are not physically next to each other,
-  and are rarely concerned with the key since they want
-  to get a different job done, e.g., of sending or reading a message.
-
-- At the end of this process both peers must receive assessments
-  about the integrity of their past communication.
-  By contrast,
-  current key fingerprint verification workflows
-  only provides assurance about the current keys,
-  and thus miss out on temporary malfeasant substitutions of keys in messages.
-
-- Like in the `setup-contact`_ protocol
-  peers should only be required
-  to perform only one "show" and "read" of bootstrap information
-  (typically transmitted via showing QR codes and scanning them).
-
-In summary,
-the goal of the "history-verification" protocol is
-to allow two peers
+However,
+our new verification protocols only verify the current keys.
+Historical interactions between peers may involve keys that have never been
+verified using these new verification protocols.
+So how can users determine the integrity of keys of historical messages?
+This is where the history-verification protocol comes in.
+This protocol,
+that again relies on a trusted out-of-band channel,
+enables two peers
 to verify key integrity of their shared historic messages.
 After completion, users gain assurance
 that not only their current communication is safe
 but that their past communications have not been tampered with.
 
-The protocol starts with steps 1-5 of the `setup-contact`_ protocol
-using a ``kg-`` prefix instread of the ``vc-`` one.
-From step 6 on, the protocol proceeds as follows:
+By verifying all keys in the shared history between peers,
+the history-verification protocol can detect
+temporary malfeasant substitutions of keys in messages.
+Such substitutions are not caught by current key-fingerprint verification
+workflows, because they only provide assurance about the current keys.j
 
-6. Alice and Bob have each others verified keydata.
-   With this data they encrypt a message to the other party
+Like in the `setup-contact`_ protocol,
+we designed our history-verification protocol so that
+peers only perform only one "show" and "read" of bootstrap information
+(typically transmitted via showing QR codes and scanning them).
+
+The protocol re-uses the first five steps of the `setup-contact`_ protocol
+(with small modifications)
+so that Alice and Bob verify each other's keys.
+We make one small modifications to indicate that
+the messages are part of the history-verification protocol:
+we substitute the message prefix "vc-" by "kg-".
+
+If no failure occurred after step 5,
+Alice and Bob have again verified each other's keys.
+The protocol then continues as follows
+(steps 6 and 7 of the `setup-contact`_ are not used):
+
+6. Alice and Bob have each others verified Autocrypt key.
+   They use these keys to
+   encrypt a message to the other party
    which contains a **message/keydata list**.
-   This is a list of the id's of the messages they have exchanged in the past.
-   For each message, this list includes
-   the Date when it was sent
-   and a list of (email-address, key fingerprints) tuples
-   which were sent or received in that particular message.
+   For each message that they have exchanged in the past
+   they add the following information:
 
-7. Alice and Bob independently perform the following historic verification algorithm:
+   - The message id of that message
+   - When this message was sent, i.e., the ``Date`` field.
+   - A list of (email-address, key fingerprints) tuples
+     which they sent or received in that particular message.
 
-   a) determine the start-date as the date of the earliest message (by Date)
-      for which both sides have records of.
+7. Alice and Bob independently perform
+   the following history-verification algorithm:
 
-   b) verify the key fingerprints for each message since the start-state
+   a) determine the start-date as the date of the earliest message (by ``Date``)
+      for which both sides have records.
+
+   b) verify the key fingerprints for each message since the start-date
       for which both sides have records of:
       if a key differs for any e-mail address,
       we consider this is strong evidence
       that there was an active attack.
-
-   Therefore an error is shown to both Alice and Bob:
-   "Message at <DATE> from <From> to <recipients> has mangled encryption".
+      If such evidence is found,
+      an error is shown to both Alice and Bob:
+      "Message at <DATE> from <From> to <recipients> has mangled encryption".
 
 8. Alice and Bob are presented with a summary which lists:
 
    - time frame of verification
-   - NUM messages successfully verified
-   - NUM messages with mangled encryption
-   - NUM dropped messages, i.e. sent by one party,
+   - the number of messages successfully verified
+   - the number of messages with mangled encryption
+   - the number of dropped messages, i.e. sent by one party,
      but not received by the other, or vice versa
 
-   If there are no dropped or mangled messages signal to the user
+   If there are no dropped or mangled messages, signal to the user
    "history verification successfull".
 
 
 Device Loss
 ~~~~~~~~~~~
 
-A typical scenario for a key change is device loss,
-which leads to loosing access to one's private key.
+A typical scenario for a key change is device loss.
+The owner of the lost device loses
+access to his private key.
 We note that when this happens,
-in most cases it entails also loosing access
-to ones message and key history.
+in most cases
+the owner also loses access to
+his messages (because he can no longer decrypt them)
+and his key history.
 
 Thus, if Bob lost his device, it is likely
 that Alice will have a much longer history for him then he has himself.
-However, Bob can only compare keys for the timespan since the device loss.
-While this is certainly less useful,
-nevertheless it would enable Alice and Bob
-to detect of attacks in that time.
+Bob can only compare keys for the timespan after the device loss.
+While this verification is certainly less useful,
+it would enable Alice and Bob
+to detect of attacks in that time after the device lossj.
 
 On the other hand, we can also envision
 users storing their history outside of their devices.
 The security requirements for such a backup are much lower
 than for backing up the private key.
-It only needs to be tamper proof,
-i.e., its integrity is guaranteed - not confidential.
+The backup only needs to be tamper proof,
+i.e., its integrity must be guaranteed :--: not its confidentiality.
 This is achievable even if the private key is lost.
-Integrity can be achieved for instance via cryptographic signatures.
-As long as Bob, and others, have access to his public key
+Users can verify the integrity of this backup even if
+they lose their private key.
+For example, Bob can cryptographically sign
+the key history using his current key.
+As long as Bob, and others, have access to Bob's public key,
 he can verify that the backup has not been tampered with.
+
+..
+  TODO: But how does bob know his public key if he lost his device?
 
 An alternative is to permit
 that Bob recovers his history from the message/keydata list
 that he receives from Alice.
 Then, he could validate such information
-with other people in subsequent out of band verifications.
+with other people in subsequent out-of-band verifications.
 However, this method is vulnerable to collusion attacks
 in which Bob's keys are replaced in all of his peers,
 including Alice.
@@ -718,15 +742,22 @@ Keeping records of keys in messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The history verification described above
-rely on each MUA keeping track of the following information indexed the message-id:
+requires all e-mail apps (MUAs) to record,
 
 - each e-mail address/key-fingerprint tuple it **ever** saw
-  in an Autocrypt or an Autocrypt-Gossip from incoming mails.
+  in an Autocrypt or an Autocrypt-Gossip header in incoming mails.
   This means not just the most recent one(s),
   but the full history.
 
 - each emailaddr/key association it ever sent out
   in an Autocrypt or an Autocrypt Gossip header.
+
+It needs to associate these data with the corresponding message-id.
+
+..
+  TODO: This seems incomplete. To verify the history, MUAs also need
+  all message-ids, even if those are deleted, or do not contain keys.
+  This information is not mentioned here.j
 
 
 State tracking suggested implementation
@@ -911,3 +942,7 @@ Having everyone publishing their status implies N*(N-1) messages.
 The proposed solution employs 2*N*n*t messages.
 For small groups the traffic can be higher.
 Thus, there is a tradeoff privacy vs. overhead.
+
+.. |--| unicode:: U+2013   .. en dash
+.. |---| unicode:: U+2014  .. em dash, trimming surrounding whitespace
+   :trim:
