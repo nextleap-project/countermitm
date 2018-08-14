@@ -11,7 +11,11 @@ Detecting and preventing active attacks against Autocrypt
    :numbered:
 
    summary.rst
-   new.rst
+   net-adversary.rst
+   setup-contact.rst
+   verified-group.rst
+   history-verification.rst
+   onion.rst
    claimchains.rst
    gossip.rst
    dkim.rst

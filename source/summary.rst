@@ -112,7 +112,7 @@ We observe the following issues with these schemes:
 Integrating key verification with general workflows
 +++++++++++++++++++++++++++++++++++++++++++++++++++
 
-In :doc:`new` we describe new protocols that aim to resolve these issues,
+In :doc:`net-adversary` we describe new protocols that aim to resolve these issues,
 by integrating key verification into existing messaging use cases:
 
 - the :ref:`Setup Contact protocol <setup-contact>` allows a user, say Alice,
@@ -152,7 +152,7 @@ by integrating key verification into existing messaging use cases:
   It can precisely point to messages where
   cryptographic key information has been modified by the network.
 
-Moreover, in :doc:`new` we also discuss a privacy issue
+Moreover, in :doc:`net-adversary` we also discuss a privacy issue
 with the Autocrypt Key gossiping mechanism.
 The continuous gossipping of keys may enable an observer
 to infer who recently communicated with each other.
