@@ -12,8 +12,8 @@ Autocrypt aims to achieve convenient end-to-end encryption of e-mail.
 The Level 1 Autocrypt specification offers users opt-in e-mail encryption,
 but only considers passive adversaries.
 Active network adversaries,
-who could,
-for example, tamper with the Autocrypt header during e-mail message transport,
+who could, for example,
+tamper with the Autocrypt header during e-mail message transport,
 are not considered in the Level 1 specification.
 Yet,
 such active attackers might undermine the security of Autocrypt.
@@ -64,15 +64,35 @@ To achieve these goals,
 an active adversary might try, for example,
 to perform a machine-in-the-middle attack on the key exchange protocol
 between peers.
+We consider this approach effective against mass surveillance of
+the encrypted email content while preventing additional meta data leakage.
+
+To enable secure key-exchange and key-verification between peers,
+we assume that peers have access to a *out-of-band*
+communication channel that cannot be observed or manipulated by the adversary.
+More concretely we expect them to be able
+to transfer a small amount of data via a QR-code confidentially.
+
+Targeted attacks on end devices or the out-of-band channels
+can break our assumptions
+and therefore the security properties of the protocols described.
+In particular
+the ability to observe QR-codes in the scan process
+(for example through CCTV or by getting access to print outs)
+will allow impersonation attacks.
+Additional measures can
+relax the security requirements for the *out-of-band* channel
+to also work under a threat of observation.
+
+Passive attackers such as service providers can still learn who
+communicates with whom at what time and the approximate size of the messages.
+We recommend using additional meassures such as encrypting the subject
+to prevent further data leakage.
+This is beyond the scope of this document though.
 
 Because peers learn the content of the messages,
 we assume that all peers are honest.
 They do not collaborate with the adversary and follow the protocols described in this document.
-
-To enable secure key-exchange and key-verification between peers,
-we assume that peers have access to a *trusted*, *untappable*, *out-of-band*
-communication channel that is not visible to the adversary,
-and thus cannot be manipulated.
 
 Problems of current key-verification techniques
 +++++++++++++++++++++++++++++++++++++++++++++++
