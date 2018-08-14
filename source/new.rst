@@ -138,19 +138,6 @@ we assume that
 our active attacker *cannot* observe or modify data transferred via the
 trusted channel.
 
-..
-  TODO: where is the non-malleability is needed? What is the non-malleability
-  property that this requires. Would it not be better to have or suggest
-  authenticated encryption
-
-The Setup Contact protocol requires that
-the underlying encryption scheme is non-malleable.
-In the case of OpenPGP this is achieved
-with Modification Detection Codes (MDC - see section 5.13 and 5.14 of RFC 4880).
-Implementers need to make sure
-to verify these
-and treat invalid or missing MDCs as an error.
-
 Here is a conceptual step-by-step example
 of the proposed UI and administrative message workflow
 for establishing a secure contact between two contacts,
@@ -160,7 +147,7 @@ Alice and Bob.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
-     which acts as a commitment to the 
+     which acts as a commitment to the
      Alice's Autocrypt key, which she will send later in the protocol,
 
    - Alice's e-mail address (both name and routable address),
@@ -245,6 +232,33 @@ bootstrap code via the trusted channel to Bob.
 
    Setup Contact protocol step 2 with https://delta.chat.
 
+
+Requirements for the underlying encryption scheme
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Setup Contact protocol requires that
+the underlying encryption scheme is non-malleable.
+Malleability means the encrypted content can be changed in a deterministic way.
+Therefore with a malleable scheme an attacker could impersonate Bob:
+They would add a different autocrypt key in Bob's vc-request message ( step 2.b )
+and send the message along without other changes.
+In step 4.b they could then modify the encrypted content to include
+their own keys fingerprint rather than ``Bob_FP``.
+
+..
+  TODO: In case of such an attack
+  the OpenPGP signature on the message body
+  would be with Bob's original key.
+  We could check the signature is made with the right key
+  rather than adding the additional, somewhat redundant Bob_FP.
+
+In the case of OpenPGP non-malleability is achieved
+with Modification Detection Codes (MDC - see section 5.13 and 5.14 of RFC 4880).
+Implementers need to make sure
+to verify these
+and treat invalid or missing MDCs as an error.
+Using an authenticated encryption scheme prevents these issues
+and is therefore recommended if possible.
 
 An active attacker cannot break the security of the Setup Contact protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
