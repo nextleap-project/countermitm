@@ -138,19 +138,6 @@ we assume that
 our active attacker *cannot* observe or modify data transferred via the
 trusted channel.
 
-..
-  TODO: where is the non-malleability is needed? What is the non-malleability
-  property that this requires. Would it not be better to have or suggest
-  authenticated encryption
-
-The Setup Contact protocol requires that
-the underlying encryption scheme is non-malleable.
-In the case of OpenPGP this is achieved
-with Modification Detection Codes (MDC - see section 5.13 and 5.14 of RFC 4880).
-Implementers need to make sure
-to verify these
-and treat invalid or missing MDCs as an error.
-
 Here is a conceptual step-by-step example
 of the proposed UI and administrative message workflow
 for establishing a secure contact between two contacts,
@@ -160,7 +147,7 @@ Alice and Bob.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
-     which acts as a commitment to the 
+     which acts as a commitment to the
      Alice's Autocrypt key, which she will send later in the protocol,
 
    - Alice's e-mail address (both name and routable address),
@@ -180,6 +167,10 @@ Alice and Bob.
      which Bob's device uses in step 4
      to authenticate itself against Alice's device.
 
+   Per ``INVITENUMBER`` Alices device will keep track of:
+   - the associated ``AUTH`` secret
+   - the time the contact verification was initiated.
+
 2. Bob receives the bootstrap data from the trusted out-of-band channel and
 
    a) If Bob's device knows a key that matches ``Alice_FP``
@@ -193,6 +184,9 @@ Alice and Bob.
 3. Alice's device receives the "vc-request" message.
 
    If she recognizes the ``INVITENUMBER`` from step 1
+   she checks that the invite has not expired.
+   If the timestamp associated with the ``INVITENUMBER``
+   is not longer ago than a given time
    she processes Bob's Autocrypt key.
    Then, she uses this key
    to create an encrypted "vc-auth-required" message
@@ -219,6 +213,7 @@ Alice and Bob.
 5. Alice decrypts Bob's 'vc-request-with-auth' message,
    and verifies
    that Bob's Autocrypt key matches ``Bob_FP``
+   that the invite has not expired
    and that the transferred ``AUTH`` matches the one from step 1.
 
    If any verification fails,
@@ -229,6 +224,7 @@ Alice and Bob.
 6. If the verification succeeds on Alice's device it shows
    "Secure contact with Bob <bob-adr> established".
    In addition it sends Bob a "vc-contact-confirm" message.
+   The device also removes the data associated with ``INVITECODE``.
 
 7. Bob's device receives "vc-contact-confirm" and shows
    "Secure contact with Alice <alice-adr> established".
@@ -245,6 +241,33 @@ bootstrap code via the trusted channel to Bob.
 
    Setup Contact protocol step 2 with https://delta.chat.
 
+
+Requirements for the underlying encryption scheme
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Setup Contact protocol requires that
+the underlying encryption scheme is non-malleable.
+Malleability means the encrypted content can be changed in a deterministic way.
+Therefore with a malleable scheme an attacker could impersonate Bob:
+They would add a different autocrypt key in Bob's vc-request message ( step 2.b )
+and send the message along without other changes.
+In step 4.b they could then modify the encrypted content to include
+their own keys fingerprint rather than ``Bob_FP``.
+
+..
+  TODO: In case of such an attack
+  the OpenPGP signature on the message body
+  would be with Bob's original key.
+  We could check the signature is made with the right key
+  rather than adding the additional, somewhat redundant Bob_FP.
+
+In the case of OpenPGP non-malleability is achieved
+with Modification Detection Codes (MDC - see section 5.13 and 5.14 of RFC 4880).
+Implementers need to make sure
+to verify these
+and treat invalid or missing MDCs as an error.
+Using an authenticated encryption scheme prevents these issues
+and is therefore recommended if possible.
 
 An active attacker cannot break the security of the Setup Contact protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -351,12 +374,57 @@ we do not consider dropping of messages further.
      and the protocol terminates with failure.
 
 
-Open Questions
+Replay attacks and conflicts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Alices device records the time a contact verification was initiated.
+It also verifies it has not expired and clears the data after
+completion.
+This prevents replay attacks.
+Replay attacks could be used to make Alices device switch back
+to an old compromised key of Bob.
+
+Limiting an invite to a single use
+reduces the impact of a QR-code
+being exposed to an attacker:
+If the attacker manages to authenticate faster than Bob
+they can impersonate Bob to Alice.
+However Bob will see an error message.
+If the QR-code could be reused
+the attacker could successfully authenticate.
+Alice would have two verified contacts
+and Bob would not see any difference to a successful
+connection attempt.
+
+Furthermore a compromise of Bob's device
+would allow registering other email addresses
+as verified contacts with Alice.
+
+
+Business Cards
 ~~~~~~~~~~~~~~
 
-- re-use or regenerate the step 1 INVITENUMBER and/or AUTH across different peers?
-  re-using would mean that the QR code can be printed on business cards
-  and used as a method for getting verified contact with someone.
+QR-codes similar to the ones used for verified contact
+could be used to print on business cards.
+
+Since business cards are usually not treated as confidential
+they can only serve
+to authenticate the issuer of the business card (Alice)
+and not the recipient (Bob).
+
+However as discussed on the messaging mailing list
+the verification of a short code at the end of the protocol
+can extend it to also protect against leakage of the QR-code.
+This may also be desirable
+for users who face active surveillance in real life
+and therefor cannot assume
+that scanning the QR-code is confidential.
+
+..
+  TODO: add link to discussion on messaging@modern crypto
+
+Open Questions
+~~~~~~~~~~~~~~
 
 - (how) can messengers such as Delta.chat
   make "verified" and "opportunistic" contact requests
