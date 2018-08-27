@@ -412,7 +412,7 @@ they can only serve
 to authenticate the issuer of the business card (Alice)
 and not the recipient (Bob).
 
-However as discussed on the messaging mailing list
+However as `discussed on the messaging@moderncrypto mailing list`_
 the verification of a short code at the end of the protocol
 can extend it to also protect against leakage of the QR-code.
 This may also be desirable
@@ -420,8 +420,7 @@ for users who face active surveillance in real life
 and therefor cannot assume
 that scanning the QR-code is confidential.
 
-..
-  TODO: add link to discussion on messaging@modern crypto
+.. _`discussed on the messaging@moderncrypto mailing list`: https://moderncrypto.org/mail-archive/messaging/2018/002544.html
 
 Open Questions
 ~~~~~~~~~~~~~~
