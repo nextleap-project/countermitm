@@ -463,14 +463,20 @@ Verified groups provide these simple to understand properties:
    by finding one group member and perform a "secure-join" as described below.
 
 
-Joining a verified group ("secure-join")
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Verifying a contact to prepare joining a group
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The goal of the secure-join protocol is
 to let Alice make Bob a member (i.e., let Bob join) a verified group
 of which Alice is a member.
 Alice may have created the group
 or become a member prior to the addition of Bob.
+
+In order to add Bob to the group
+Alice has to verify him as a contact
+if she has not done so yet.
+We use this message exchange
+to also ask Bob wether he agrees to becoming part of the group.
 
 The protocol re-uses the first five steps of the `setup-contact`_ protocol
 (with small modifications)
@@ -502,22 +508,36 @@ More precisely:
 If no failure occurred up to this point,
 Alice and Bob have again verified each other's keys,
 and Alice knows that Bob wants to join the group ``GROUP``.
-The protocol then continues as follows
-(steps 6 and 7 of the `setup-contact`_ are not used):
 
-6. Alice broadcasts an encrypted "vg-member-added" message to all members of
+Now Alice and Bob have verified each other
+and Bob has agreed to be added to the group.
+The protocol then continues as described in the following section
+(steps 6 and 7 of the `setup-contact`_ are not used).
+
+Joining a verified group ("secure-join")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to add Bob to a group Alice first needs to make sure
+she has a verified key for Bob.
+This is the case if Bob already was a verified contact
+or Alice performed the steps described in the previous section.
+
+Now she needs to inform the group that Bob should be added.
+Bob needs to confirm everything worked:
+
+a. Alice broadcasts an encrypted "vg-member-added" message to all members of
    ``GROUP`` (including Bob),
    gossiping the Autocrypt keys of all members (including Bob).
 
-7. Bob receives the encrypted "vg-member-added" message
+b. Bob receives the encrypted "vg-member-added" message
    and learns all the keys and e-mail addresses of group members.
    Bob's device sends
    a final "vg-member-added-received" message to Alice's device.
    Bob's device shows
    "You successfully joined the verified group ``GROUP``".
 
-8. Alice's device receives the "vg-member-added-received" reply from Bob
-   and shows a screen i
+c. Alice's device receives the "vg-member-added-received" reply from Bob
+   and shows a screen
    "Bob <email-address> securely joined group ``GROUP``"
 
 Bob and Alice may now both invite and add more members
