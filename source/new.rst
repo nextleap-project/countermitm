@@ -167,9 +167,12 @@ Alice and Bob.
      which Bob's device uses in step 4
      to authenticate itself against Alice's device.
 
+   - optionally add metadata such as ``INVITE-TO=groupname``
+
    Per ``INVITENUMBER`` Alices device will keep track of:
    - the associated ``AUTH`` secret
    - the time the contact verification was initiated.
+   - the metadata provided.
 
 2. Bob receives the bootstrap data from the trusted out-of-band channel and
 
@@ -479,38 +482,33 @@ We use this message exchange
 to also ask Bob wether he agrees to becoming part of the group.
 
 The protocol re-uses the first five steps of the `setup-contact`_ protocol
-(with small modifications)
 so that Alice and Bob verify each other's keys.
-We make small modifications to indicate that
-the messages are part of the verified group protocol,
-to include the group's identifier,
-and to ask for Bob's explicit consent.
+To ask for Bob's explicit consent we
+indicate that the messages are part of the verified group protocol,
+and include the group's identifier
+in the metadata transfered in the out of band channel.
+
 More precisely:
 
-- we substitute the message prefix "vc-" by "vg-".
-
-- in step 1 there are two changes.
-  We change the type of the out-of-band transferred to ``TYPE=vg-invite``.
-  Second, Alice adds the name of the group ``GROUP`` to the bootstrap code
-  to indicate that Alice offers Bob to join the group ``GROUP``.
+- in step 1 Alice adds the metadata:
+    ``INVITE=<groupname>``.
+  Where ``<groupname>`` is the name of the group ``GROUP``.
 
 - in step 2 Bob manually confirms he wants to join ``GROUP``
-  before his device sends the ``vg-request`` message.
+  before his device sends the ``vc-request`` message.
+  If Bob declines processing aborts.
 
-- in step 4b Bob adds to the encrypted part of ``vc-request-with-auth``
-  the group identifier ``GROUP``
-  in addition to the fingerprint ``Bob_FP`` of Bob's key and
-  the second challenge ``AUTH``.
-
-- in step 5 Alice verifies the group identifier ``GROUP``
-  in addition to the challenge ``AUTH``.
+- in step 5 Alice looks up the metadata
+  associated with the ``INVITENUMBER``.
+  If Alice sees the ``INVITE=<groupname>``
+  but is not part of the group anymore
+  she aborts the joining process
+  (without sending another message).
 
 If no failure occurred up to this point,
-Alice and Bob have again verified each other's keys,
+Alice and Bob have verified each other's keys,
 and Alice knows that Bob wants to join the group ``GROUP``.
 
-Now Alice and Bob have verified each other
-and Bob has agreed to be added to the group.
 The protocol then continues as described in the following section
 (steps 6 and 7 of the `setup-contact`_ are not used).
 
@@ -588,7 +586,7 @@ Notes on the verified group protocol
   In practise this means that secure joins can be concurrent.
   A member can show the "Secure Group invite" to a number of people.
   Each of these peers scans the message and launches the secure-join.
-  As 'vg-request-with-auth' messages arrive to Alice,
+  As 'vc-request-with-auth' messages arrive to Alice,
   she will send the broadcast message
   that introduces every new peer to the rest of the group.
   After some time everybody will become a member of the group.
@@ -617,7 +615,7 @@ Notes on the verified group protocol
 ..
   TODO: could it be that the next point is stale? It references messages in
   steps that don't exist. And I don't see how (after translating this to the
-  vg-request/vc-request setting), the malfeasance detection differs between
+  vc-request setting), the malfeasance detection differs between
   joining groups and verifying contacts.
 
 - **Leaving attackers in the dark about verified groups**.
