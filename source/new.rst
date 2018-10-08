@@ -536,7 +536,17 @@ b. Bob receives the encrypted "vg-member-added" message
    Bob's device shows
    "You successfully joined the verified group ``GROUP``".
 
-c. Alice's device receives the "vg-member-added-received" reply from Bob
+c. Any other group member that receives the encrypted "vg-member-added" message
+   will process the gossiped key through autocrypt gossip mechanisms.
+   In addition they verify:
+     * The encryption and Alices signature are intact.
+     * They are themselves a member of ``GROUP``.
+     * Alice is a member of ``GROUP``.
+   If any of the checks fail processing aborts.
+   Otherwise they will add Bob to their list of group members
+   and mark the gossiped key as verified in the context of this group.
+
+d. Alice's device receives the "vg-member-added-received" reply from Bob
    and shows a screen
    "Bob <email-address> securely joined group ``GROUP``"
 
