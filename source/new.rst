@@ -124,13 +124,13 @@ messages.
 
 The protocol follows a single simple UI workflow:
 A peer "shows" bootstrap data
-that is then "read" by the other peer through a out-of-band channel.
+that is then "read" by the other peer through a second channel.
 This means that,
 as opposed to current fingerprint verification workflows,
 the protocol only runs once instead of twice,
 yet results in the two peers having verified keys of each other.
 
-The out-of-band channel acts as a second factor
+The second channel acts as a second factor
 in verifying the cryptographic material.
 (The other factor being the control over the email account.)
 
@@ -165,7 +165,7 @@ Alice and Bob.
 
    - Alice's e-mail address (both name and routable address),
 
-   - A type ``TYPE=vc-invite`` of the out-of-band transfer
+   - A type ``TYPE=vc-invite`` of the bootstrap code
 
    - a challenge ``INVITENUMBER`` of at least 8 bytes.
      This challenge is used by Bob's device in step 2b
@@ -500,7 +500,7 @@ so that Alice and Bob verify each other's keys.
 To ask for Bob's explicit consent we
 indicate that the messages are part of the verified group protocol,
 and include the group's identifier
-in the metadata transfered in the out of band channel.
+in the metadata transfered in the second factor.
 
 More precisely:
 
@@ -565,7 +565,7 @@ d. Alice's device receives the "vg-member-added-received" reply from Bob
 Bob and Alice may now both invite and add more members
 which in turn can add more members.
 The described secure-join workflow guarantees
-that all members of the group have been out-of-band verified with at least one member.
+that all members of the group have been verified with at least one member.
 The broadcasting of keys further ensures
 that all members are fully connected.
 
@@ -839,7 +839,7 @@ An alternative is to permit
 that Bob recovers his history from the message/keydata list
 that he receives from Alice.
 Then, he could validate such information
-with other people in subsequent out-of-band verifications.
+with other people in subsequent verifications.
 However, this method is vulnerable to collusion attacks
 in which Bob's keys are replaced in all of his peers,
 including Alice.
@@ -927,7 +927,7 @@ Verifying keys through onion-queries
 
 Up to this point this document has describe methods
 to securely add contacts, form groups, and verify history
-in an offline scenario where users can establish an out of band channel
+in an offline scenario where users can establish a second channel
 to carry out the verification.
 We now discuss how the use of Autocrypt headers can be used
 to support continuous key verification in an online setting.
