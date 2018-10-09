@@ -124,26 +124,39 @@ messages.
 
 The protocol follows a single simple UI workflow:
 A peer "shows" bootstrap data
-that is then "read" by the other peer through a trusted (out-of-band) channel.
+that is then "read" by the other peer through a out-of-band channel.
 This means that,
 as opposed to current fingerprint verification workflows,
 the protocol only runs once instead of twice,
 yet results in the two peers having verified keys of each other.
 
-On mobile phones, trusted channels are typically implemented using QR codes,
+The out-of-band channel acts as a second factor
+in verifying the cryptographic material.
+(The other factor being the control over the email account.)
+
+On mobile phones, QR codes can be used as a second factor,
 but transferring data via USB, Bluetooth, WLAN channels or phone calls
 is possible as well.
+
 Recall that
 we assume that
-our active attacker *cannot* observe or modify data transferred via the
-trusted channel.
+our active attacker *cannot* observe or modify data transferred
+as the second factor.
+
+An attacker who can alter messages
+but has no way of reading or manipulating the second factor
+can disrupt the verification flow.
+
+An attacker who can compromise both factors
+can inject wrong key material
+and convince the peer to verify it.
 
 Here is a conceptual step-by-step example
 of the proposed UI and administrative message workflow
 for establishing a secure contact between two contacts,
 Alice and Bob.
 
-1. Alice sends a bootstrap code to Bob through a trusted out-of-band channel.
+1. Alice sends a bootstrap code to Bob as the second factor.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
@@ -157,7 +170,7 @@ Alice and Bob.
    - a challenge ``INVITENUMBER`` of at least 8 bytes.
      This challenge is used by Bob's device in step 2b
      to prove to Alice's device
-     that it is the device involved in the trusted out-of-band communication.
+     that it is the device that the second factor was shared with.
      Alice's device uses this information in step 3
      to automatically accept Bob's contact request.
      This is in contrast with most messaging apps
@@ -174,7 +187,7 @@ Alice and Bob.
    - the time the contact verification was initiated.
    - the metadata provided.
 
-2. Bob receives the bootstrap data from the trusted out-of-band channel and
+2. Bob receives the bootstrap data as the second factor and
 
    a) If Bob's device knows a key that matches ``Alice_FP``
       the protocol continues with 4b)
@@ -233,11 +246,12 @@ Alice and Bob.
    "Secure contact with Alice <alice-adr> established".
 
 
-At the end of this protocol, Alice has learned and validated the contact
-information and Autocrypt key of Bob, the person to whom she sent the bootstrap
-code via the trusted channel. Moreover, Bob has learned and validated the
-contact information and Autocrypt key of Alice, the person who sent the
-bootstrap code via the trusted channel to Bob.
+At the end of this protocol,
+Alice has learned and validated the contact information and Autocrypt key of Bob,
+the person to whom she sent the bootstrap code.
+Moreover,
+Bob has learned and validated the contact information and Autocrypt key of Alice,
+the person who sent the bootstrap code to Bob.
 
 .. figure:: ../images/secure_channel_foto.jpg
    :width: 200px
@@ -282,7 +296,7 @@ Recall that an active attacker can
 read, modify, and create messages
 that are sent via a regular channel.
 The attacker cannot observe or modify the bootstrap code
-that Alice sends via the trusted channel.
+that Alice sends as the second factor.
 We argue that such an attacker cannot
 break the security of the Setup Contact protocol,
 that is, the attacker cannot
@@ -309,9 +323,9 @@ we do not consider dropping of messages further.
    However, Bob will detect this modification step 4a,
    because the fake Alice-MITM key does not match
    the fingerprint ``Alice_FP``
-   that Alice sent to Bob using the trusted channel.
-   (Recall that the adversary cannot modify the bootstrap code sent via the
-   trusted channel.)
+   that Alice sent to Bob in the bootstrap code.
+   (Recall that the bootstrap code acts as a second factor
+   the adversary cannot modify.)
 
 2. The adversary also cannot impersonate Bob to Alice,
    that is,
@@ -361,9 +375,9 @@ we do not consider dropping of messages further.
      the finger print of the fake key Bob-MITM and
      a guess for the challenge ``AUTH``.
      The adversary cannot learn the challenge ``AUTH``:
-     it cannot observe the bootstrap data in step 1 because of the trusted
-     channel, and
-     it cannot decrypt the message "vc-request-with-auth".
+     it cannot observe the bootstrap data
+     that acts as a second factor in step 1,
+     and it cannot decrypt the message "vc-request-with-auth".
      Therefore,
      this guess will only be correct with probability :math:`2^{-64}`.
      Thus, with overwhelming probability
@@ -632,11 +646,12 @@ Notes on the verified group protocol
   securing the e-mail encryption eco-system,
   rather than just securing the group at hand.
 
-- **Sending all messages through trusted channel**:
+- **Sending all messages through alternative channels**:
   instead of being relayed through the provider,
   all messages from step 2 onwards could be transferred via Bluetooth or WLAN.
   This way,
-  the full invite/join protocol would be completed on a trusted channel.
+  the full invite/join protocol would be completed
+  on a different channel.
   Besides increasing the security of the joining,
   an additional advantage is
   that the provider would not gain knowledge about verifications.
@@ -715,7 +730,7 @@ verified using these new verification protocols.
 So how can users determine the integrity of keys of historical messages?
 This is where the history-verification protocol comes in.
 This protocol,
-that again relies on a trusted out-of-band channel,
+that again relies on a second factor,
 enables two peers
 to verify key integrity of their shared historic messages.
 After completion, users gain assurance
