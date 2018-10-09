@@ -103,6 +103,27 @@ without having to rely on services from third parties.
 Our verification approach thus fits into the Autocrypt key distribution model
 which does not require extra services from third parties either.
 
+Autocrypt itself focusses on passive attacks
+such as sniffing the mail content
+by a provider.
+Active attacks are outside of the scope
+and can be carried out automatically
+by replacing Autocrypt headers.
+
+Here we aim to increase the requirements of active attacks
+by introducing a second factor
+and using it to verify the cryptographic material.
+
+We consider targeted active attacks
+against these protections feasible.
+However they will require coordinated attacks
+based for example on infiltrators or real time CCTV footage.
+
+We believe
+that the ideas explained here
+prevent automated mass surveillance
+with a fairly low impact on usability.
+
 
 .. _`setup-contact`:
 
