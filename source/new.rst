@@ -165,7 +165,9 @@ via the second channel.
 
 An attacker who can alter messages
 but has no way of reading or manipulating the second channel
-can disrupt the verification flow.
+can prevent the verification protocol
+from completing successfully
+by droping or altering messages.
 
 An attacker who can compromise both channels
 can inject wrong key material
