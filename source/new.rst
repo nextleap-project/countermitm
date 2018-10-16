@@ -103,6 +103,28 @@ without having to rely on services from third parties.
 Our verification approach thus fits into the Autocrypt key distribution model
 which does not require extra services from third parties either.
 
+Autocrypt Level 1 focusses on passive attacks
+such as sniffing the mail content
+by a provider.
+Active attacks are outside of the scope
+and can be carried out automatically
+by replacing Autocrypt headers.
+
+Here we aim to increase the costs of active attacks
+by introducing a second channel
+and using it to verify the Autocrypt headers
+transmitted in-band.
+
+We consider targeted active attacks
+against these protections feasible.
+However they will require coordinated attacks
+based for example on infiltrators or real time CCTV footage.
+
+We believe
+that the ideas explained here
+make automated mass surveillance prohibitively expensive
+with a fairly low impact on usability.
+
 
 .. _`setup-contact`:
 
@@ -124,26 +146,39 @@ messages.
 
 The protocol follows a single simple UI workflow:
 A peer "shows" bootstrap data
-that is then "read" by the other peer through a trusted (out-of-band) channel.
+that is then "read" by the other peer through a second channel.
 This means that,
 as opposed to current fingerprint verification workflows,
 the protocol only runs once instead of twice,
 yet results in the two peers having verified keys of each other.
 
-On mobile phones, trusted channels are typically implemented using QR codes,
+Between mobile phones,
+showing and scanning a QR code
+constitutes a second channel,
 but transferring data via USB, Bluetooth, WLAN channels or phone calls
 is possible as well.
+
 Recall that
 we assume that
-our active attacker *cannot* observe or modify data transferred via the
-trusted channel.
+our active attacker *cannot* observe or modify data transferred
+via the second channel.
+
+An attacker who can alter messages
+but has no way of reading or manipulating the second channel
+can prevent the verification protocol
+from completing successfully
+by droping or altering messages.
+
+An attacker who can compromise both channels
+can inject wrong key material
+and convince the peer to verify it.
 
 Here is a conceptual step-by-step example
 of the proposed UI and administrative message workflow
 for establishing a secure contact between two contacts,
 Alice and Bob.
 
-1. Alice sends a bootstrap code to Bob through a trusted out-of-band channel.
+1. Alice sends a bootstrap code to Bob via the second channel.
    The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
@@ -152,12 +187,12 @@ Alice and Bob.
 
    - Alice's e-mail address (both name and routable address),
 
-   - A type ``TYPE=vc-invite`` of the out-of-band transfer
+   - A type ``TYPE=vc-invite`` of the bootstrap code
 
    - a challenge ``INVITENUMBER`` of at least 8 bytes.
      This challenge is used by Bob's device in step 2b
      to prove to Alice's device
-     that it is the device involved in the trusted out-of-band communication.
+     that it is the device that the bootstrap code was shared with.
      Alice's device uses this information in step 3
      to automatically accept Bob's contact request.
      This is in contrast with most messaging apps
@@ -174,7 +209,7 @@ Alice and Bob.
    - the time the contact verification was initiated.
    - the metadata provided.
 
-2. Bob receives the bootstrap data from the trusted out-of-band channel and
+2. Bob receives the bootstrap code and
 
    a) If Bob's device knows a key that matches ``Alice_FP``
       the protocol continues with 4b)
@@ -233,11 +268,12 @@ Alice and Bob.
    "Secure contact with Alice <alice-adr> established".
 
 
-At the end of this protocol, Alice has learned and validated the contact
-information and Autocrypt key of Bob, the person to whom she sent the bootstrap
-code via the trusted channel. Moreover, Bob has learned and validated the
-contact information and Autocrypt key of Alice, the person who sent the
-bootstrap code via the trusted channel to Bob.
+At the end of this protocol,
+Alice has learned and validated the contact information and Autocrypt key of Bob,
+the person to whom she sent the bootstrap code.
+Moreover,
+Bob has learned and validated the contact information and Autocrypt key of Alice,
+the person who sent the bootstrap code to Bob.
 
 .. figure:: ../images/secure_channel_foto.jpg
    :width: 200px
@@ -282,7 +318,7 @@ Recall that an active attacker can
 read, modify, and create messages
 that are sent via a regular channel.
 The attacker cannot observe or modify the bootstrap code
-that Alice sends via the trusted channel.
+that Alice sends via the second channel.
 We argue that such an attacker cannot
 break the security of the Setup Contact protocol,
 that is, the attacker cannot
@@ -309,9 +345,10 @@ we do not consider dropping of messages further.
    However, Bob will detect this modification step 4a,
    because the fake Alice-MITM key does not match
    the fingerprint ``Alice_FP``
-   that Alice sent to Bob using the trusted channel.
-   (Recall that the adversary cannot modify the bootstrap code sent via the
-   trusted channel.)
+   that Alice sent to Bob in the bootstrap code.
+   (Recall that the bootstrap code is transmitted
+   via the second channel
+   the adversary cannot modify.)
 
 2. The adversary also cannot impersonate Bob to Alice,
    that is,
@@ -361,9 +398,9 @@ we do not consider dropping of messages further.
      the finger print of the fake key Bob-MITM and
      a guess for the challenge ``AUTH``.
      The adversary cannot learn the challenge ``AUTH``:
-     it cannot observe the bootstrap data in step 1 because of the trusted
-     channel, and
-     it cannot decrypt the message "vc-request-with-auth".
+     it cannot observe the bootstrap code
+     transmitted via the second channel in step 1,
+     and it cannot decrypt the message "vc-request-with-auth".
      Therefore,
      this guess will only be correct with probability :math:`2^{-64}`.
      Thus, with overwhelming probability
@@ -486,7 +523,7 @@ so that Alice and Bob verify each other's keys.
 To ask for Bob's explicit consent we
 indicate that the messages are part of the verified group protocol,
 and include the group's identifier
-in the metadata transfered in the out of band channel.
+in the metadata part of the bootstrap code.
 
 More precisely:
 
@@ -551,7 +588,7 @@ d. Alice's device receives the "vg-member-added-received" reply from Bob
 Bob and Alice may now both invite and add more members
 which in turn can add more members.
 The described secure-join workflow guarantees
-that all members of the group have been out-of-band verified with at least one member.
+that all members of the group have been verified with at least one member.
 The broadcasting of keys further ensures
 that all members are fully connected.
 
@@ -632,11 +669,12 @@ Notes on the verified group protocol
   securing the e-mail encryption eco-system,
   rather than just securing the group at hand.
 
-- **Sending all messages through trusted channel**:
+- **Sending all messages through alternative channels**:
   instead of being relayed through the provider,
   all messages from step 2 onwards could be transferred via Bluetooth or WLAN.
   This way,
-  the full invite/join protocol would be completed on a trusted channel.
+  the full invite/join protocol would be completed
+  on a different channel.
   Besides increasing the security of the joining,
   an additional advantage is
   that the provider would not gain knowledge about verifications.
@@ -715,7 +753,7 @@ verified using these new verification protocols.
 So how can users determine the integrity of keys of historical messages?
 This is where the history-verification protocol comes in.
 This protocol,
-that again relies on a trusted out-of-band channel,
+that again relies on a second channel,
 enables two peers
 to verify key integrity of their shared historic messages.
 After completion, users gain assurance
@@ -824,7 +862,7 @@ An alternative is to permit
 that Bob recovers his history from the message/keydata list
 that he receives from Alice.
 Then, he could validate such information
-with other people in subsequent out-of-band verifications.
+with other people in subsequent verifications.
 However, this method is vulnerable to collusion attacks
 in which Bob's keys are replaced in all of his peers,
 including Alice.
@@ -912,7 +950,7 @@ Verifying keys through onion-queries
 
 Up to this point this document has describe methods
 to securely add contacts, form groups, and verify history
-in an offline scenario where users can establish an out of band channel
+in an offline scenario where users can establish a second channel
 to carry out the verification.
 We now discuss how the use of Autocrypt headers can be used
 to support continuous key verification in an online setting.
