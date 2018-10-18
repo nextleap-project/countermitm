@@ -564,8 +564,17 @@ a. Alice broadcasts an encrypted "vg-member-added" message to all members of
    ``GROUP`` (including Bob),
    gossiping the Autocrypt keys of all members (including Bob).
 
-b. Bob receives the encrypted "vg-member-added" message
-   and learns all the keys and e-mail addresses of group members.
+b. Bob receives the encrypted "vg-member-added" message.
+   Bob's device verifies:
+
+     * The encryption and Alices signature are intact.
+
+     * Alice may invite Bob to a verified group.
+       That is she is a verified contact of Bob.
+
+   If any of the checks fail processing aborts.
+   Otherwise the device learns
+   all the keys and e-mail addresses of group members.
    Bob's device sends
    a final "vg-member-added-received" message to Alice's device.
    Bob's device shows
@@ -632,32 +641,59 @@ Notes on the verified group protocol
   that introduces every new peer to the rest of the group.
   After some time everybody will become a member of the group.
 
-..
-  TODO: I don't understand how the infiltrator attack works.
+- **Restricting verification reuse accross groups**
+  Since we share the content of the group
+  with all group members
+  we can also trust them
+  to verify the keys used for the group.
 
-- **Ignoring infiltrators, focusing on message transport attacks first**:
-  If one group member is "malicious" or colludes with the adversary,
-  it can leak the messages' content to outsiders
-  as this group member can by construction read all messages.
-  Thus, we do not aim at protecting against such peers,
-  and instead assume that they are honest.
+  If they wanted to leak the content they could do so anyway.
 
-  We also choose to not consider advanced attacks
+  However if we want
+  to reuse keys from one verified group
+  to form a different one
+  the peer who originally verified the key
+  may not be part of the new group.
+
+  If the verifier is "malicious"
+  and colludes with an attacker in a MITM position,
+  they can inject a MITM key as the verified key.
+  Reusing the key in the context of another group
+  would allow MITM attacks on that group.
+
+  This can be prevented by restricting
+  the invitation to verified groups
+  to verified contacts
+  and limiting the scope
+  of keys from member-added messages
+  to the corresponding group.
+
+- **Ignoring infiltrators, focusing on message transport attacks first**
+  One may also choose to not consider advanced attacks
   in which an "infiltrator" peer collaborates with an evil provider
   to intercept/read messages.
 
+  In this case keys can be reused accross verified groups.
+  Active attacks from an adversary
+  who can only modify messages in the first channel
+  are still impossible.
+
+  A malicious verified contact may inject MITM keys.
   We note, however,
   that such an infiltrator (say Bob when adding Carol as a new member),
   will have to sign the message containing the gossip fake keys.
-  If Carol performs an oob-verification with Alice,
+  If Carol performs a verification with Alice,
   she can use Bob's signature to prove
   that Bob gossiped the wrong key for Alice.
 
-..
-  TODO: could it be that the next point is stale? It references messages in
-  steps that don't exist. And I don't see how (after translating this to the
-  vc-request setting), the malfeasance detection differs between
-  joining groups and verifying contacts.
+  Trusting all peers to verify keys
+  also allows faster recovery
+  from device loss.
+  Say Alice lost her device
+  and Bob verified the new key.
+  Once Bob announced the new key in a verified group including Carol
+  Carol could send the key to further verified groups
+  that Bob is not part of.
 
 - **Leaving attackers in the dark about verified groups**.
   It might be feasible to design
