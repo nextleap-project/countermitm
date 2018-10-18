@@ -211,7 +211,8 @@ Alice and Bob.
 
 2. Bob receives the bootstrap code and
 
-   a) If Bob's device already verified that ``Alice_FP``
+   a) If Bob's device already knows a key with the fingerprint ``Alice_FP``
+      that
       belongs to Alice's e-mail address the protocol continues with 4b)
 
    b) otherwise Bob's device sends
