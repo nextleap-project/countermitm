@@ -564,8 +564,17 @@ a. Alice broadcasts an encrypted "vg-member-added" message to all members of
    ``GROUP`` (including Bob),
    gossiping the Autocrypt keys of all members (including Bob).
 
-b. Bob receives the encrypted "vg-member-added" message
-   and learns all the keys and e-mail addresses of group members.
+b. Bob receives the encrypted "vg-member-added" message.
+   Bob's device verifies:
+
+     * The encryption and Alices signature are intact.
+
+     * Alice may invite Bob to a verified group.
+       That is she is a verified contact of Bob.
+
+   If any of the checks fail processing aborts.
+   Otherwise the device learns
+   all the keys and e-mail addresses of group members.
    Bob's device sends
    a final "vg-member-added-received" message to Alice's device.
    Bob's device shows
