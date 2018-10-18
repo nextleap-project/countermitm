@@ -682,7 +682,7 @@ Notes on the verified group protocol
   We note, however,
   that such an infiltrator (say Bob when adding Carol as a new member),
   will have to sign the message containing the gossip fake keys.
-  If Carol performs an oob-verification with Alice,
+  If Carol performs a verification with Alice,
   she can use Bob's signature to prove
   that Bob gossiped the wrong key for Alice.
 
