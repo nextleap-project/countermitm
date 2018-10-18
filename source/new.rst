@@ -527,8 +527,8 @@ in the metadata part of the bootstrap code.
 
 More precisely:
 
-- in step 1 Alice adds the metadata:
-    ``INVITE=<groupname>``.
+- in step 1 Alice adds the metadata
+  ``INVITE=<groupname>``.
   Where ``<groupname>`` is the name of the group ``GROUP``.
 
 - in step 2 Bob manually confirms he wants to join ``GROUP``
@@ -574,9 +574,13 @@ b. Bob receives the encrypted "vg-member-added" message
 c. Any other group member that receives the encrypted "vg-member-added" message
    will process the gossiped key through autocrypt gossip mechanisms.
    In addition they verify:
-     * The encryption and Alices signature are intact.
-     * They are themselves a member of ``GROUP``.
-     * Alice is a member of ``GROUP``.
+
+   * The encryption and Alices signature are intact.
+
+   * They are themselves a member of ``GROUP``.
+
+   * Alice is a member of ``GROUP``.
+
    If any of the checks fail processing aborts.
    Otherwise they will add Bob to their list of group members
    and mark the gossiped key as verified in the context of this group.
@@ -776,8 +780,8 @@ The protocol re-uses the first five steps of the `setup-contact`_ protocol
 so that Alice and Bob verify each other's keys.
 We make one small modifications to indicate that
 the messages are part of the history-verification protocol:
-- in step 1 Alice adds the metadata:
-    ``VERIFY=history``.
+In step 1 Alice adds the metadata
+``VERIFY=history``.
 
 If no failure occurred after step 5,
 Alice and Bob have again verified each other's keys.
