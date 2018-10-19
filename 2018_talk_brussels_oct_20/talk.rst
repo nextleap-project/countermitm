@@ -1,8 +1,19 @@
+.. title: Securing Autocrypt against active attacks
 
-CounterMITM - Securing Autocrypt against active attacks
-=======================================================
 
-- me: azul@merlinux.eu
+----
+
+Securing Autocrypt against active attacks
+=========================================
+
+presented at OpenPGP Summit Brussels 2018
+by azul@merlinux.eu
+
+
+----
+
+CounterMitM
+===========
 
 - developed as part of NEXTLEAP research
 
