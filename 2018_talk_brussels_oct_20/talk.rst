@@ -1,3 +1,5 @@
+:css: talk.css
+
 .. title: Securing Autocrypt against active attacks
 
 
@@ -54,11 +56,11 @@ Active Attacks against Autocrypt Level 1
 Verify Contacts based on QR codes
 ==================================
 
+.. image:: img/delta-scan.png
+
 - one person shows the QR code, other person scans.
 
 - works with laptop & mobile
-
-- Verified contacts have checkmark
 
 ----
 
@@ -72,7 +74,8 @@ Underlying mechanism
 
 - system messages
 
-- currently using Autocrypt headers for key distribution
+- currently using Autocrypt headers for key retrieval
+
   could use: keyserver, wkd, etc.
 
 ----
