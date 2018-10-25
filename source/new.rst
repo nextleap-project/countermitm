@@ -606,41 +606,26 @@ that all members of the group have been verified with at least one member.
 The broadcasting of keys further ensures
 that all members are fully connected.
 
-Recall that this protocol does **not** consider key loss or change.
-When users observe a change
-in one of the Autocrypt keys belonging to the group
-they must intepret this
-as the owner of that key being removed from the group.
-To become a member again,
-a user whose key changed needs to run the secure join with
-a user that is still a member.
-
 .. figure:: ../images/join_verified_group.jpg
    :width: 200px
 
    Join-Group protocol at step 2 with https://delta.chat.
 
-Notes on the verified group protocol
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Strategies for verification reuse
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **More Asynchronous UI flow**:
-  All steps after 2 (the sending of adminstrative messages)
-  could happen asynchronously and in the background.
-  This might be useful because e-mail providers often delay initial messages
-  ("greylisting") as mitigation against spam.
-  The eventual outcomes ("Could not establish verified connection"
-  or "successful join") can be delivered in asynchronous notifications
-  towards Alice and Bob.
-  These can include a notification
-  "verified join failed to complete"
-  if messages do not arrive within a fixed time frame.
-  In practise this means that secure joins can be concurrent.
-  A member can show the "Secure Group invite" to a number of people.
-  Each of these peers scans the message and launches the secure-join.
-  As 'vc-request-with-auth' messages arrive to Alice,
-  she will send the broadcast message
-  that introduces every new peer to the rest of the group.
-  After some time everybody will become a member of the group.
+Since we retrieve keys for verified groups from peers
+we have to choose wether we want to trust our peers
+to verify the keys correctly.
+
+One of the shortcomings of the web of trust
+is that it's mental model is hard to understand
+and make practical use of.
+We therefore do not ask the user questions
+about how much they trust their peers.
+
+Therefore two strategies remain
+that have different security implications:
 
 - **Restricting verification reuse accross groups**
   Since we share the content of the group
@@ -680,9 +665,14 @@ Notes on the verified group protocol
   are still impossible.
 
   A malicious verified contact may inject MITM keys.
-  We note, however,
-  that such an infiltrator (say Bob when adding Carol as a new member),
-  will have to sign the message containing the gossip fake keys.
+  Say Bob when adding Carol as a new member,
+  sends a prepared MITM key.
+  We refer to this as a Bob in the middle attack
+  to illustrate that a peer is involved in the attack.
+
+  We note,
+  that Bob, will have to sign the message
+  containing the gossip fake keys.
   If Carol performs a verification with Alice,
   she can use Bob's signature to prove
   that Bob gossiped the wrong key for Alice.
@@ -695,6 +685,80 @@ Notes on the verified group protocol
   Once Bob announced the new key in a verified group including Carol
   Carol could send the key to further verified groups
   that Bob is not part of.
+
+Dealing with key loss and compromise
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If a user looses their device
+they can setup a new device
+and regain access to their inbox.
+However they may loose their secret key.
+
+They can generate a new key pair.
+Autocrypt will distribute their new public key
+in the Autocrypt headers
+and opportunistic encryption will switch to it automatically.
+
+Verified groups will remain unreadable
+until the user verifies a contact from that group.
+Then the contact can update the key used in the group.
+This happens by sending a "vg-member-added" message
+to the group.
+Since the email address of that user remains the same
+the old key will be replaced by the new one.
+
+Implementers may decide
+wether the recipients of such key updates
+propagate them to other groups
+they share with the user in question.
+If they do this will speed up the recovery from device loss.
+However it also allows Bob-in-the-middle attacks
+that replace the originally verified keys.
+So the decision needs to be based on the threat model of the app
+and the strategy picked for verification reuse
+
+In the case of **key compromise**
+more care needs to be taken.
+Since network attackers can drop messages
+they can also drop the "vg-member-added" message
+that was meant to replace a compromised key.
+
+Therefor an key update due to key compromise
+requires a confirmation
+by all other members of the group,
+that they received the update.
+
+As long as only one key is compromised
+at a time
+this can happen in band
+since the established verified keys
+will be required to sign the confirmations.
+
+User testing will be required
+to learn how to best guide users
+in this situation.
+
+Notes on the verified group protocol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **More Asynchronous UI flow**:
+  All steps after 2 (the sending of adminstrative messages)
+  could happen asynchronously and in the background.
+  This might be useful because e-mail providers often delay initial messages
+  ("greylisting") as mitigation against spam.
+  The eventual outcomes ("Could not establish verified connection"
+  or "successful join") can be delivered in asynchronous notifications
+  towards Alice and Bob.
+  These can include a notification
+  "verified join failed to complete"
+  if messages do not arrive within a fixed time frame.
+  In practise this means that secure joins can be concurrent.
+  A member can show the "Secure Group invite" to a number of people.
+  Each of these peers scans the message and launches the secure-join.
+  As 'vc-request-with-auth' messages arrive to Alice,
+  she will send the broadcast message
+  that introduces every new peer to the rest of the group.
+  After some time everybody will become a member of the group.
 
 - **Leaving attackers in the dark about verified groups**.
   It might be feasible to design
@@ -745,28 +809,6 @@ we recommend performing new verifications.
 Since performing new verifications may not always be feasible,
 clients should provide the users with a way
 to actively move back to an unverified state.
-
-
-Open Questions about reusing verifications for new groups
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Given a verified group that grows as described in the previous section:
-What if one of the members wants to start a new group
-with a subset of the members?
-How safe is it in practise to allow
-directly creating the group
-if the creator has not verified all keys herself?
-
-Of course, a safe answer would be
-to always require a new secure-join workflow for not directly verified members.
-A creator could send a message to initial group members
-and ask them to add other peers they have directly verified.
-
-Another option seems to be
-to allow starting a new group with exactly the same group of people.
-But what happens if the new group creator chooses to remove people from the group?
-What if they were vital in setting up the verification network in the initial group?
-
 
 .. _`history-verification`:
 
