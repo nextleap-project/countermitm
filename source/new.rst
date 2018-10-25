@@ -723,7 +723,7 @@ Since network attackers can drop messages
 they can also drop the "vg-member-added" message
 that was meant to replace a compromised key.
 
-Therefor an key update due to key compromise
+Therefore an key update due to key compromise
 requires a confirmation
 by all other members of the group,
 that they received the update.
