@@ -561,11 +561,11 @@ or Alice performed the steps described in the previous section.
 Now she needs to inform the group that Bob should be added.
 Bob needs to confirm everything worked:
 
-a. Alice broadcasts an encrypted "vg-member-added" message to all members of
+a. Alice broadcasts an encrypted "vg-member-setup" message to all members of
    ``GROUP`` (including Bob),
    gossiping the Autocrypt keys of all members (including Bob).
 
-b. Bob receives the encrypted "vg-member-added" message.
+b. Bob receives the encrypted "vg-member-setup" message.
    Bob's device verifies:
 
      * The encryption and Alices signature are intact.
@@ -577,11 +577,11 @@ b. Bob receives the encrypted "vg-member-added" message.
    Otherwise the device learns
    all the keys and e-mail addresses of group members.
    Bob's device sends
-   a final "vg-member-added-received" message to Alice's device.
+   a final "vg-member-setup-received" message to Alice's device.
    Bob's device shows
    "You successfully joined the verified group ``GROUP``".
 
-c. Any other group member that receives the encrypted "vg-member-added" message
+c. Any other group member that receives the encrypted "vg-member-setup" message
    will process the gossiped key through autocrypt gossip mechanisms.
    In addition they verify:
 
@@ -595,7 +595,7 @@ c. Any other group member that receives the encrypted "vg-member-added" message
    Otherwise they will add Bob to their list of group members
    and mark the gossiped key as verified in the context of this group.
 
-d. Alice's device receives the "vg-member-added-received" reply from Bob
+d. Alice's device receives the "vg-member-setup-received" reply from Bob
    and shows a screen
    "Bob <email-address> securely joined group ``GROUP``"
 
@@ -673,8 +673,12 @@ that have different security implications:
   We note,
   that Bob, will have to sign the message
   containing the gossip fake keys.
-  If Carol performs a verification with Alice,
-  she can use Bob's signature to prove
+  In the following section
+  we introduce `history verification`
+  which will detect such attacks after the fact.
+  Performing a history verification with Alice
+  will inform Carol about the MITM key introduced by Bob.
+  Bob's signature serves as evidence
   that Bob gossiped the wrong key for Alice.
 
   Trusting all peers to verify keys
@@ -702,7 +706,7 @@ and opportunistic encryption will switch to it automatically.
 Verified groups will remain unreadable
 until the user verifies a contact from that group.
 Then the contact can update the key used in the group.
-This happens by sending a "vg-member-added" message
+This happens by sending a "vg-member-setup" message
 to the group.
 Since the email address of that user remains the same
 the old key will be replaced by the new one.
@@ -717,10 +721,10 @@ that replace the originally verified keys.
 So the decision needs to be based on the threat model of the app
 and the strategy picked for verification reuse
 
-In the case of **key compromise**
+If a key is known or suspected to be compromised
 more care needs to be taken.
 Since network attackers can drop messages
-they can also drop the "vg-member-added" message
+they can also drop the "vg-member-setup" message
 that was meant to replace a compromised key.
 
 Therefore an key update due to key compromise
@@ -849,6 +853,15 @@ the history-verification protocol can detect
 temporary malfeasant substitutions of keys in messages.
 Such substitutions are not caught by current key-fingerprint verification
 workflows, because they only provide assurance about the current keys.
+They can detect substitutions
+that happened via gossip, Autocrypt headers
+and through verification reuse (Bob in the middle attacks).
+
+In the latter case they also point out and provide evidence
+who introduced the MITM key in a given group.
+Performing a history verification with that person
+will in turn show where they got the key from.
+This way the key can be tracked back to who originally created it.
 
 Like in the `setup-contact`_ protocol,
 we designed our history-verification protocol so that
