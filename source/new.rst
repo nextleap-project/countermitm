@@ -726,21 +726,10 @@ more care needs to be taken.
 Since network attackers can drop messages
 they can also drop the "vg-member-setup" message
 that was meant to replace a compromised key.
-
-Therefore an key update due to key compromise
-requires a confirmation
-by all other members of the group,
-that they received the update.
-
-As long as only one key is compromised
-at a time
-this can happen in band
-since the established verified keys
-will be required to sign the confirmations.
-
-User testing will be required
-to learn how to best guide users
-in this situation.
+A compromised key combined with a network attack
+breaks the security of both channels.
+Recovering from this situation needs careful consideration
+and goes beyond the scope of our current work.
 
 Notes on the verified group protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
