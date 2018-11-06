@@ -189,7 +189,8 @@ for establishing a secure contact between two contacts,
 Alice and Bob.
 
 1. Alice sends a bootstrap code to Bob via the second channel.
-   The bootstrap code consists of:
+
+   a) The bootstrap code consists of:
 
    - Alice's Openpgp4 public key fingerprint ``Alice_FP``,
      which acts as a commitment to the
@@ -214,7 +215,7 @@ Alice and Bob.
 
    - optionally add metadata such as ``INVITE-TO=groupname``
 
-   Per ``INVITENUMBER`` Alices device will keep track of:
+   b) Per ``INVITENUMBER`` Alices device will keep track of:
    - the associated ``AUTH`` secret
    - the time the contact verification was initiated.
    - the metadata provided.
@@ -232,17 +233,21 @@ Alice and Bob.
 
 3. Alice's device receives the "vc-request" message.
 
-   If she recognizes the ``INVITENUMBER`` from step 1
-   she checks that the invite has not expired.
-   If the timestamp associated with the ``INVITENUMBER``
-   is not longer ago than a given time
-   she processes Bob's Autocrypt key.
-   Then, she uses this key
-   to create an encrypted "vc-auth-required" message
-   containing her own Autocrypt key, which she sends to Bob.
-
+   a) She looks up the bootstrap data for the ``INVITENUMBER``.
    If the ``INVITENUMBER`` does not match
    then Alice terminates the protocol.
+
+   b) If she recognizes the ``INVITENUMBER`` from step 1
+   she checks that the invite has not expired.
+   If the timestamp associated with the ``INVITENUMBER``
+   is longer ago than a given time
+   Alice terminates the protocol.
+
+   c) She then processes Bob's Autocrypt key.
+
+   d) She uses this key
+   to create an encrypted "vc-auth-required" message
+   containing her own Autocrypt key, which she sends to Bob.
 
 4. Bob receive the "vc-auth-required" message,
    decrypts it,
@@ -259,21 +264,24 @@ Alice and Bob.
       Bob's own key fingerprint ``Bob_FP``
       and the second challenge ``AUTH`` from step 1.
 
-5. Alice decrypts Bob's 'vc-request-with-auth' message,
-   and verifies
-   that Bob's Autocrypt key matches ``Bob_FP``
+5. Alice decrypts Bob's 'vc-request-with-auth' message
+
+   a) and verifies that Bob's Autocrypt key matches ``Bob_FP``
    that the invite has not expired
    and that the transferred ``AUTH`` matches the one from step 1.
 
-   If any verification fails,
+   b) If any verification fails,
    Alice's device signals
    "Could not establish secure connection to Bob"
    and the protocol terminates.
 
-6. If the verification succeeds on Alice's device it shows
-   "Secure contact with Bob <bob-adr> established".
-   In addition it sends Bob a "vc-contact-confirm" message.
-   The device also removes the data associated with ``INVITECODE``.
+6. If the verification succeeds on Alice's device
+
+   a) shows "Secure contact with Bob <bob-adr> established".
+
+   b) sends Bob a "vc-contact-confirm" message.
+
+   c) also removes the data associated with ``INVITECODE``.
 
 7. Bob's device receives "vc-contact-confirm" and shows
    "Secure contact with Alice <alice-adr> established".
