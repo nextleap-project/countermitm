@@ -144,6 +144,11 @@ or else both get an error message.
 The protocol is safe against active attackers that can modify, create and delete
 messages.
 
+.. figure:: ../images/secure_channel_foto.jpg
+   :width: 200px
+
+   Setup Contact protocol step 2 with https://delta.chat.
+
 The protocol follows a single simple UI workflow:
 A peer "shows" bootstrap data
 that is then "read" by the other peer through a second channel.
@@ -172,6 +177,11 @@ by droping or altering messages.
 An attacker who can compromise both channels
 can inject wrong key material
 and convince the peer to verify it.
+
+.. figure:: ../images/contact.*
+   :alt: Sequence diagram of UI and administrative message flow
+
+   UI and administrative message flow of contact setup
 
 Here is a conceptual step-by-step example
 of the proposed UI and administrative message workflow
@@ -275,12 +285,6 @@ the person to whom she sent the bootstrap code.
 Moreover,
 Bob has learned and validated the contact information and Autocrypt key of Alice,
 the person who sent the bootstrap code to Bob.
-
-.. figure:: ../images/secure_channel_foto.jpg
-   :width: 200px
-
-   Setup Contact protocol step 2 with https://delta.chat.
-
 
 Requirements for the underlying encryption scheme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
