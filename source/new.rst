@@ -802,18 +802,34 @@ Verified key material
 provides stronger security guarantees
 then keys discovered in Autocrypt headers.
 
+At the same time opportunistic usage
+of keys from autocrypt headers
+provides faster recovery from device loss.
+
 Therefore the address-to-key mappings obtained using the verification protocols
 should be stored separately
-and used in preference to keys distributed in the AutoCrypt headers
-in case of conflicts.
-This way verified contacts and groups prevent key injection through
-Autocrypt headers.
+and in addition to the data
+stored for the normal Autocrypt behaviour.
 
-To enable users to recover from device loss,
-we recommend performing new verifications.
-Since performing new verifications may not always be feasible,
-clients should provide the users with a way
-to actively move back to an unverified state.
+Verified contacts and groups offer
+a separate communication channel
+from the opportunistic one.
+
+We separated the two concepts
+but they can both be presented to the user
+as 'Verified Groups'.
+In this case the verified contact is a verified group with two members.
+
+This allows the UI to feature
+a verified group
+and the 'normal' opportunistic encryption
+with the same contact.
+
+The verified group prevents key injection through Autocrypt headers.
+In the case of device loss
+the user can fall back to the non-verified contact
+to ensure availability of a communication channel
+even before the next verification has taken place.
 
 .. _`history-verification`:
 
