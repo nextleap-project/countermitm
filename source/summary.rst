@@ -43,12 +43,6 @@ because they constrain and complement each other.
 Some of the proposed protocols are already implemented;
 we link to the repositories in the appropriate places.
 
-.. note::
-
-    Future revisions are to refine this document and its contained protocols.
-    The document lives at https://github.com/nextleap-project/countermitm
-    and can be followed in public. A 1.0 release is envisioned for end 2018.
-
 
 Attack model and terminology
 ++++++++++++++++++++++++++++
