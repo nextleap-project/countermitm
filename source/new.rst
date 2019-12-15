@@ -960,7 +960,7 @@ users storing their history outside of their devices.
 The security requirements for such a backup are much lower
 than for backing up the private key.
 The backup only needs to be tamper proof,
-i.e., its integrity must be guaranteed :--: not its confidentiality.
+i.e., its integrity must be guaranteed |--| not its confidentiality.
 This is achievable even if the private key is lost.
 Users can verify the integrity of this backup even if
 they lose their private key.
