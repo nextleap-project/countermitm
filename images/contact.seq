@@ -19,6 +19,6 @@ Note over A: 5.a) verify AUTH and key
 Note over A: 5.b) on failure alert user and abort
 Note over A: 6.a) signal success to user
 A -> B: 6.b) vc-contact-confirm message
-Note over A: 6.c) clear bootstrap data for INVITECODE
+Note over A: 6.c) clear bootstrap data for INVITENUMBER
 Note over B: 7. signal success to user
 

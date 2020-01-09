@@ -281,7 +281,7 @@ Alice and Bob.
 
    b) sends Bob a "vc-contact-confirm" message.
 
-   c) also removes the data associated with ``INVITECODE``.
+   c) also removes the data associated with ``INVITENUMBER``.
 
 7. Bob's device receives "vc-contact-confirm" and shows
    "Secure contact with Alice <alice-adr> established".
