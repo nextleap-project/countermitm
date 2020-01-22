@@ -279,7 +279,7 @@ Alice and Bob.
 
    a) shows "Secure contact with Bob <bob-adr> established".
 
-   b) sends Bob a "vc-contact-confirm" message.
+   b) sends Bob a encrypted "vc-contact-confirm" message.
 
    c) also removes the data associated with ``INVITENUMBER``.
 
@@ -289,10 +289,12 @@ Alice and Bob.
 
 At the end of this protocol,
 Alice has learned and validated the contact information and Autocrypt key of Bob,
-the person to whom she sent the bootstrap code.
+the person to whom she sent the bootstrap code,
+while also knowing that Bob has her Autocrypt key.
 Moreover,
 Bob has learned and validated the contact information and Autocrypt key of Alice,
-the person who sent the bootstrap code to Bob.
+the person who sent the bootstrap code to Bob,
+while also knowing that Alice has his Autocrypt key.
 
 Requirements for the underlying encryption scheme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
