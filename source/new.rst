@@ -261,8 +261,11 @@ Alice and Bob.
    b) Otherwise Bob's device sends back
       a 'vc-request-with-auth' encrypted message
       whose encrypted part contains
-      Bob's own key fingerprint ``Bob_FP``
-      and the second challenge ``AUTH`` from step 1.
+      Bob's own key fingerprint ``Bob_FP``,
+      the second challenge ``AUTH`` from step 1 and
+      optionally an Autocrypt-Gossip header for Alice's
+      Autocrypt key in order for a second device of Bob
+      to learn Alice's verified key.
 
 5. Alice decrypts Bob's 'vc-request-with-auth' message
 
